@@ -1,0 +1,399 @@
+{
+  "id": "XN5zvwsajUldmPgN",
+  "name": "UFC | svc.resolve_incident",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "tags": [],
+  "description": "Closes one ufc_incidents row by id or key: sets status=resolved, resolution, resolved_by=owner and fixed_in_version, then confirms in Telegram.",
+  "connections": {
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Read All Incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read All Incidents": {
+      "main": [
+        [
+          {
+            "node": "Pick Incident",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Resolution": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Confirmation?": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Confirmation": {
+      "main": [
+        [
+          {
+            "node": "Return Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick Incident": {
+      "main": [
+        [
+          {
+            "node": "Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Found?": {
+      "main": [
+        [
+          {
+            "node": "Save Resolution",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Not Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Not Found": {
+      "main": [
+        [
+          {
+            "node": "Return Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "f08d9fb9-155b-4b7f-82eb-1d7d4d581baa",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        80
+      ],
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "incident",
+              "type": "string"
+            },
+            {
+              "name": "resolution",
+              "type": "string"
+            },
+            {
+              "name": "fixed_in_version",
+              "type": "string"
+            },
+            {
+              "name": "dry_run",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "fe72ab85-fd0c-40f2-ba8b-1a7753b54576",
+      "name": "Read All Incidents",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        80
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "1a0fbd2d-89f6-4b94-bb44-50abf65ceb70",
+      "name": "Pick Incident",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        80
+      ],
+      "parameters": {
+        "jsCode": "const req=$('When Called').first().json;\nconst nl=String.fromCharCode(10);\nconst rows=$('Read All Incidents').all().map(function(item){return item.json;}).filter(function(row){return row && row.incident_key;});\nconst clean=function(value,max){return String(value===undefined||value===null?'':value).trim().slice(0,max);};\nconst esc=function(value){return clean(value,4000).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};\nconst target=clean(req.incident,120);\nconst dry=req.dry_run===true;\nconst fail=function(reason){\n return [{json:{ok:false,key:'',incident_key:'',telegram_message:'<b>Could not close that incident</b>'+nl+reason,dry_run:dry,update:null,already_resolved:false}}];\n};\nif(!target)return fail('Give an incident number or key, for example: /fixed 3');\nconst found=rows.find(function(row){return String(row.id)===target || row.incident_key===target;});\nif(!found)return fail('No incident matches \"'+esc(target)+'\". Send /issues to see the current list.');\nconst resolution=clean(req.resolution,900)||'Marked fixed by owner from Telegram.';\nconst version=clean(req.fixed_in_version,120);\nconst alreadyResolved=found.status==='resolved';\nconst lines=['<b>Incident closed</b> #'+found.id,'<b>Workflow:</b> '+esc(found.workflow_name||found.node_name||'unknown'),'<b>Was:</b> '+esc(found.last_message||'(no message)').slice(0,300),'<b>Resolution:</b> '+esc(resolution)];\nif(version)lines.push('<b>Fixed in:</b> '+esc(version));\nif(alreadyResolved)lines.push('<i>Already resolved; the details above were updated.</i>');\nreturn [{json:{ok:true,incident_key:String(found.id===undefined?'':found.id),key:found.incident_key,update:{status:'resolved',resolved_at:new Date().toISOString(),resolution:resolution,resolved_by:'owner',fixed_in_version:version},telegram_message:lines.join(nl),dry_run:dry,already_resolved:alreadyResolved}}];"
+      }
+    },
+    {
+      "id": "23073786-bd55-4c67-9659-aa9385740dfc",
+      "name": "Save Resolution",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        80
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "incident_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "={{ $json.update.status }}",
+            "resolved_at": "={{ $json.update.resolved_at }}",
+            "resolution": "={{ $json.update.resolution }}",
+            "resolved_by": "={{ $json.update.resolved_by }}",
+            "fixed_in_version": "={{ $json.update.fixed_in_version }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "status",
+              "displayName": "status",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "resolved_at",
+              "displayName": "resolved_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "resolution",
+              "displayName": "resolution",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "resolved_by",
+              "displayName": "resolved_by",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "fixed_in_version",
+              "displayName": "fixed_in_version",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            }
+          ]
+        },
+        "options": {
+          "dryRun": "={{ $json.dry_run === true }}"
+        }
+      }
+    },
+    {
+      "id": "718e5052-53ab-4bee-bb30-c1b1c6e6184c",
+      "name": "Send Confirmation?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        80
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $(\"Pick Incident\").first().json.dry_run !== true }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              },
+              "rightValue": true
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "70886006-b38a-4b5e-ad35-338258547ecb",
+      "name": "Send Confirmation",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "0",
+        "text": "={{ $(\"Pick Incident\").first().json.telegram_message }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "4a65af31-877c-4823-a832-2b3960f8d837",
+      "name": "Return Done",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        80
+      ],
+      "parameters": {
+        "jsCode": "const p=$('Pick Incident').first().json;\nreturn [{json:{ok:p.ok===true,incident:p.incident_key||'',already_resolved:p.already_resolved===true,telegram_sent:p.dry_run!==true,dry_run:p.dry_run}}];"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "53a6545f-d45e-40ef-8880-ae3f46bf2f98",
+      "name": "Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        160
+      ],
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $json.ok === true }}",
+              "operator": {
+                "operation": "equals",
+                "type": "boolean"
+              },
+              "rightValue": true
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          }
+        }
+      }
+    },
+    {
+      "id": "f4b3b3a9-d772-458c-9265-13caa4f140f4",
+      "name": "Send Not Found",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        240
+      ],
+      "parameters": {
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true,
+          "parse_mode": "HTML"
+        },
+        "chatId": "0",
+        "operation": "sendMessage",
+        "resource": "message",
+        "text": "={{ $json.telegram_message }}"
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    }
+  ],
+  "nodeGroups": []
+}

@@ -1,0 +1,159 @@
+{
+  "id": "YeYpgLGiYlzCTopn",
+  "name": "UFC | 8. Picker Leaderboard",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki"
+  },
+  "tags": [],
+  "description": "Builds the all-time picker leaderboard from the graded picks and props (accuracy, high-confidence accuracy, props) and sends it to Telegram. Called by the command router (/leaderboard).",
+  "connections": {
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Get Pick Grades",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pick Grades": {
+      "main": [
+        [
+          {
+            "node": "Get Prop Grades",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Prop Grades": {
+      "main": [
+        [
+          {
+            "node": "Build Leaderboard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Leaderboard": {
+      "main": [
+        [
+          {
+            "node": "Send Leaderboard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "6b066fe1-229a-40b9-a492-2847e22da977",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    },
+    {
+      "id": "5fc3a56a-5f93-4db9-9857-9fc680812c54",
+      "name": "Get Pick Grades",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "r3YKyjLCAU8EiANs",
+          "cachedResultName": "ufc_pick_grades"
+        },
+        "returnAll": true
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "279e73ec-7578-46aa-a06c-a8a7ac72edb9",
+      "name": "Get Prop Grades",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1qPnxl4is7YBJW0X",
+          "cachedResultName": "ufc_prop_grades"
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "76055647-9701-4971-90c6-269e885fb75d",
+      "name": "Build Leaderboard",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// All-time picker leaderboard from the graded picks and props.\n\nconst MIN_PICKS_TO_RANK = 15;\nconst HIGH_CONFIDENCE = 7;\nconst OWNER_CHAT_ID = 0;\n\nlet chatId = OWNER_CHAT_ID;\n\ntry {\n  chatId = $('When Called').first().json.chat_id || OWNER_CHAT_ID;\n} catch {\n  // Not called from the router.\n}\n\nconst escapeHtml = (value) =>\n  String(value ?? '')\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;');\n\nconst percent = (correct, total) => (total > 0 ? Math.round((correct / total) * 100) : 0);\n\nconst pickGrades = $('Get Pick Grades').all().map((item) => item.json).filter((row) => row.pick_id);\nconst propGrades = $('Get Prop Grades').all().map((item) => item.json).filter((row) => row.prop_id);\n\nconst pickers = new Map();\nconst events = new Set();\n\nconst statsFor = (name) => {\n  if (!pickers.has(name)) {\n    pickers.set(name, {\n      name,\n      events: new Set(),\n      correct: 0,\n      total: 0,\n      highCorrect: 0,\n      highTotal: 0,\n      propCorrect: 0,\n      propTotal: 0,\n    });\n  }\n\n  return pickers.get(name);\n};\n\nfor (const grade of pickGrades) {\n  if (grade.result !== 'CORRECT' && grade.result !== 'INCORRECT') continue;\n\n  const stats = statsFor(grade.channel_name);\n  const isCorrect = grade.result === 'CORRECT';\n\n  events.add(grade.event_key);\n  stats.events.add(grade.event_key);\n  stats.total += 1;\n  if (isCorrect) stats.correct += 1;\n\n  if (Number(grade.confidence_score) >= HIGH_CONFIDENCE) {\n    stats.highTotal += 1;\n    if (isCorrect) stats.highCorrect += 1;\n  }\n}\n\nfor (const grade of propGrades) {\n  if (grade.result !== 'CORRECT' && grade.result !== 'INCORRECT') continue;\n\n  const stats = statsFor(grade.channel_name);\n  stats.propTotal += 1;\n  if (grade.result === 'CORRECT') stats.propCorrect += 1;\n}\n\nif (pickers.size === 0) {\n  return [\n    {\n      json: {\n        chat_id: chatId,\n        text: 'No graded picks yet. Grading runs automatically after each card, or send /grade.',\n      },\n    },\n  ];\n}\n\nconst all = [...pickers.values()];\nconst ranked = all\n  .filter((stats) => stats.total >= MIN_PICKS_TO_RANK)\n  .sort((a, b) => percent(b.correct, b.total) - percent(a.correct, a.total) || b.total - a.total);\nconst small = all\n  .filter((stats) => stats.total < MIN_PICKS_TO_RANK)\n  .sort((a, b) => b.total - a.total);\n\nconst formatRow = (stats, rank) => {\n  const high =\n    stats.highTotal > 0\n      ? ` · high-confidence ${stats.highCorrect}/${stats.highTotal} (${percent(stats.highCorrect, stats.highTotal)}%)`\n      : '';\n  const props =\n    stats.propTotal > 0\n      ? ` · props ${stats.propCorrect}/${stats.propTotal} (${percent(stats.propCorrect, stats.propTotal)}%)`\n      : '';\n\n  return (\n    `${rank ? `${rank}. ` : '• '}${escapeHtml(stats.name)} — ${stats.correct}/${stats.total} ` +\n    `(${percent(stats.correct, stats.total)}%), ${stats.events.size} events${high}${props}`\n  );\n};\n\nconst lines = [\n  '<b>Picker leaderboard</b>',\n  `${events.size} events graded, ${pickGrades.length} picks`,\n  '',\n];\n\nranked.forEach((stats, index) => lines.push(formatRow(stats, index + 1)));\n\nif (small.length > 0) {\n  lines.push('', `<b>Small sample (under ${MIN_PICKS_TO_RANK} picks)</b>`);\n  small.forEach((stats) => lines.push(formatRow(stats, null)));\n}\n\nconst messages = [];\nlet current = '';\n\nfor (const line of lines) {\n  if (current && current.length + line.length + 1 > 3800) {\n    messages.push(current);\n    current = '';\n  }\n\n  current = current ? `${current}\\n${line}` : line;\n}\n\nif (current) messages.push(current);\n\nreturn messages.map((text) => ({ json: { chat_id: chatId, text } }));"
+      }
+    },
+    {
+      "id": "c552f664-b22e-4cc1-bad8-b4f883620644",
+      "name": "Send Leaderboard",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    }
+  ],
+  "nodeGroups": []
+}

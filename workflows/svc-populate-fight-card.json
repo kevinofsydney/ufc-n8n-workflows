@@ -1,0 +1,1996 @@
+{
+  "id": "SBBK0hOGx2uPYpm4",
+  "name": "UFC | svc.populate_fight_card",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki",
+    "timezone": "Australia/Sydney",
+    "executionTimeout": 300,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [],
+  "description": "Populates empty UFC Fight Cards using official UFC order and names, ESPN-verified rounds and verified athlete nicknames. Preserves existing cards and extracted picks.",
+  "connections": {
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Validate UFC Card Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate UFC Card Input": {
+      "main": [
+        [
+          {
+            "node": "Read Stored UFC Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Stored UFC Event": {
+      "main": [
+        [
+          {
+            "node": "Prepare UFC Card Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare UFC Card Request": {
+      "main": [
+        [
+          {
+            "node": "Read Fight Card State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Fight Card State": {
+      "main": [
+        [
+          {
+            "node": "Read Fight Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Fight Card": {
+      "main": [
+        [
+          {
+            "node": "Classify Existing Fight Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify Existing Fight Card": {
+      "main": [
+        [
+          {
+            "node": "Needs Fight Card Population?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs Fight Card Population?": {
+      "main": [
+        [
+          {
+            "node": "Check Existing Picks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Needs Weight Class Backfill?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Existing Picks": {
+      "main": [
+        [
+          {
+            "node": "Check Existing Props",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Existing Props": {
+      "main": [
+        [
+          {
+            "node": "Check Existing Fight Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Existing Fight Analysis": {
+      "main": [
+        [
+          {
+            "node": "Protect Existing Extraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Protect Existing Extraction": {
+      "main": [
+        [
+          {
+            "node": "Fetch Official UFC Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Official UFC Card": {
+      "main": [
+        [
+          {
+            "node": "Extract Official UFC Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Official UFC Card": {
+      "main": [
+        [
+          {
+            "node": "Fetch ESPN Round Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch ESPN Round Data": {
+      "main": [
+        [
+          {
+            "node": "Build Verified UFC Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Athlete Lookups": {
+      "main": [
+        [
+          {
+            "node": "Fetch Official Athlete Profiles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Official Athlete Profiles": {
+      "main": [
+        [
+          {
+            "node": "Prepare Profile HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Profile HTML": {
+      "main": [
+        [
+          {
+            "node": "Extract Official Nicknames",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Official Nicknames": {
+      "main": [
+        [
+          {
+            "node": "Build Fight Card Matrix",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Fight Card Matrix": {
+      "main": [
+        [
+          {
+            "node": "Preview Only?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preview Only?": {
+      "main": [
+        [
+          {
+            "node": "Return UFC Card Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Recheck Empty Fight Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recheck Empty Fight Card": {
+      "main": [
+        [
+          {
+            "node": "Confirm Empty Destination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Confirm Empty Destination": {
+      "main": [
+        [
+          {
+            "node": "Record Pending Fight Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Pending Fight Card": {
+      "main": [
+        [
+          {
+            "node": "Prepare Fight Card Write",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Fight Card Write": {
+      "main": [
+        [
+          {
+            "node": "Write Empty Fight Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Empty Fight Card": {
+      "main": [
+        [
+          {
+            "node": "Verify Written Fight Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Written Fight Card": {
+      "main": [
+        [
+          {
+            "node": "Verify Fight Card Read Back",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Fight Card Read Back": {
+      "main": [
+        [
+          {
+            "node": "Record Ready Fight Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Ready Fight Card": {
+      "main": [
+        [
+          {
+            "node": "Return UFC Card Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Existing Card Readiness": {
+      "main": [
+        [
+          {
+            "node": "Return UFC Card Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs Weight Class Backfill?": {
+      "main": [
+        [
+          {
+            "node": "Fetch ESPN Weight Classes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record Existing Card Readiness",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch ESPN Weight Classes": {
+      "main": [
+        [
+          {
+            "node": "Build Weight Class Backfill",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Weight Class Backfill": {
+      "main": [
+        [
+          {
+            "node": "Preview Weight Class Backfill?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preview Weight Class Backfill?": {
+      "main": [
+        [
+          {
+            "node": "Return UFC Card Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Write Weight Class Column",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Weight Class Column": {
+      "main": [
+        [
+          {
+            "node": "Verify Weight Class Column",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Weight Class Column": {
+      "main": [
+        [
+          {
+            "node": "Verify Weight Class Read Back",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Weight Class Read Back": {
+      "main": [
+        [
+          {
+            "node": "Record Existing Card Readiness",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Verified UFC Card": {
+      "main": [
+        [
+          {
+            "node": "Official Card Pending?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Official Card Pending?": {
+      "main": [
+        [
+          {
+            "node": "Return UFC Card Status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Athlete Lookups",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "4fb599ad-7ca6-40ef-a923-31c2e4839d7b",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    },
+    {
+      "id": "c177c1df-7e51-4095-b6aa-505cb082df94",
+      "name": "Validate UFC Card Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        128
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const items=$input.all();if(items.length!==1||!String(items[0].json.event_key||'').trim())throw new Error('Fight-card setup needs exactly one UFC event_key.');return items;"
+      }
+    },
+    {
+      "id": "92b86959-b7cb-4b52-844d-d722e4d01103",
+      "name": "Read Stored UFC Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        496,
+        128
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WTTpdZSDVOxOB3Ex",
+          "mode": "list",
+          "cachedResultName": "ufc_events",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/WTTpdZSDVOxOB3Ex"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.event_key }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "2673e62e-589a-479d-be1d-4dcac8003dae",
+      "name": "Prepare UFC Card Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        128
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst request=$('When Called').first().json;\nconst events=$input.all().map(i=>i.json).filter(e=>e.event_key===request.event_key);\nif(events.length!==1)throw new Error('Fight-card setup requires one stored UFC event for '+request.event_key+'.');\nconst event={...request,...events[0]};\nif(!/^[A-Za-z0-9_-]+$/.test(String(event.spreadsheet_id||'')))throw new Error('UFC event has no valid spreadsheet. Run spreadsheet setup first.');\nconst path=String(event.source_event_id||'').replace(/^https:\\/\\/www\\.ufc\\.com\\//,'').replace(/^\\//,'');\nif(!Number.isFinite(Date.parse(event.event_datetime_local)))throw new Error('UFC event date is missing or invalid.');\nreturn [{json:{...event,dry_run:request.dry_run===true,source_url:/^event\\/[a-z0-9-]+$/.test(path)?'https://www.ufc.com/'+path:''}}];\n"
+      }
+    },
+    {
+      "id": "bc24662c-1eb6-4dad-9666-a6769c49339c",
+      "name": "Read Fight Card State",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        944,
+        128
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "oCOZ7hzgZ2htYL9F",
+          "cachedResultName": "ufc_fight_card_state"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.event_key }}"
+            },
+            {
+              "keyName": "spreadsheet_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.spreadsheet_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "043458e8-b753-4d71-8d48-5e8914fabf30",
+      "name": "Read Fight Card",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        1168,
+        128
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('Prepare UFC Card Request').first().json.spreadsheet_id }}",
+        "range": "'Fight Card'!A:H",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "continue": true,
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "7fd42017-2f57-4a69-9c32-6f83fafde3e7",
+      "name": "Classify Existing Fight Card",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1392,
+        128
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst HEADERS=['fight_order','fighter_a','fighter_b','fighter_a_aliases','fighter_b_aliases','bout_type','scheduled_rounds'];\nconst text=v=>String(v??'').trim();\nconst norm=v=>text(v).normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');\nconst cleanName=v=>text(v).replace(/\\s*\\[https?:\\/\\/[^\\]]+\\]/g,'').replace(/\\s+/g,' ').trim();\nconst populated=rows=>(rows||[]).slice(1).filter(row=>row.some(v=>text(v)));\nfunction checkCard(rows,allowEmpty=false){\n if(!Array.isArray(rows)||HEADERS.some((h,i)=>text(rows[0]?.[i])!==h))throw new Error('Fight Card needs the seven expected headers in columns A:G.');\n const data=populated(rows);\n if(!data.length){if(allowEmpty)return [];throw new Error('Fight Card is empty. Run UFC event spreadsheet setup before analysis.');}\n const seen=new Set();\n data.forEach((r,i)=>{\n  if(Number(r[0])!==i+1||!text(r[1])||!text(r[2])||norm(r[1])===norm(r[2]))throw new Error('Fight Card has invalid order or fighters at fight '+(i+1)+'.');\n  if(!['main_event','main_card','prelim'].includes(text(r[5]))||![3,5].includes(Number(r[6])))throw new Error('Fight Card has missing bout type or scheduled rounds at fight '+(i+1)+'.');\n  if((i===0)!==(r[5]==='main_event'))throw new Error('Fight Card must have exactly one main event at fight 1.');\n  for(const name of [r[1],r[2]]){const key=norm(name);if(seen.has(key))throw new Error('Fight Card contains a duplicate fighter: '+name);seen.add(key);}\n });\n return data;\n}\nfunction fingerprint(rows){const value=JSON.stringify(rows.map(r=>r.map(v=>text(v))));let hash=2166136261;for(let i=0;i<value.length;i++)hash=Math.imul(hash^value.charCodeAt(i),16777619)>>>0;return 'fnv1a-'+hash.toString(16).padStart(8,'0');}\n\nconst event=$('Prepare UFC Card Request').first().json;\nconst states=$('Read Fight Card State').all().map(i=>i.json).filter(s=>s.event_key===event.event_key&&s.spreadsheet_id===event.spreadsheet_id);\nif(states.length>1)throw new Error('Duplicate fight-card state records need review before continuing.');\nconst state=states[0]||{};\nconst rows=$input.first().json.rows||[];\nconst card=checkCard(rows,true);\nconst weightHeader=text(rows[0]?.[7]);\nif(weightHeader&&weightHeader!=='weight_class')throw new Error('Fight Card column H is already in use. Review it before adding weight_class.');\nif(!weightHeader&&card.some(r=>text(r[7])))throw new Error('Fight Card has values in column H without a weight_class header.');\nconst needsWeightClassBackfill=card.length>0&&(!weightHeader||card.some(r=>!text(r[7])));\nconst storedRows=state.parser_version==='ufc-fight-card-v2'?card:card.map(r=>r.slice(0,7));\nif(card.length&&['WRITING','READY'].includes(state.status)&&fingerprint(storedRows)!==state.card_fingerprint)throw new Error('Fight Card differs from its saved automatic candidate. Review the spreadsheet and initialization state before retrying.');\nif(card.length&&state.status==='READY'&&card.length!==JSON.parse(state.source_card_json||'[]').length)throw new Error('Fight Card row count changed after initialization. Review before analysis.');\n\n// Keep what the saved card knows beyond the sheet (bout_id, athlete URLs, ESPN ids) for bouts that are unchanged.\nconst pairKey=(a,b)=>[norm(a),norm(b)].sort().join('|');\nlet savedCard=[];try{savedCard=JSON.parse(state.source_card_json||'[]');}catch(e){savedCard=[];}\nconst existingCard=card.map(r=>{const row={...Object.fromEntries(HEADERS.map((h,i)=>[h,r[i]??''])),weight_class:text(r[7])};const s=savedCard.find(b=>Number(b.fight_order)===Number(r[0])&&pairKey(b.fighter_a,b.fighter_b)===pairKey(r[1],r[2]));return s?{...s,...row}:row;});\nconst verifiedExisting=state.status==='WRITING'||state.status==='READY';\nconst cardVersion=card.length&&!needsWeightClassBackfill?'ufc-fight-card-v2':(state.parser_version||'ufc-fight-card-v1');\nconst cardFingerprint=card.length?fingerprint(cardVersion==='ufc-fight-card-v2'?card:card.map(r=>r.slice(0,7))):null;\nreturn [{json:{...event,existing_card_json:JSON.stringify(cardVersion==='ufc-fight-card-v2'?existingCard:(verifiedExisting?JSON.parse(state.source_card_json||'[]'):existingCard)),existing_card_state:card.length?(verifiedExisting?'READY':'PRESERVED'):'EMPTY',existing_initialized_at:state.initialized_at||(card.length?new Date().toISOString():null),needs_population:card.length===0,needs_weight_class_backfill:needsWeightClassBackfill,fight_card_parser_version:cardVersion,fight_card_status:card.length?(verifiedExisting?'READY':'PRESERVED'):'EMPTY',fight_card_count:card.length,fight_card_fingerprint:cardFingerprint}}];\n"
+      }
+    },
+    {
+      "id": "96d43bff-562f-40da-ba6a-4162c920adc7",
+      "name": "Needs Fight Card Population?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        752,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.needs_population }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "47d20fe7-5363-4679-bc90-19abcb5ed6a6",
+      "name": "Check Existing Picks",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        1024,
+        192
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('Prepare UFC Card Request').first().json.spreadsheet_id }}",
+        "range": "'Picks'!A2:AZ",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "continue": true,
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "0f7da417-edd2-4418-8ebe-772c1e5b2ff4",
+      "name": "Check Existing Props",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        1248,
+        192
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('Prepare UFC Card Request').first().json.spreadsheet_id }}",
+        "range": "'Props'!A2:AZ",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "continue": true,
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "00a6b7a1-e622-464b-b197-559b2950a919",
+      "name": "Check Existing Fight Analysis",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        192
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('Prepare UFC Card Request').first().json.spreadsheet_id }}",
+        "range": "'Fight Analysis'!A2:AZ",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "continue": true,
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "e856f22e-9778-4441-a540-b27a94206eee",
+      "name": "Protect Existing Extraction",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1696,
+        192
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst HEADERS=['fight_order','fighter_a','fighter_b','fighter_a_aliases','fighter_b_aliases','bout_type','scheduled_rounds'];\nconst text=v=>String(v??'').trim();\nconst norm=v=>text(v).normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');\nconst cleanName=v=>text(v).replace(/\\s*\\[https?:\\/\\/[^\\]]+\\]/g,'').replace(/\\s+/g,' ').trim();\nconst populated=rows=>(rows||[]).slice(1).filter(row=>row.some(v=>text(v)));\nfunction checkCard(rows,allowEmpty=false){\n if(!Array.isArray(rows)||HEADERS.some((h,i)=>text(rows[0]?.[i])!==h))throw new Error('Fight Card needs the seven expected headers in columns A:G.');\n const data=populated(rows);\n if(!data.length){if(allowEmpty)return [];throw new Error('Fight Card is empty. Run UFC event spreadsheet setup before analysis.');}\n const seen=new Set();\n data.forEach((r,i)=>{\n  if(Number(r[0])!==i+1||!text(r[1])||!text(r[2])||norm(r[1])===norm(r[2]))throw new Error('Fight Card has invalid order or fighters at fight '+(i+1)+'.');\n  if(!['main_event','main_card','prelim'].includes(text(r[5]))||![3,5].includes(Number(r[6])))throw new Error('Fight Card has missing bout type or scheduled rounds at fight '+(i+1)+'.');\n  if((i===0)!==(r[5]==='main_event'))throw new Error('Fight Card must have exactly one main event at fight 1.');\n  for(const name of [r[1],r[2]]){const key=norm(name);if(seen.has(key))throw new Error('Fight Card contains a duplicate fighter: '+name);seen.add(key);}\n });\n return data;\n}\nfunction fingerprint(rows){const value=JSON.stringify(rows.map(r=>r.map(v=>text(v))));let hash=2166136261;for(let i=0;i<value.length;i++)hash=Math.imul(hash^value.charCodeAt(i),16777619)>>>0;return 'fnv1a-'+hash.toString(16).padStart(8,'0');}\n\nconst event=$('Prepare UFC Card Request').first().json;\nconst rows=$('Read Fight Card').first().json.rows||[];\ncheckCard(rows,true);\nfor(const tab of ['Picks','Props','Fight Analysis'])if(($('Check Existing '+tab).first().json.rows||[]).some(r=>r.some(v=>text(v))))throw new Error('Fight Card is empty but '+tab+' already contains data. Restore or review the card manually; automatic population has stopped.');\nif(Date.parse(event.event_datetime_local)<=Date.now())throw new Error('Automatic fight-card population is only allowed before the event starts.');\nif(!/^https:\\/\\/www\\.ufc\\.com\\/event\\/[a-z0-9-]+$/.test(event.source_url||''))throw new Error('UFC event needs its official source_event_id before automatic population.');\nreturn [{json:event}];\n"
+      }
+    },
+    {
+      "id": "339d67c9-bcdf-4885-bb6d-c79f7cba4713",
+      "name": "Fetch Official UFC Card",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1920,
+        192
+      ],
+      "parameters": {
+        "url": "={{ $json.source_url }}",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "STYXKEY_region=USA.US.en.Default"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "b6927e13-ae10-4e86-bb19-2ed43aa1df17",
+      "name": "Extract Official UFC Card",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        2144,
+        192
+      ],
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "data",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "canonical",
+              "cssSelector": "link[rel=\"canonical\"]",
+              "returnValue": "attribute",
+              "attribute": "href"
+            },
+            {
+              "key": "title",
+              "cssSelector": "title",
+              "returnValue": "text"
+            },
+            {
+              "key": "main_timestamp",
+              "cssSelector": "#main-card .c-event-fight-card-broadcaster__time",
+              "returnValue": "attribute",
+              "attribute": "data-timestamp"
+            },
+            {
+              "key": "main_ids",
+              "cssSelector": "#main-card .c-listing-fight",
+              "returnValue": "attribute",
+              "attribute": "data-fmid",
+              "returnArray": true
+            },
+            {
+              "key": "main_a",
+              "cssSelector": "#main-card .c-listing-fight__corner-name--red",
+              "returnValue": "text",
+              "returnArray": true
+            },
+            {
+              "key": "main_b",
+              "cssSelector": "#main-card .c-listing-fight__corner-name--blue",
+              "returnValue": "text",
+              "returnArray": true
+            },
+            {
+              "key": "main_a_url",
+              "cssSelector": "#main-card .c-listing-fight__corner-name--red a",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
+            },
+            {
+              "key": "main_b_url",
+              "cssSelector": "#main-card .c-listing-fight__corner-name--blue a",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
+            },
+            {
+              "key": "prelim_ids",
+              "cssSelector": "#prelims-card .c-listing-fight",
+              "returnValue": "attribute",
+              "attribute": "data-fmid",
+              "returnArray": true
+            },
+            {
+              "key": "prelim_a",
+              "cssSelector": "#prelims-card .c-listing-fight__corner-name--red",
+              "returnValue": "text",
+              "returnArray": true
+            },
+            {
+              "key": "prelim_b",
+              "cssSelector": "#prelims-card .c-listing-fight__corner-name--blue",
+              "returnValue": "text",
+              "returnArray": true
+            },
+            {
+              "key": "prelim_a_url",
+              "cssSelector": "#prelims-card .c-listing-fight__corner-name--red a",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
+            },
+            {
+              "key": "prelim_b_url",
+              "cssSelector": "#prelims-card .c-listing-fight__corner-name--blue a",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
+            },
+            {
+              "key": "early_ids",
+              "cssSelector": "#early-prelims .c-listing-fight",
+              "returnValue": "attribute",
+              "attribute": "data-fmid",
+              "returnArray": true
+            },
+            {
+              "key": "early_a",
+              "cssSelector": "#early-prelims .c-listing-fight__corner-name--red",
+              "returnValue": "text",
+              "returnArray": true
+            },
+            {
+              "key": "early_b",
+              "cssSelector": "#early-prelims .c-listing-fight__corner-name--blue",
+              "returnValue": "text",
+              "returnArray": true
+            },
+            {
+              "key": "early_a_url",
+              "cssSelector": "#early-prelims .c-listing-fight__corner-name--red a",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
+            },
+            {
+              "key": "early_b_url",
+              "cssSelector": "#early-prelims .c-listing-fight__corner-name--blue a",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
+            },
+            {
+              "key": "hero_timestamp",
+              "cssSelector": ".c-hero__headline-suffix",
+              "returnValue": "attribute",
+              "attribute": "data-timestamp"
+            },
+            {
+              "key": "unsplit_ids",
+              "cssSelector": ".view-event-fights .c-listing-fight",
+              "returnValue": "attribute",
+              "attribute": "data-fmid",
+              "returnArray": true
+            },
+            {
+              "key": "unsplit_a",
+              "cssSelector": ".view-event-fights .c-listing-fight__corner-name--red",
+              "returnValue": "text",
+              "returnArray": true
+            },
+            {
+              "key": "unsplit_b",
+              "cssSelector": ".view-event-fights .c-listing-fight__corner-name--blue",
+              "returnValue": "text",
+              "returnArray": true
+            },
+            {
+              "key": "unsplit_a_url",
+              "cssSelector": ".view-event-fights .c-listing-fight__corner-name--red a",
+              "returnValue": "attribute",
+              "returnArray": true,
+              "attribute": "href"
+            },
+            {
+              "key": "unsplit_b_url",
+              "cssSelector": ".view-event-fights .c-listing-fight__corner-name--blue a",
+              "returnValue": "attribute",
+              "returnArray": true,
+              "attribute": "href"
+            }
+          ]
+        },
+        "options": {
+          "trimValues": true,
+          "cleanUpText": true
+        }
+      }
+    },
+    {
+      "id": "0dd7b9fb-4d75-4a0c-99b6-c2903718b0f6",
+      "name": "Fetch ESPN Round Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2368,
+        192
+      ],
+      "parameters": {
+        "url": "=https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard?dates={{ DateTime.fromISO($('Prepare UFC Card Request').first().json.event_datetime_local).minus({days:1}).toFormat('yyyyLLdd') }}-{{ DateTime.fromISO($('Prepare UFC Card Request').first().json.event_datetime_local).plus({days:1}).toFormat('yyyyLLdd') }}",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "0c56a7ef-d8e6-4f21-8a52-f3deb15b1c92",
+      "name": "Build Verified UFC Card",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2592,
+        192
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst HEADERS=['fight_order','fighter_a','fighter_b','fighter_a_aliases','fighter_b_aliases','bout_type','scheduled_rounds','weight_class'];\nconst text=v=>String(v??'').trim();\nconst norm=v=>text(v).normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');\nconst cleanName=v=>text(v).replace(/\\s*\\[https?:\\/\\/[^\\]]+\\]/g,'').replace(/\\s+/g,' ').trim();\nconst populated=rows=>(rows||[]).slice(1).filter(row=>row.some(v=>text(v)));\nfunction checkCard(rows,allowEmpty=false){\n if(!Array.isArray(rows)||HEADERS.some((h,i)=>text(rows[0]?.[i])!==h))throw new Error('Fight Card needs the eight expected headers in columns A:H.');\n const data=populated(rows);\n if(!data.length){if(allowEmpty)return [];throw new Error('Fight Card is empty. Run UFC event spreadsheet setup before analysis.');}\n const seen=new Set();\n data.forEach((r,i)=>{\n  if(Number(r[0])!==i+1||!text(r[1])||!text(r[2])||norm(r[1])===norm(r[2]))throw new Error('Fight Card has invalid order or fighters at fight '+(i+1)+'.');\n  if(!['main_event','main_card','prelim'].includes(text(r[5]))||![3,5].includes(Number(r[6])))throw new Error('Fight Card has missing bout type or scheduled rounds at fight '+(i+1)+'.');\n  if((i===0)!==(r[5]==='main_event'))throw new Error('Fight Card must have exactly one main event at fight 1.');\n  if(!text(r[7]))throw new Error('Fight Card is missing weight_class at fight '+(i+1)+'.');\n  for(const name of [r[1],r[2]]){const key=norm(name);if(seen.has(key))throw new Error('Fight Card contains a duplicate fighter: '+name);seen.add(key);}\n });\n return data;\n}\nfunction fingerprint(rows){const value=JSON.stringify(rows.map(r=>r.map(v=>text(v))));let hash=2166136261;for(let i=0;i<value.length;i++)hash=Math.imul(hash^value.charCodeAt(i),16777619)>>>0;return 'fnv1a-'+hash.toString(16).padStart(8,'0');}\n\nconst event=$('Prepare UFC Card Request').first().json;\nconst official=$('Extract Official UFC Card').first().json;\nconst http=$('Fetch Official UFC Card').first().json;\nif(http.statusCode!==200)throw new Error('Official UFC card request returned HTTP '+http.statusCode+'. No spreadsheet data was written.');\nif(String(official.canonical||'').replace(/\\/$/,'')!==event.source_url)throw new Error('Official UFC page does not match the stored event URL.');\n// UFC lists upcoming cards as one flat list until it splits them into main card and prelims.\n// Build those from the flat list (UFC is the source of truth for bouts, names and order) and take\n// rounds, weight class and segment from ESPN. Report pending only if ESPN cannot place the segments.\nconst unsplit=['main','prelim','early'].every(s=>Array.isArray(official[s+'_ids'])&&!official[s+'_ids'].length);\nconst mainTimestamp=Number(unsplit?official.hero_timestamp:official.main_timestamp);\nif(!mainTimestamp||Math.abs(mainTimestamp*1000-Date.parse(event.event_datetime_local))>18*3600000)throw new Error('Official UFC card date does not match the selected event.');\nconst card=[];\nfor(const section of unsplit?['unsplit']:['main','prelim','early']){\n const arrays=['ids','a','b','a_url','b_url'].map(k=>official[section+'_'+k]);\n if(arrays.some(a=>!Array.isArray(a))||arrays.some(a=>a.length!==arrays[0].length))throw new Error('Official UFC card fields are incomplete in '+section+'.');\n arrays[0].forEach((id,i)=>card.push({bout_id:'ufc:'+id,fighter_a:cleanName(arrays[1][i]),fighter_b:cleanName(arrays[2][i]),fighter_a_url:arrays[3][i],fighter_b_url:arrays[4][i],bout_type:section==='main'?(i===0?'main_event':'main_card'):section==='unsplit'?null:'prelim'}));\n}\nif(!card.length)throw new Error('Official UFC page lists no fights. The page layout may have changed. No spreadsheet data was written.');\nif(card.length<2||card.length>30||new Set(card.map(b=>b.bout_id)).size!==card.length)throw new Error('Official UFC card is missing, duplicated or outside the expected size.');\nconst pair=(a,b)=>[norm(a),norm(b)].sort().join('|');\nconst surname=v=>{const words=text(v).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().split(/\\s+/).map(w=>w.replace(/[^a-z0-9]/g,'')).filter(w=>w&&!['jr','sr','ii','iii','iv'].includes(w));return words[words.length-1]||'';};\nconst surnamePair=(a,b)=>[surname(a),surname(b)].sort().join('|');\nconst names=c=>[c.competitors[0].athlete?.displayName,c.competitors[1].athlete?.displayName];\n// Exact full-name pairing first; fall back to surnames (e.g. Zach vs Zachary) only when that is unique.\nfunction findComps(comps,a,b){\n const named=(comps||[]).filter(c=>c.competitors?.length===2);\n const exact=named.filter(c=>pair(...names(c))===pair(a,b));\n return exact.length?exact:named.filter(c=>surnamePair(...names(c))===surnamePair(a,b));\n}\nconst response=$input.first().json;\nif(response.statusCode!==200)throw new Error('ESPN round verification returned HTTP '+response.statusCode+'. No spreadsheet data was written.');\nconst options=(response.body?.events||[]).filter(e=>Math.abs(Date.parse(e.date)-Date.parse(event.event_datetime_local))<=24*3600000&&findComps(e.competitions,card[0].fighter_a,card[0].fighter_b).length===1);\nif(options.length!==1)throw new Error('Could not uniquely verify this UFC event and its main event on ESPN.');\nconst espn=options[0];\nconst competitions=(espn.competitions||[]).filter(c=>!/cancel|postpon/i.test(String(c.status?.type?.name||'')));\nif(!unsplit&&competitions.length!==card.length)throw new Error('UFC and ESPN list different bout counts ('+card.length+' vs '+competitions.length+'). Review the card before populating it.');\nconst used=new Set();\nfor(const bout of card){\n const matches=findComps(competitions,bout.fighter_a,bout.fighter_b);\n if(matches.length!==1||used.has(matches[0].id))throw new Error('Could not verify pairing and rounds for '+bout.fighter_a+' vs '+bout.fighter_b+'.');\n const comp=matches[0];used.add(comp.id);\n const rounds=Number(comp.format?.regulation?.periods);\n if(![3,5].includes(rounds))throw new Error('Scheduled rounds are unavailable for '+bout.fighter_a+' vs '+bout.fighter_b+'.');\n const weightClass=String(comp.type?.abbreviation||'').trim().toLowerCase();\n if(!/^[a-z][a-z '’-]{3,39}$/.test(weightClass))throw new Error('Weight class is unavailable for '+bout.fighter_a+' vs '+bout.fighter_b+'.');\n Object.assign(bout,{scheduled_rounds:rounds,weight_class:weightClass,espn_competition_id:String(comp.id),espn_start:Date.parse(comp.date),fighter_a_aliases:'',fighter_b_aliases:''});\n for(const key of ['fighter_a_url','fighter_b_url'])if(!/^https:\\/\\/www\\.ufc\\.com\\/athlete\\/[a-z0-9-]+$/.test(bout[key]))throw new Error('Invalid official athlete URL.');\n}\n// ESPN bouts UFC does not list are left off the card (UFC is the source of truth) and reported.\nconst espnOnly=competitions.filter(c=>!used.has(c.id)&&c.competitors?.length===2).map(c=>names(c).join(' vs '));\nif(unsplit){\n const starts=[...new Set(card.map(b=>b.espn_start))].filter(Number.isFinite).sort((a,b)=>b-a);\n if(starts.length<2)return [{json:{...event,card_pending:true,fight_card_status:'PENDING_OFFICIAL_CARD',fight_card_count:0,pending_reason:'UFC.com has not split the card and ESPN start times do not separate main card from prelims. No spreadsheet data was written.',checked_at:new Date().toISOString()}}];\n const mainStart=starts[0];\n if(Math.abs(mainStart-mainTimestamp*1000)>3600000)throw new Error('ESPN main card start does not match the official UFC event time.');\n if(card[0].espn_start!==mainStart)throw new Error('ESPN does not place the UFC main event on the main card.');\n card.forEach((b,i)=>{b.bout_type=i===0?'main_event':b.espn_start===mainStart?'main_card':'prelim';});\n // Keep UFC's order within each segment, main card before prelims.\n const rank={main_event:0,main_card:1,prelim:2};\n card.sort((x,y)=>rank[x.bout_type]-rank[y.bout_type]);\n}\ncard.forEach((b,i)=>{b.fight_order=i+1;delete b.espn_start;});\nconst rows=card.map(b=>HEADERS.map(h=>b[h]));\ncheckCard([HEADERS,...rows]);\nreturn [{json:{...event,card,espn_event_id:String(espn.id),card_source:unsplit?'ufc-unsplit+espn-segments':'ufc-sections',espn_only_bouts:espnOnly,source_fingerprint:fingerprint(rows),parser_version:'ufc-fight-card-v2',checked_at:new Date().toISOString()}}];\n"
+      }
+    },
+    {
+      "id": "9ec42876-d013-443d-bca5-4dc956d28a88",
+      "name": "Prepare Athlete Lookups",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2816,
+        192
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst candidate=$('Build Verified UFC Card').first().json;\nreturn candidate.card.flatMap(b=>['a','b'].map(side=>({json:{fighter_name:b['fighter_'+side],profile_url:b['fighter_'+side+'_url']}})));\n"
+      }
+    },
+    {
+      "id": "7c0cc26e-cb5b-4397-8942-4abada51d84b",
+      "name": "Fetch Official Athlete Profiles",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        3040,
+        192
+      ],
+      "parameters": {
+        "url": "={{ $json.profile_url }}",
+        "options": {
+          "timeout": 15000,
+          "batching": {
+            "batch": {
+              "batchSize": 2,
+              "batchInterval": 500
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Cookie",
+              "value": "STYXKEY_region=USA.US.en.Default"
+            }
+          ]
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "2030539a-cf7f-4455-ac53-786e58961fb0",
+      "name": "Prepare Profile HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3264,
+        192
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst requests=$('Prepare Athlete Lookups').all();\nreturn $input.all().map((item,index)=>({json:{...requests[index].json,data:typeof item.json.data==='string'?item.json.data:'',profile_status:Number(item.json.statusCode||0)}}));\n"
+      }
+    },
+    {
+      "id": "9dc12873-1516-480b-9c79-28bc74b0f968",
+      "name": "Extract Official Nicknames",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        3488,
+        192
+      ],
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "data",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "profile_name",
+              "cssSelector": ".hero-profile__name",
+              "returnValue": "text"
+            },
+            {
+              "key": "nickname",
+              "cssSelector": ".hero-profile__nickname",
+              "returnValue": "text"
+            }
+          ]
+        },
+        "options": {
+          "trimValues": true,
+          "cleanUpText": true
+        }
+      }
+    },
+    {
+      "id": "37c45e56-baf9-4ed1-b8b9-b6b9f5c17308",
+      "name": "Build Fight Card Matrix",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3712,
+        192
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst HEADERS=['fight_order','fighter_a','fighter_b','fighter_a_aliases','fighter_b_aliases','bout_type','scheduled_rounds','weight_class'];\nconst text=v=>String(v??'').trim();\nconst norm=v=>text(v).normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');\nconst cleanName=v=>text(v).replace(/\\s*\\[https?:\\/\\/[^\\]]+\\]/g,'').replace(/\\s+/g,' ').trim();\nconst populated=rows=>(rows||[]).slice(1).filter(row=>row.some(v=>text(v)));\nfunction checkCard(rows,allowEmpty=false){\n if(!Array.isArray(rows)||HEADERS.some((h,i)=>text(rows[0]?.[i])!==h))throw new Error('Fight Card needs the eight expected headers in columns A:H.');\n const data=populated(rows);\n if(!data.length){if(allowEmpty)return [];throw new Error('Fight Card is empty. Run UFC event spreadsheet setup before analysis.');}\n const seen=new Set();\n data.forEach((r,i)=>{\n  if(Number(r[0])!==i+1||!text(r[1])||!text(r[2])||norm(r[1])===norm(r[2]))throw new Error('Fight Card has invalid order or fighters at fight '+(i+1)+'.');\n  if(!['main_event','main_card','prelim'].includes(text(r[5]))||![3,5].includes(Number(r[6])))throw new Error('Fight Card has missing bout type or scheduled rounds at fight '+(i+1)+'.');\n  if((i===0)!==(r[5]==='main_event'))throw new Error('Fight Card must have exactly one main event at fight 1.');\n  if(!text(r[7]))throw new Error('Fight Card is missing weight_class at fight '+(i+1)+'.');\n  for(const name of [r[1],r[2]]){const key=norm(name);if(seen.has(key))throw new Error('Fight Card contains a duplicate fighter: '+name);seen.add(key);}\n });\n return data;\n}\nfunction fingerprint(rows){const value=JSON.stringify(rows.map(r=>r.map(v=>text(v))));let hash=2166136261;for(let i=0;i<value.length;i++)hash=Math.imul(hash^value.charCodeAt(i),16777619)>>>0;return 'fnv1a-'+hash.toString(16).padStart(8,'0');}\n\nconst candidate=$('Build Verified UFC Card').first().json;\nconst responses=$('Prepare Profile HTML').all();\nconst lookups=$input.all();\nconst verified=new Map();const warnings=[];\nlookups.forEach((item,index)=>{\n const request=responses[index].json;\n const p=item.json;\n const profileName=cleanName(p.profile_name);\n let nickname=text(p.nickname).replace(/^[\"“”]+|[\"“”]+$/g,'').trim();\n if(request.profile_status===200&&norm(profileName)===norm(request.fighter_name)&&nickname&&nickname.length<=120&&!/^n\\/?a$/i.test(nickname))verified.set(request.profile_url,nickname);\n else warnings.push(request.fighter_name+': nickname unavailable or profile name did not match');\n});\nconst card=candidate.card.map(b=>({...b,fighter_a_aliases:verified.get(b.fighter_a_url)||'',fighter_b_aliases:verified.get(b.fighter_b_url)||''}));\nconst matrix=card.map(b=>HEADERS.map(h=>b[h]));\ncheckCard([HEADERS,...matrix]);\nreturn [{json:{...candidate,card,matrix,card_fingerprint:fingerprint(matrix),alias_warnings:warnings,fight_card_count:card.length,fight_card_status:candidate.dry_run?'PREVIEW':'WRITING'}}];\n"
+      }
+    },
+    {
+      "id": "7921eab0-b002-4b43-a799-68e7af5970b9",
+      "name": "Preview Only?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1504,
+        80
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.dry_run }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "57285f12-65b2-4355-8c27-8b59eeff74fa",
+      "name": "Recheck Empty Fight Card",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        1776,
+        272
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('Prepare UFC Card Request').first().json.spreadsheet_id }}",
+        "range": "'Fight Card'!A:H",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "continue": true,
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "8a21fd9f-07e7-4a97-a68e-afb21e3ba88d",
+      "name": "Confirm Empty Destination",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2000,
+        272
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst HEADERS=['fight_order','fighter_a','fighter_b','fighter_a_aliases','fighter_b_aliases','bout_type','scheduled_rounds'];\nconst text=v=>String(v??'').trim();\nconst norm=v=>text(v).normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');\nconst cleanName=v=>text(v).replace(/\\s*\\[https?:\\/\\/[^\\]]+\\]/g,'').replace(/\\s+/g,' ').trim();\nconst populated=rows=>(rows||[]).slice(1).filter(row=>row.some(v=>text(v)));\nfunction checkCard(rows,allowEmpty=false){\n if(!Array.isArray(rows)||HEADERS.some((h,i)=>text(rows[0]?.[i])!==h))throw new Error('Fight Card needs the seven expected headers in columns A:G.');\n const data=populated(rows);\n if(!data.length){if(allowEmpty)return [];throw new Error('Fight Card is empty. Run UFC event spreadsheet setup before analysis.');}\n const seen=new Set();\n data.forEach((r,i)=>{\n  if(Number(r[0])!==i+1||!text(r[1])||!text(r[2])||norm(r[1])===norm(r[2]))throw new Error('Fight Card has invalid order or fighters at fight '+(i+1)+'.');\n  if(!['main_event','main_card','prelim'].includes(text(r[5]))||![3,5].includes(Number(r[6])))throw new Error('Fight Card has missing bout type or scheduled rounds at fight '+(i+1)+'.');\n  if((i===0)!==(r[5]==='main_event'))throw new Error('Fight Card must have exactly one main event at fight 1.');\n  for(const name of [r[1],r[2]]){const key=norm(name);if(seen.has(key))throw new Error('Fight Card contains a duplicate fighter: '+name);seen.add(key);}\n });\n return data;\n}\nfunction fingerprint(rows){const value=JSON.stringify(rows.map(r=>r.map(v=>text(v))));let hash=2166136261;for(let i=0;i<value.length;i++)hash=Math.imul(hash^value.charCodeAt(i),16777619)>>>0;return 'fnv1a-'+hash.toString(16).padStart(8,'0');}\n\nconst rows=$input.first().json.rows||[];\nif(checkCard(rows,true).length)throw new Error('Fight Card was populated while sources were being checked. No rows were overwritten. Retry to use the existing card.');\nreturn [{json:$('Build Fight Card Matrix').first().json}];\n"
+      }
+    },
+    {
+      "id": "b564b856-e278-46da-babb-e861482c481c",
+      "name": "Record Pending Fight Card",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2224,
+        272
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "oCOZ7hzgZ2htYL9F",
+          "cachedResultName": "ufc_fight_card_state"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_key",
+              "condition": "eq",
+              "keyValue": "={{ $('Prepare UFC Card Request').first().json.event_key }}"
+            },
+            {
+              "keyName": "spreadsheet_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Prepare UFC Card Request').first().json.spreadsheet_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "event_key": "={{ $('Prepare UFC Card Request').first().json.event_key }}",
+            "spreadsheet_id": "={{ $('Prepare UFC Card Request').first().json.spreadsheet_id }}",
+            "status": "WRITING",
+            "source_url": "={{ $('Build Fight Card Matrix').first().json.source_url }}",
+            "espn_event_id": "={{ $('Build Fight Card Matrix').first().json.espn_event_id }}",
+            "source_fingerprint": "={{ $('Build Fight Card Matrix').first().json.source_fingerprint }}",
+            "card_fingerprint": "={{ $('Build Fight Card Matrix').first().json.card_fingerprint }}",
+            "source_card_json": "={{ JSON.stringify($('Build Fight Card Matrix').first().json.card) }}",
+            "checked_at": "={{ $('Build Fight Card Matrix').first().json.checked_at }}",
+            "parser_version": "ufc-fight-card-v2",
+            "message": "Fight Card write pending read-back verification"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "spreadsheet_id",
+              "displayName": "spreadsheet_id",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "espn_event_id",
+              "displayName": "espn_event_id",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "source_fingerprint",
+              "displayName": "source_fingerprint",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "card_fingerprint",
+              "displayName": "card_fingerprint",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "source_card_json",
+              "displayName": "source_card_json",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "checked_at",
+              "displayName": "checked_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "parser_version",
+              "displayName": "parser_version",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "c6a4ffce-3e1e-4a6d-b296-d6b6c5d25c26",
+      "name": "Prepare Fight Card Write",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2448,
+        272
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return [{json:{rows:[['fight_order','fighter_a','fighter_b','fighter_a_aliases','fighter_b_aliases','bout_type','scheduled_rounds','weight_class'],...$('Build Fight Card Matrix').first().json.matrix]}}];"
+      }
+    },
+    {
+      "id": "74337e84-e5f7-46dc-88d5-48be555541a2",
+      "name": "Write Empty Fight Card",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        2672,
+        272
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "update",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('Prepare UFC Card Request').first().json.spreadsheet_id }}",
+        "range": "={{ \"'Fight Card'!A1:H\" + ($(\"Build Fight Card Matrix\").first().json.matrix.length+1) }}",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "valueInputMode": "RAW"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "0e688b3f-aff1-4ddd-8710-03082194c79b",
+      "name": "Verify Written Fight Card",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        2896,
+        272
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('Prepare UFC Card Request').first().json.spreadsheet_id }}",
+        "range": "'Fight Card'!A:H",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "continue": true,
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "81c2c5f1-fd30-49b6-95a0-26923bc3c3ff",
+      "name": "Verify Fight Card Read Back",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3120,
+        272
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst HEADERS=['fight_order','fighter_a','fighter_b','fighter_a_aliases','fighter_b_aliases','bout_type','scheduled_rounds','weight_class'];\nconst text=v=>String(v??'').trim();\nconst norm=v=>text(v).normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');\nconst cleanName=v=>text(v).replace(/\\s*\\[https?:\\/\\/[^\\]]+\\]/g,'').replace(/\\s+/g,' ').trim();\nconst populated=rows=>(rows||[]).slice(1).filter(row=>row.some(v=>text(v)));\nfunction checkCard(rows,allowEmpty=false){\n if(!Array.isArray(rows)||HEADERS.some((h,i)=>text(rows[0]?.[i])!==h))throw new Error('Fight Card needs the eight expected headers in columns A:H.');\n const data=populated(rows);\n if(!data.length){if(allowEmpty)return [];throw new Error('Fight Card is empty. Run UFC event spreadsheet setup before analysis.');}\n const seen=new Set();\n data.forEach((r,i)=>{\n  if(Number(r[0])!==i+1||!text(r[1])||!text(r[2])||norm(r[1])===norm(r[2]))throw new Error('Fight Card has invalid order or fighters at fight '+(i+1)+'.');\n  if(!['main_event','main_card','prelim'].includes(text(r[5]))||![3,5].includes(Number(r[6])))throw new Error('Fight Card has missing bout type or scheduled rounds at fight '+(i+1)+'.');\n  if((i===0)!==(r[5]==='main_event'))throw new Error('Fight Card must have exactly one main event at fight 1.');\n  if(!text(r[7]))throw new Error('Fight Card is missing weight_class at fight '+(i+1)+'.');\n  for(const name of [r[1],r[2]]){const key=norm(name);if(seen.has(key))throw new Error('Fight Card contains a duplicate fighter: '+name);seen.add(key);}\n });\n return data;\n}\nfunction fingerprint(rows){const value=JSON.stringify(rows.map(r=>r.map(v=>text(v))));let hash=2166136261;for(let i=0;i<value.length;i++)hash=Math.imul(hash^value.charCodeAt(i),16777619)>>>0;return 'fnv1a-'+hash.toString(16).padStart(8,'0');}\n\nconst candidate=$('Build Fight Card Matrix').first().json;\nconst actual=checkCard($input.first().json.rows||[]);\nif(actual.length!==candidate.matrix.length||fingerprint(actual)!==candidate.card_fingerprint)throw new Error('Fight Card read-back did not match the prepared card. Analysis is blocked; review the saved candidate and spreadsheet.');\nreturn [{json:{...candidate,fight_card_status:'READY',initialized_at:new Date().toISOString()}}];\n"
+      }
+    },
+    {
+      "id": "8cbfd0b7-3a1a-4d78-81cc-6099c1705cdf",
+      "name": "Record Ready Fight Card",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3344,
+        272
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "oCOZ7hzgZ2htYL9F",
+          "cachedResultName": "ufc_fight_card_state"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_key",
+              "condition": "eq",
+              "keyValue": "={{ $('Prepare UFC Card Request').first().json.event_key }}"
+            },
+            {
+              "keyName": "spreadsheet_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Prepare UFC Card Request').first().json.spreadsheet_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "event_key": "={{ $('Prepare UFC Card Request').first().json.event_key }}",
+            "spreadsheet_id": "={{ $('Prepare UFC Card Request').first().json.spreadsheet_id }}",
+            "status": "READY",
+            "source_url": "={{ $('Verify Fight Card Read Back').first().json.source_url }}",
+            "espn_event_id": "={{ $('Verify Fight Card Read Back').first().json.espn_event_id }}",
+            "source_fingerprint": "={{ $('Verify Fight Card Read Back').first().json.source_fingerprint }}",
+            "card_fingerprint": "={{ $('Verify Fight Card Read Back').first().json.card_fingerprint }}",
+            "source_card_json": "={{ JSON.stringify($('Verify Fight Card Read Back').first().json.card) }}",
+            "checked_at": "={{ $('Verify Fight Card Read Back').first().json.checked_at }}",
+            "parser_version": "ufc-fight-card-v2",
+            "message": "={{ $('Verify Fight Card Read Back').first().json.alias_warnings.join('; ') }}",
+            "initialized_at": "={{ $('Verify Fight Card Read Back').first().json.initialized_at }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "spreadsheet_id",
+              "displayName": "spreadsheet_id",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "source_url",
+              "displayName": "source_url",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "espn_event_id",
+              "displayName": "espn_event_id",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "source_fingerprint",
+              "displayName": "source_fingerprint",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "card_fingerprint",
+              "displayName": "card_fingerprint",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "source_card_json",
+              "displayName": "source_card_json",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "checked_at",
+              "displayName": "checked_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "parser_version",
+              "displayName": "parser_version",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "initialized_at",
+              "displayName": "initialized_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "6bb4a47e-9374-41d7-9888-ea1a1c475060",
+      "name": "Return UFC Card Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2256,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst classification=$('Classify Existing Fight Card').first().json;\nconst result=classification.needs_population||classification.needs_weight_class_backfill?$input.first().json:classification;\nconst event=$('Prepare UFC Card Request').first().json;\nreturn [{json:{...event,fight_card_status:result.fight_card_status||result.status||'READY',fight_card_count:result.fight_card_count||Number(JSON.parse(result.source_card_json||'[]').length),fight_card_fingerprint:result.fight_card_fingerprint||result.card_fingerprint||null,...(result.dry_run?{fight_card_preview:result.matrix||result.weight_class_preview,alias_warnings:result.alias_warnings,source_url:result.source_url}:{})}}];\n"
+      }
+    },
+    {
+      "id": "d21955a6-657e-4e10-ae88-f2c901af7c04",
+      "name": "Record Existing Card Readiness",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1900,
+        -250
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "oCOZ7hzgZ2htYL9F",
+          "cachedResultName": "ufc_fight_card_state"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.event_key }}"
+            },
+            {
+              "keyName": "spreadsheet_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.spreadsheet_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "event_key": "={{ $json.event_key }}",
+            "spreadsheet_id": "={{ $json.spreadsheet_id }}",
+            "status": "={{ $json.existing_card_state }}",
+            "card_fingerprint": "={{ $json.fight_card_fingerprint }}",
+            "source_card_json": "={{ $json.existing_card_json }}",
+            "initialized_at": "={{ $json.existing_initialized_at }}",
+            "checked_at": "={{ $now.toISO() }}",
+            "parser_version": "={{ $json.fight_card_parser_version || 'ufc-fight-card-v2' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "spreadsheet_id",
+              "displayName": "spreadsheet_id",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "card_fingerprint",
+              "displayName": "card_fingerprint",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "source_card_json",
+              "displayName": "source_card_json",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "initialized_at",
+              "displayName": "initialized_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "checked_at",
+              "displayName": "checked_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "parser_version",
+              "displayName": "parser_version",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            }
+          ]
+        },
+        "options": {
+          "dryRun": "={{ $('Classify Existing Fight Card').first().json.dry_run === true }}"
+        }
+      }
+    },
+    {
+      "id": "d3e29df4-5c9b-42ac-874d-0b14fc9f2e59",
+      "name": "Needs Weight Class Backfill?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1000,
+        -500
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.needs_weight_class_backfill }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "5f7300e1-040e-4636-ac3e-996ccf3e8e95",
+      "name": "Preview Weight Class Backfill?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1672,
+        -500
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.dry_run }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "01e44899-1694-4941-9399-9f9c62ef08d3",
+      "name": "Fetch ESPN Weight Classes",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1224,
+        -500
+      ],
+      "parameters": {
+        "url": "=https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard?dates={{ DateTime.fromISO($('Prepare UFC Card Request').first().json.event_datetime_local).minus({days:1}).toFormat('yyyyLLdd') }}-{{ DateTime.fromISO($('Prepare UFC Card Request').first().json.event_datetime_local).plus({days:1}).toFormat('yyyyLLdd') }}",
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "1506ee1e-4afc-4156-a032-df38c1c98619",
+      "name": "Write Weight Class Column",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        1896,
+        -500
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "update",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('Prepare UFC Card Request').first().json.spreadsheet_id }}",
+        "range": "={{ \"'Fight Card'!H1:H\" + ($(\"Build Weight Class Backfill\").first().json.rows.length) }}",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "valueInputMode": "RAW"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "e30e60b3-92ac-4884-98d6-8f2a8fc7168e",
+      "name": "Verify Weight Class Column",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        2120,
+        -500
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('Prepare UFC Card Request').first().json.spreadsheet_id }}",
+        "range": "'Fight Card'!A:H",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "continue": true,
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "ece3b97e-02df-4daf-af4c-f338d6d833b0",
+      "name": "Build Weight Class Backfill",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1448,
+        -500
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst event=$('Classify Existing Fight Card').first().json;\nconst rows=$('Read Fight Card').first().json.rows||[];\nconst baseHeaders=['fight_order','fighter_a','fighter_b','fighter_a_aliases','fighter_b_aliases','bout_type','scheduled_rounds'];\nconst text=value=>String(value??'').trim();\nconst norm=value=>text(value).normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');\nconst pair=(a,b)=>[norm(a),norm(b)].sort().join('|');\nconst fingerprint=matrix=>{const value=JSON.stringify(matrix.map(row=>row.map(cell=>text(cell))));let hash=2166136261;for(let i=0;i<value.length;i++)hash=Math.imul(hash^value.charCodeAt(i),16777619)>>>0;return 'fnv1a-'+hash.toString(16).padStart(8,'0');};\nif(!event.needs_weight_class_backfill)throw new Error('Weight class backfill was requested for a card that is already complete.');\nif(baseHeaders.some((name,index)=>text(rows[0]?.[index])!==name))throw new Error('Fight Card base headers changed before weight class backfill.');\nconst card=rows.slice(1).filter(row=>row.some(cell=>text(cell)));\nif(card.length!==event.fight_card_count)throw new Error('Fight Card changed before weight class backfill.');\nif(fingerprint(card.map(row=>row.slice(0,7)))!==fingerprint(JSON.parse(event.existing_card_json).map(bout=>baseHeaders.map(name=>bout[name]??''))))throw new Error('Fight Card rows changed before weight class backfill.');\nconst response=$input.first().json;\nif(response.statusCode!==200)throw new Error('ESPN weight class lookup returned HTTP '+response.statusCode+'.');\nconst events=response.body?.events||[];\nconst firstPair=pair(card[0]?.[1],card[0]?.[2]);\nconst options=events.filter(candidate=>Math.abs(Date.parse(candidate.date)-Date.parse(event.event_datetime_local))<=24*3600000&&(candidate.competitions||[]).some(comp=>comp.competitors?.length===2&&pair(comp.competitors[0].athlete?.displayName,comp.competitors[1].athlete?.displayName)===firstPair));\nif(options.length!==1)throw new Error('Could not uniquely verify the UFC event for weight class backfill.');\nconst competitions=(options[0].competitions||[]).filter(comp=>!/cancel|postpon/i.test(String(comp.status?.type?.name||'')));\nif(competitions.length!==card.length)throw new Error('UFC card and ESPN list different bout counts; weight class backfill stopped.');\nconst enriched=[];\nconst storedCard=JSON.parse(event.existing_card_json);\nconst fullRows=[];\nfor(const row of card){\n const matches=competitions.filter(comp=>comp.competitors?.length===2&&pair(comp.competitors[0].athlete?.displayName,comp.competitors[1].athlete?.displayName)===pair(row[1],row[2]));\n if(matches.length!==1)throw new Error('Could not uniquely match weight class for '+row[1]+' vs '+row[2]+'.');\n const weightClass=text(matches[0].type?.abbreviation).toLowerCase();\n if(!/^[a-z][a-z '’-]{3,39}$/.test(weightClass))throw new Error('Weight class is unavailable for '+row[1]+' vs '+row[2]+'.');\n const existing=text(row[7]);\n if(existing&&existing.toLowerCase()!==weightClass)throw new Error('Existing weight_class conflicts with ESPN for '+row[1]+' vs '+row[2]+'.');\n fullRows.push([...row.slice(0,7),weightClass]);\n enriched.push({...storedCard[enriched.length],weight_class:weightClass});\n}\nconst weightRows=[['weight_class'],...enriched.map(bout=>[bout.weight_class])];\nreturn [{json:{...event,rows:weightRows,weight_class_preview:weightRows,fight_card_status:event.dry_run?'PREVIEW':'READY',fight_card_fingerprint:fingerprint(fullRows),fight_card_parser_version:'ufc-fight-card-v2',existing_card_json:JSON.stringify(enriched)}}];\n"
+      }
+    },
+    {
+      "id": "267bb8ea-d55a-4c0e-9c45-233bb3219592",
+      "name": "Verify Weight Class Read Back",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2344,
+        -500
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst candidate=$('Build Weight Class Backfill').first().json;\nconst rows=$input.first().json.rows||[];\nconst text=value=>String(value??'').trim();\nconst fingerprint=matrix=>{const value=JSON.stringify(matrix.map(row=>row.map(cell=>text(cell))));let hash=2166136261;for(let i=0;i<value.length;i++)hash=Math.imul(hash^value.charCodeAt(i),16777619)>>>0;return 'fnv1a-'+hash.toString(16).padStart(8,'0');};\nif(text(rows[0]?.[7])!=='weight_class')throw new Error('weight_class header was not saved in Fight Card column H.');\nconst card=rows.slice(1).filter(row=>row.some(cell=>text(cell)));\nif(card.length!==candidate.fight_card_count)throw new Error('Fight Card row count changed during weight class backfill.');\nif(fingerprint(card.map(row=>row.slice(0,8)))!==candidate.fight_card_fingerprint)throw new Error('Fight Card read-back differs from the verified weight class backfill.');\nreturn [{json:candidate}];\n"
+      }
+    },
+    {
+      "id": "6070e26d-693b-4b7a-9a24-2dc3059c1700",
+      "name": "Official Card Pending?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2704,
+        400
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.card_pending === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    }
+  ],
+  "nodeGroups": [
+    {
+      "id": "69cc5c4c-844e-4b0c-b296-8935c042057a",
+      "name": "Inspect the event spreadsheet",
+      "nodeNames": [
+        "Validate UFC Card Input",
+        "Read Stored UFC Event",
+        "Prepare UFC Card Request",
+        "Read Fight Card State",
+        "Read Fight Card",
+        "Classify Existing Fight Card",
+        "Needs Fight Card Population?"
+      ],
+      "description": "Resolve the stored UFC event and preserve a valid populated card."
+    },
+    {
+      "id": "59e79bb7-bcd5-436d-bd6c-bbf360e3d11c",
+      "name": "Initialize and verify the sheet",
+      "nodeNames": [
+        "Recheck Empty Fight Card",
+        "Confirm Empty Destination",
+        "Record Pending Fight Card",
+        "Prepare Fight Card Write",
+        "Write Empty Fight Card",
+        "Verify Written Fight Card",
+        "Verify Fight Card Read Back",
+        "Record Ready Fight Card"
+      ],
+      "description": "Recheck the empty destination, write the card once and verify every value before marking ready."
+    },
+    {
+      "id": "d16ae785-759d-4651-a57f-8900ef39be67",
+      "name": "Verify ESPN weight classes",
+      "nodeNames": [
+        "Fetch ESPN Weight Classes",
+        "Build Weight Class Backfill"
+      ],
+      "description": "Match the existing UFC card to ESPN bouts and prepare verified weight classes."
+    },
+    {
+      "id": "93589ce4-6596-47d6-995b-95f0241f3472",
+      "name": "Write and verify weight classes",
+      "nodeNames": [
+        "Write Weight Class Column",
+        "Verify Weight Class Column",
+        "Verify Weight Class Read Back"
+      ],
+      "description": "Write only column H and verify the complete card before recording its new schema."
+    },
+    {
+      "id": "4be37a9f-2524-4ea5-9de7-2556bd3d34ce",
+      "name": "Collect and verify the card",
+      "nodeNames": [
+        "Check Existing Picks",
+        "Check Existing Props",
+        "Check Existing Fight Analysis",
+        "Protect Existing Extraction",
+        "Fetch Official UFC Card",
+        "Extract Official UFC Card",
+        "Fetch ESPN Round Data",
+        "Build Verified UFC Card"
+      ],
+      "description": "Check for existing picks and verify UFC pairings and rounds against ESPN."
+    },
+    {
+      "id": "85b089bd-14da-4375-8882-79ed2841b059",
+      "name": "Collect verified nicknames",
+      "nodeNames": [
+        "Prepare Athlete Lookups",
+        "Fetch Official Athlete Profiles",
+        "Prepare Profile HTML",
+        "Extract Official Nicknames",
+        "Build Fight Card Matrix"
+      ],
+      "description": "Fetch official athlete profiles, collect verified nicknames and build the card matrix."
+    }
+  ]
+}

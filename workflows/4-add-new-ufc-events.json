@@ -1,0 +1,671 @@
+{
+  "id": "MWmlPIyBDUKoheXO",
+  "name": "UFC | 4. Add New UFC Events",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki"
+  },
+  "tags": [],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Extract HTML Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract HTML Content": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Parse Individual UFC Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Individual UFC Event": {
+      "main": [
+        [
+          {
+            "node": "Normalise and Filter UFC Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalise and Filter UFC Events": {
+      "main": [
+        [
+          {
+            "node": "Find Existing UFC Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Existing UFC Event": {
+      "main": [
+        [
+          {
+            "node": "Classify UFC Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Event Already Exists?": {
+      "main": [
+        [
+          {
+            "node": "Update Existing UFC Event",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert New UFC Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify UFC Events": {
+      "main": [
+        [
+          {
+            "node": "Event Already Exists?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert New UFC Event": {
+      "main": [
+        [
+          {
+            "node": "Telegram — UFC Event Added",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1,
+                4
+              ],
+              "triggerAtHour": 12
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1e85e8a0-5cf3-4edb-9943-1f58301436f3",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://www.ufc.com/events",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-AU,en;q=0.9"
+            },
+            {
+              "name": "Cookie",
+              "value": "STYXKEY_region=USA.US.en.Default"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "f7403a72-0204-4483-9146-d0751a86193c",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "event_cards",
+              "cssSelector": "#events-list-upcoming .l-listing__item.views-row",
+              "returnValue": "html",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "a89bd077-d6e1-4eb6-9da0-0b99e2370d1a",
+      "name": "Extract HTML Content"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "event_cards",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "8ff512ad-4c1b-4b15-9a1f-6bb03173c229",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "event_cards",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "headline",
+              "cssSelector": ".c-card-event--result__headline a"
+            },
+            {
+              "key": "event_path",
+              "cssSelector": ".c-card-event--result__headline a",
+              "returnValue": "attribute",
+              "attribute": "href"
+            },
+            {
+              "key": "main_card_timestamp",
+              "cssSelector": ".c-card-event--result__date",
+              "returnValue": "attribute",
+              "attribute": "data-main-card-timestamp"
+            },
+            {
+              "key": "prelims_timestamp",
+              "cssSelector": ".c-card-event--result__date",
+              "returnValue": "attribute",
+              "attribute": "data-prelims-card-timestamp"
+            },
+            {
+              "key": "venue",
+              "cssSelector": ".c-card-event--result__location h5"
+            },
+            {
+              "key": "locality",
+              "cssSelector": ".c-card-event--result__location .locality"
+            },
+            {
+              "key": "administrative_area",
+              "cssSelector": ".c-card-event--result__location .administrative-area"
+            },
+            {
+              "key": "country",
+              "cssSelector": ".c-card-event--result__location .country"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        832,
+        0
+      ],
+      "id": "453e7249-d940-4646-a06f-efdd73479b86",
+      "name": "Parse Individual UFC Event"
+    },
+    {
+      "parameters": {
+        "jsCode": "const THREE_WEEKS_MS = 21 * 24 * 60 * 60 * 1000;\n\nconst nowMs = Date.now();\nconst cutoffMs = nowMs + THREE_WEEKS_MS;\n\nfunction clean(value) {\n  return String(value ?? '')\n    .replace(/\\s+/g, ' ')\n    .trim();\n}\n\nfunction slugify(value) {\n  return value\n    .normalize('NFD')\n    .replace(/[\\u0300-\\u036f]/g, '')\n    .toLowerCase()\n    .replace(/&/g, ' and ')\n    .replace(/[’']/g, '')\n    .replace(/[^a-z0-9]+/g, '-')\n    .replace(/^-+|-+$/g, '')\n    .replace(/-+/g, '-');\n}\n\nfunction melbourneIso(timestampMs) {\n  return DateTime\n    .fromMillis(timestampMs, { zone: 'utc' })\n    .setZone('Australia/Melbourne')\n    .toISO({\n      suppressMilliseconds: false,\n      includeOffset: true,\n    });\n}\n\n// Used for events that should include their city in the event name.\nconst venueToCity = {\n  'Etihad Arena': 'Abu Dhabi',\n  'Belgrade Arena': 'Belgrade',\n  'Galaxy Arena': 'Macao',\n};\n\n// Meta APEX and UFC APEX should be named \"UFC Fight Night\",\n// rather than \"UFC Las Vegas\".\nconst apexVenues = new Set([\n  'Meta APEX',\n  'UFC APEX',\n]);\n\nconst output = [];\n\nfor (const item of $input.all()) {\n  const headline = clean(item.json.headline);\n  const eventPath = clean(item.json.event_path);\n  const venue = clean(item.json.venue);\n  const locality = clean(item.json.locality);\n  const administrativeArea = clean(item.json.administrative_area);\n  const country = clean(item.json.country);\n\n  const timestampSeconds = Number(item.json.main_card_timestamp);\n\n  // Skip malformed records.\n  if (\n    !headline ||\n    !eventPath ||\n    !Number.isFinite(timestampSeconds)\n  ) {\n    continue;\n  }\n\n  const eventTimeMs = timestampSeconds * 1000;\n\n  // Keep only future events occurring within the next 21 days.\n  if (eventTimeMs <= nowMs || eventTimeMs > cutoffMs) {\n    continue;\n  }\n\n  let city =\n    venueToCity[venue] ||\n    locality ||\n    administrativeArea ||\n    country ||\n    'Unknown Location';\n\n  // UFC currently returns \"BG\" instead of \"Belgrade\".\n  if (city === 'BG') {\n    city = 'Belgrade';\n  }\n\n  // Detect numbered events such as /event/ufc-330.\n  const numberedMatch = eventPath.match(\n    /\\/event\\/ufc-(\\d+)(?:$|[/?#])/i\n  );\n\n  let eventName;\n\n  if (numberedMatch) {\n    // Example: UFC 330: Makhachev vs Machado Garry\n    eventName = `UFC ${numberedMatch[1]}: ${headline}`;\n  } else if (apexVenues.has(venue)) {\n    // Example: UFC Fight Night: Gamrot vs Salkilld\n    eventName = `UFC Fight Night: ${headline}`;\n  } else {\n    // Example: UFC Abu Dhabi: Ankalaev vs Guskov\n    eventName = `UFC ${city}: ${headline}`;\n  }\n\n  const sourceEventId = eventPath\n    .replace(/^https?:\\/\\/(?:www\\.)?ufc\\.com/i, '')\n    .replace(/[?#].*$/, '')\n    .replace(/^\\/+|\\/+$/g, '');\n\n  const sourceUrl = eventPath.startsWith('http')\n    ? eventPath\n    : `https://www.ufc.com${eventPath.startsWith('/') ? '' : '/'}${eventPath}`;\n\n  output.push({\n    json: {\n      source_event_id: sourceEventId,\n      source_url: sourceUrl,\n      event_key: slugify(eventName),\n      event_name: eventName,\n      event_datetime_local: melbourneIso(eventTimeMs),\n      scraped_at: new Date().toISOString(),\n    },\n  });\n}\n\noutput.sort(\n  (a, b) =>\n    new Date(a.json.event_datetime_local).getTime() -\n    new Date(b.json.event_datetime_local).getTime()\n);\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        0
+      ],
+      "id": "dba27ad9-5985-4294-9142-947c7416c9fe",
+      "name": "Normalise and Filter UFC Events"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WTTpdZSDVOxOB3Ex",
+          "mode": "list",
+          "cachedResultName": "ufc_events",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/WTTpdZSDVOxOB3Ex"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1248,
+        0
+      ],
+      "id": "8aeb56b3-e7f5-4ee1-b1f9-4dac5ebae456",
+      "name": "Find Existing UFC Event",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "26fed208-70c8-4174-a4e3-bd25aabd2278",
+              "leftValue": "={{ $json.event_exists }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1680,
+        0
+      ],
+      "id": "4c4bb98d-5661-4d88-acb6-dc1a74633541",
+      "name": "Event Already Exists?"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WTTpdZSDVOxOB3Ex",
+          "mode": "list",
+          "cachedResultName": "ufc_events",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/WTTpdZSDVOxOB3Ex"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $json.existing_row_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source_event_id": "={{ $json.source_event_id }}",
+            "event_key": "={{ $json.event_key }}",
+            "event_name": "={{ $json.event_name }}",
+            "event_datetime_local": "={{ $json.event_datetime_local }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "source_event_id",
+              "displayName": "source_event_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event_name",
+              "displayName": "event_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event_datetime_local",
+              "displayName": "event_datetime_local",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "active",
+              "displayName": "active",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "spreadsheet_id",
+              "displayName": "spreadsheet_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "spreadsheet_url",
+              "displayName": "spreadsheet_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "closed_at",
+              "displayName": "closed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1920,
+        -16
+      ],
+      "id": "00abb576-8d28-4bff-afc7-5b1ab9fc8fcd",
+      "name": "Update Existing UFC Event"
+    },
+    {
+      "parameters": {
+        "chatId": "0",
+        "text": "=🥊 New UFC event added\n\nEvent: {{ $('Classify UFC Events').item.json.event_name }}\n\nMain card time:\n{{ $('Classify UFC Events').item.json.event_datetime_local }}\n\nEvent key:\n{{ $('Classify UFC Events').item.json.event_key }}\n\nSource:\n{{ $('Classify UFC Events').item.json.source_url }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2144,
+        240
+      ],
+      "id": "bf1c1da9-e8f1-439f-9951-41f048190956",
+      "name": "Telegram — UFC Event Added",
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// All events produced by the scraper and 21-day filter.\nconst scrapedEvents = $('Normalise and Filter UFC Events')\n  .all()\n  .map(item => item.json);\n\n// All rows currently stored in ufc_events.\n// These are the direct inputs to this Code node.\nconst existingRows = $input\n  .all()\n  .map(item => item.json)\n  .filter(row => row.id !== undefined && row.id !== null);\n\n// Build a lookup keyed by the stable UFC source event ID.\nconst existingBySourceId = new Map();\n\nfor (const row of existingRows) {\n  const sourceEventId = String(row.source_event_id ?? '').trim();\n\n  if (sourceEventId) {\n    existingBySourceId.set(sourceEventId, row);\n  }\n}\n\nreturn scrapedEvents.map(event => {\n  const sourceEventId = String(event.source_event_id ?? '').trim();\n  const existingRow = existingBySourceId.get(sourceEventId) ?? null;\n\n  return {\n    json: {\n      ...event,\n\n      // Used by the following IF node.\n      event_exists: existingRow !== null,\n\n      // Used by the update branch.\n      existing_row_id: existingRow?.id ?? null,\n\n      // Useful for debugging and preserving awareness of current state.\n      existing_active: existingRow?.active ?? null,\n      existing_event_name: existingRow?.event_name ?? null,\n    },\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1456,
+        0
+      ],
+      "id": "95b851ef-facc-4e5a-9415-401b157cb91f",
+      "name": "Classify UFC Events"
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "value": "WTTpdZSDVOxOB3Ex",
+          "mode": "list",
+          "cachedResultName": "ufc_events",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/WTTpdZSDVOxOB3Ex"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "source_event_id": "={{ $json.source_event_id }}",
+            "event_key": "={{ $json.event_key }}",
+            "event_name": "={{ $json.event_name }}",
+            "event_datetime_local": "={{ $json.event_datetime_local }}",
+            "active": false,
+            "created_at": "={{ $now.setZone('Australia/Melbourne').toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "source_event_id",
+              "displayName": "source_event_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event_name",
+              "displayName": "event_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event_datetime_local",
+              "displayName": "event_datetime_local",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "active",
+              "displayName": "active",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "spreadsheet_id",
+              "displayName": "spreadsheet_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "spreadsheet_url",
+              "displayName": "spreadsheet_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "closed_at",
+              "displayName": "closed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1920,
+        240
+      ],
+      "id": "4e33de3a-7eb4-456f-b76c-eb36b5044f6a",
+      "name": "Insert New UFC Event"
+    }
+  ],
+  "nodeGroups": []
+}

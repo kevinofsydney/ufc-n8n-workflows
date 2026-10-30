@@ -1,0 +1,11 @@
+.private/
+.DS_Store
+node_modules/
+__pycache__/
+*.pyc
+.env
+.env.*
+capture-feedback/
+feature-addvideo/
+feature-videos/
+youtube-api/

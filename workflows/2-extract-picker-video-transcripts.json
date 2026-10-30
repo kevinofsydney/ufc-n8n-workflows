@@ -1,0 +1,3501 @@
+{
+  "id": "y20ZZYzBVS6y8kC0",
+  "name": "UFC | 2. Extract Picker Video Transcripts",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki"
+  },
+  "tags": [],
+  "connections": {
+    "Merge All Channel Feeds": {
+      "main": [
+        [
+          {
+            "node": "Merge All Channel Feeds2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalise and Filter Videos": {
+      "main": [
+        [
+          {
+            "node": "Attach Active Event",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get transcript": {
+      "main": [
+        [
+          {
+            "node": "Combine Video and Transcript",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Transcript Received?": {
+      "main": [
+        [
+          {
+            "node": "Prepare Transcript Chunks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Retry Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append Transcript to Google Sheet": {
+      "main": [
+        [
+          {
+            "node": "One Tracking Update Per Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Video and Transcript": {
+      "main": [
+        [
+          {
+            "node": "Validate Transcript Language",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "One Tracking Update Per Video": {
+      "main": [
+        [
+          {
+            "node": "Record Captured Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Transcript Chunks": {
+      "main": [
+        [
+          {
+            "node": "Append Transcript to Google Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Max Video Limit (10)": {
+      "main": [
+        [
+          {
+            "node": "Combine Video and Transcript",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Active UFC Event": {
+      "main": [
+        [
+          {
+            "node": "One Active Event Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Captured Video": {
+      "main": [
+        [
+          {
+            "node": "Prepare Captured Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Telegram Summary": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Summary",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Record Capture Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge All Channel Feeds1": {
+      "main": [
+        [
+          {
+            "node": "Merge All Channel Feeds2",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge All Channel Feeds2": {
+      "main": [
+        [
+          {
+            "node": "Normalise and Filter Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Transcript Language": {
+      "main": [
+        [
+          {
+            "node": "Transcript Received?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Active Event": {
+      "main": [
+        [
+          {
+            "node": "Get Recorded Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recorded Videos": {
+      "main": [
+        [
+          {
+            "node": "Select Videos To Process",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Retry Record": {
+      "main": [
+        [
+          {
+            "node": "Record Retry Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Retry Status": {
+      "main": [
+        [
+          {
+            "node": "Prepare Retry Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Captured Result": {
+      "main": [
+        [
+          {
+            "node": "Merge Run Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Retry Result": {
+      "main": [
+        [
+          {
+            "node": "Merge Run Results",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Run Results": {
+      "main": [
+        [
+          {
+            "node": "Build Telegram Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "One Active Event Only": {
+      "main": [
+        [
+          {
+            "node": "Ensure UFC Event Spreadsheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ensure UFC Event Spreadsheet": {
+      "main": [
+        [
+          {
+            "node": "Event Ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get UFC Events For Matching",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run On Demand": {
+      "main": [
+        [
+          {
+            "node": "Get UFC Events For Matching",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get UFC Events For Matching": {
+      "main": [
+        [
+          {
+            "node": "Get Active UFC Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Event Ready": {
+      "main": [
+        [
+          {
+            "node": "Record Capture Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Capture Start": {
+      "main": [
+        [
+          {
+            "node": "Resolve Capture Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolve Capture Request": {
+      "main": [
+        [
+          {
+            "node": "Capture One Video?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Capture One Video?": {
+      "main": [
+        [
+          {
+            "node": "Prepare Requested Capture",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Attach Active Event",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get YouTube Upload Playlists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Requested Capture": {
+      "main": [
+        [
+          {
+            "node": "Max Video Limit (10)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Videos To Process": {
+      "main": [
+        [
+          {
+            "node": "Capture Work Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Capture Work Found?": {
+      "main": [
+        [
+          {
+            "node": "Max Video Limit (10)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record Capture Idle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Capture Idle": {
+      "main": [
+        [
+          {
+            "node": "Build Capture Idle Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Capture Idle Summary": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get YouTube Upload Playlists": {
+      "main": [
+        [
+          {
+            "node": "YouTube — UFC Predictions Tracker",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "YouTube — The MMA Guru",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "YouTube — Lucrative James",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "YouTube — MMA Lock of the Night",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "YouTube — Kunath MMA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "YouTube — TonyHasDiedMMA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "YouTube — MMA Husky Hustler",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "YouTube — Walk the Line MMA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "YouTube — Artem MMA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "YouTube — BedtimeMMA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "YouTube — BetSam",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "YouTube — JakeGerberMMA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "YouTube — Funky Bunch MMA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube — UFC Predictions Tracker": {
+      "main": [
+        [
+          {
+            "node": "Merge All Channel Feeds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube — The MMA Guru": {
+      "main": [
+        [
+          {
+            "node": "Merge All Channel Feeds",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "YouTube — Lucrative James": {
+      "main": [
+        [
+          {
+            "node": "Merge All Channel Feeds",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "YouTube — MMA Lock of the Night": {
+      "main": [
+        [
+          {
+            "node": "Merge All Channel Feeds",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "YouTube — Kunath MMA": {
+      "main": [
+        [
+          {
+            "node": "Merge All Channel Feeds",
+            "type": "main",
+            "index": 4
+          }
+        ]
+      ]
+    },
+    "YouTube — TonyHasDiedMMA": {
+      "main": [
+        [
+          {
+            "node": "Merge All Channel Feeds",
+            "type": "main",
+            "index": 5
+          }
+        ]
+      ]
+    },
+    "YouTube — MMA Husky Hustler": {
+      "main": [
+        [
+          {
+            "node": "Merge All Channel Feeds",
+            "type": "main",
+            "index": 6
+          }
+        ]
+      ]
+    },
+    "YouTube — Walk the Line MMA": {
+      "main": [
+        [
+          {
+            "node": "Merge All Channel Feeds",
+            "type": "main",
+            "index": 7
+          }
+        ]
+      ]
+    },
+    "YouTube — Artem MMA": {
+      "main": [
+        [
+          {
+            "node": "Merge All Channel Feeds",
+            "type": "main",
+            "index": 8
+          }
+        ]
+      ]
+    },
+    "YouTube — BedtimeMMA": {
+      "main": [
+        [
+          {
+            "node": "Merge All Channel Feeds",
+            "type": "main",
+            "index": 9
+          }
+        ]
+      ]
+    },
+    "YouTube — BetSam": {
+      "main": [
+        [
+          {
+            "node": "Merge All Channel Feeds1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube — JakeGerberMMA": {
+      "main": [
+        [
+          {
+            "node": "Merge All Channel Feeds1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "YouTube — Funky Bunch MMA": {
+      "main": [
+        [
+          {
+            "node": "Merge All Channel Feeds1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              "triggerAtHour": 18
+            },
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -640,
+        -1056
+      ],
+      "id": "af0de8a7-d2fe-4d08-b849-3e1bf8260dbe",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "getTranscript",
+        "videoUrl": "={{ $json.video_url }}",
+        "text": true,
+        "mode": "native",
+        "lang": "en"
+      },
+      "type": "n8n-nodes-supadata.supadata",
+      "typeVersion": 1,
+      "position": [
+        1712,
+        144
+      ],
+      "id": "d26b6a6a-7e3f-4b72-8493-93c123d1667a",
+      "name": "Get transcript",
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "supadataApi": {
+          "name": "supadataApi credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "numberInputs": 10
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        368,
+        -256
+      ],
+      "id": "64a334ee-3e17-4560-aa8f-3a7d23e81018",
+      "name": "Merge All Channel Feeds"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Keep only recent UFC prediction/breakdown videos about the active event\n// and normalise the RSS fields into one consistent structure.\n\nconst sixDaysAgo = Date.now() - (6 * 24 * 60 * 60 * 1000);\n\nconst predictionTerms = [\n  'prediction',\n  'predictions',\n  'picks',\n  'breakdown',\n  'full card',\n  'overview',\n  'all predictions',\n  'betting picks',\n  'fight picks',\n  // 'ufc',\n];\n\n//make sure all terms are lowercase\nconst excludedTerms = [\n  'results',\n  'post fight',\n  'post-fight',\n  'reaction',\n  'recap',\n  'watchalong',\n  'watch along',\n  'highlights',\n  'press conference',\n  'weigh-in',\n  'weigh ins',\n  'shorts',\n  'live chat',\n  'dfs',\n  'live',\n  'draftkings',\n  'draft kings',   //filtering out last week's fight card\n  'early',\n  'road to ufc',\n  'contender series',\n  'dwcs',\n];\n\nfunction ufcText(value) {\n return String(value ?? '').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\\s+/g,' ');\n}\nfunction ufcHas(text, phrase) { return phrase && (' '+text+' ').includes(' '+phrase+' '); }\nfunction ufcEventSignals(event, title) {\n const name=ufcText(event.event_name);\n const split=String(event.event_name || '').split(':');\n const prefix=ufcText(split[0]);\n const number=(prefix.match(/\\bufc\\s+(\\d{2,4})\\b/) || [])[1];\n const pair=String(split.slice(1).join(':') || '').split(/\\s+v(?:s)?\\.?\\s+/i);\n const surname=value=>ufcText(value).split(' ').filter(word=>!['jr','sr','ii','iii','iv'].includes(word)).slice(-1)[0] || '';\n const a=surname(pair[0]), b=surname(pair[1]);\n const matchup=pair.length===2 && a.length>=3 && b.length>=3 && ufcHas(title,a) && ufcHas(title,b);\n const numbered=Boolean(number && new RegExp('\\\\bufc\\\\s+'+number+'\\\\b').test(title));\n const venue=prefix.replace(/\\bufc\\b/g,' ').replace(/\\bfight\\s+night\\b/g,' ').replace(/\\b\\d+\\b/g,' ').trim().replace(/\\s+/g,' ');\n const location=venue.length>=3 && ufcHas(title,venue);\n return {event, score: matchup || numbered ? 10 : location ? 4 : 0, reason: matchup ? 'main-event surnames' : numbered ? 'UFC event number' : location ? 'event location' : ''};\n}\nfunction classifyUfcVideo(title, active, events) {\n const text=ufcText(title);\n const pool=[...new Map([...(events||[]),active].filter(event=>event?.event_key&&event.event_name).map(event=>[event.event_key,event])).values()];\n const matches=pool.map(event=>ufcEventSignals(event,text)).filter(match=>match.score>0);\n const strong=matches.filter(match=>match.score===10);\n const candidates=strong.length ? strong : matches;\n if(candidates.length!==1) return {event_match_status:candidates.length>1?'AMBIGUOUS':'UNCONFIRMED',event_match_reason:candidates.length>1?'Title identifies more than one known UFC event':'Title does not clearly identify a known UFC event',matched_event_key:'',event_match_version:'ufc-event-match-v2'};\n const match=candidates[0];\n return {event_match_status:match.event.event_key===active.event_key?'MATCHED':'OTHER_EVENT',event_match_reason:'Matched '+match.event.event_name+' by '+match.reason,matched_event_key:match.event.event_key,event_match_version:'ufc-event-match-v2'};\n}\nconst activeEvent=$('Event Ready').first().json;\nconst knownEvents=$('Get UFC Events For Matching').all().map(item=>item.json);\n\nconst seenInThisRun = new Set();\nconst output = [];\n\nconst apiVideos=[];\nfor(const page of $input.all()){\n for(const video of (Array.isArray(page.json.items)?page.json.items:[])){\n  const id=video.contentDetails?.videoId||video.snippet?.resourceId?.videoId;\n  if(!/^[A-Za-z0-9_-]{11}$/.test(id||''))continue;\n  apiVideos.push({json:{id:'yt:video:'+id,title:video.snippet?.title,link:'https://www.youtube.com/watch?v='+id,creator:video.snippet?.videoOwnerChannelTitle||video.snippet?.channelTitle,isoDate:video.contentDetails?.videoPublishedAt||video.snippet?.publishedAt}});\n }\n}\nfor (const item of apiVideos) {\n  const source = item.json;\n\n  const title = String(source.title || '').trim();\n  const lowerTitle = title.toLowerCase();\n\n  const publishedRaw =\n    source.isoDate ||\n    source.pubDate ||\n    source.published ||\n    source.updated;\n\n  const publishedTimestamp = Date.parse(publishedRaw);\n\n  // Skip entries with an invalid or old publication date.\n  if (\n    !Number.isFinite(publishedTimestamp) ||\n    publishedTimestamp < sixDaysAgo\n  ) {\n    continue;\n  }\n\n  const hasUfc = lowerTitle.includes('ufc');\n\n  const hasPredictionTerm = predictionTerms.some((term) =>\n    lowerTitle.includes(term)\n  );\n\n  const hasExcludedTerm = excludedTerms.some((term) =>\n    lowerTitle.includes(term)\n  );\n\n  if (!hasUfc || !hasPredictionTerm || hasExcludedTerm) {\n    continue;\n  }\n\n  // Skip videos about other events (e.g. last week's card).\n  const match=classifyUfcVideo(title,activeEvent,knownEvents);\n  if (match.event_match_status !== 'MATCHED') {\n    continue;\n  }\n\n  // YouTube RSS IDs commonly look like \"yt:video:VIDEO_ID\".\n  let videoId = String(source.id || '').split(':').pop();\n\n  let videoUrl = '';\n\n  if (typeof source.link === 'string') {\n    videoUrl = source.link;\n  } else if (Array.isArray(source.link)) {\n    videoUrl =\n      source.link.find((entry) => entry?.href)?.href ||\n      source.link[0]?.href ||\n      '';\n  } else if (source.link?.href) {\n    videoUrl = source.link.href;\n  }\n\n  // Fallback: derive the ID from a standard YouTube URL.\n  if ((!videoId || videoId === source.id) && videoUrl) {\n    try {\n      const parsedUrl = new URL(videoUrl);\n\n      videoId =\n        parsedUrl.searchParams.get('v') ||\n        parsedUrl.pathname.split('/').filter(Boolean).pop();\n    } catch {\n      // Leave the existing value unchanged if URL parsing fails.\n    }\n  }\n\n  // Exclude YouTube Shorts.\n  if (/\\/shorts\\//i.test(videoUrl)) {\n    continue;\n  }\n\n  if (!videoId || !videoUrl || seenInThisRun.has(videoId)) {\n    continue;\n  }\n\n  seenInThisRun.add(videoId);\n\n  output.push({\n    json: {\n      ...match,\n      channel_name:\n        source.creator ||\n        source.author ||\n        source['media:group']?.['media:credit'] ||\n        'Unknown channel',\n      video_id: videoId,\n      video_title: title,\n      video_url: videoUrl,\n      published_at: new Date(publishedTimestamp).toISOString(),\n      discovered_at: new Date().toISOString(),\n\n      analysis_profile:\n        String(\n          source.creator ||\n          source.author ||\n          source['media:group']?.['media:credit'] ||\n          ''\n        )\n          .toLowerCase()\n          .includes('ufc predictions tracker')\n          ? 'predictions_tracker'\n          : 'standard_capper',\n    },\n  });\n}\n\nreturn output.length ? output : [{json:{__no_capture_work:true}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        -176
+      ],
+      "id": "fbdbe4d3-f269-4a99-80a2-c5e1a38d8286",
+      "name": "Normalise and Filter Videos"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "1216fdee-c3a8-4a7b-b59c-91d9e3630754",
+              "leftValue": "={{ $json.transcript_received }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "c4c1c1c9-9a93-41cc-91ce-d2d00c47757e",
+              "leftValue": "={{ $json.transcript_is_english }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2512,
+        128
+      ],
+      "id": "3f76e635-7c8d-4e31-9d86-0ba1bbbf8028",
+      "name": "Transcript Received?"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{$json.spreadsheet_id}}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Transcripts",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "record_id": "={{ $json.record_id }}",
+            "channel_name": "={{ $json.channel_name }}"
+          },
+          "matchingColumns": [
+            "record_id"
+          ],
+          "schema": [
+            {
+              "id": "record_id",
+              "displayName": "record_id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "channel_name",
+              "displayName": "channel_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "video_id",
+              "displayName": "video_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "video_title",
+              "displayName": "video_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "video_url",
+              "displayName": "video_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "published_at",
+              "displayName": "published_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "part_number",
+              "displayName": "part_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "part_count",
+              "displayName": "part_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "transcript_text",
+              "displayName": "transcript_text",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "captured_at",
+              "displayName": "captured_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "RAW",
+          "handlingExtraData": "ignoreIt"
+        },
+        "resource": "sheet"
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2976,
+        112
+      ],
+      "id": "f0ea0132-61c0-4745-8f45-412c873a58f5",
+      "name": "Append Transcript to Google Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "cAQonN6NYOY3fqxl",
+          "mode": "list",
+          "cachedResultName": "ufc_videos",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/cAQonN6NYOY3fqxl"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "video_id",
+              "keyValue": "={{ $json.video_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "transcript_appended": true,
+            "video_id": "={{ $json.video_id }}",
+            "channel_name": "={{ $json.channel_name }}",
+            "video_title": "={{ $json.video_title }}",
+            "published_at": "={{ $json.published_at }}",
+            "event_key": "={{ $json.event_key}}",
+            "status": "CAPTURED_AUTO",
+            "attempt_count": "={{ $('Max Video Limit (10)').all().find(item => item.json.video_id === $json.video_id)?.json.next_attempt_count ?? 1 }}",
+            "last_attempt_at": "={{ $now.toISO() }}",
+            "last_http_status": 200,
+            "last_error": "",
+            "transcript_parts": "={{ $json.part_count }}",
+            "completed_at": "={{ $now.toISO() }}",
+            "analysis_profile": "={{ $json.analysis_profile }}",
+            "event_match_status": "={{ $json.event_match_status || '' }}",
+            "event_match_reason": "={{ $json.event_match_reason || '' }}",
+            "matched_event_key": "={{ $json.matched_event_key || '' }}",
+            "event_match_version": "={{ $json.event_match_version || '' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "video_id",
+              "displayName": "video_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "channel_name",
+              "displayName": "channel_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "video_title",
+              "displayName": "video_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "published_at",
+              "displayName": "published_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "attempt_count",
+              "displayName": "attempt_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_attempt_at",
+              "displayName": "last_attempt_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_http_status",
+              "displayName": "last_http_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_error",
+              "displayName": "last_error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "placeholder_appended",
+              "displayName": "placeholder_appended",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "transcript_appended",
+              "displayName": "transcript_appended",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "transcript_parts",
+              "displayName": "transcript_parts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "completed_at",
+              "displayName": "completed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "analysis_status",
+              "displayName": "analysis_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "analysis_attempt_count",
+              "displayName": "analysis_attempt_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "analysis_model",
+              "displayName": "analysis_model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "analysis_prompt_version",
+              "displayName": "analysis_prompt_version",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "analysed_at",
+              "displayName": "analysed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "analysis_error",
+              "displayName": "analysis_error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "analysis_profile",
+              "displayName": "analysis_profile",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event_match_status",
+              "displayName": "event_match_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "event_match_reason",
+              "displayName": "event_match_reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "matched_event_key",
+              "displayName": "matched_event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "event_match_version",
+              "displayName": "event_match_version",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3408,
+        112
+      ],
+      "id": "58579c94-95d9-4954-8ec6-9ffe8a0e3403",
+      "name": "Record Captured Video"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        2048,
+        128
+      ],
+      "id": "bf8cc926-a254-4b20-9dbb-9813c66c5b6a",
+      "name": "Combine Video and Transcript"
+    },
+    {
+      "parameters": {
+        "compare": "selectedFields",
+        "fieldsToCompare": "video_id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        3200,
+        112
+      ],
+      "id": "746089e7-adaa-4e76-8669-339e5111e92b",
+      "name": "One Tracking Update Per Video"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Split long transcripts into spreadsheet-safe, ordered chunks.\n\nconst MAX_CHARS = 49000;\nconst output = [];\n\nfor (const [itemIndex, item] of $input.all().entries()) {\n  const data = item.json;\n  const fullText = String(data.content || '').trim();\n\n  if (!fullText) {\n    continue;\n  }\n\n  const chunks = [];\n  let remaining = fullText;\n\n  while (remaining.length > MAX_CHARS) {\n    let cutPosition = remaining.lastIndexOf('\\n', MAX_CHARS);\n\n    // Prefer a paragraph break, but don't create an extremely short chunk.\n    if (cutPosition < MAX_CHARS * 0.7) {\n      cutPosition = remaining.lastIndexOf('. ', MAX_CHARS);\n    }\n\n    // Fall back to a hard character limit.\n    if (cutPosition < MAX_CHARS * 0.7) {\n      cutPosition = MAX_CHARS;\n    }\n\n    chunks.push(remaining.slice(0, cutPosition).trim());\n    remaining = remaining.slice(cutPosition).trim();\n  }\n\n  if (remaining) {\n    chunks.push(remaining);\n  }\n\n  chunks.forEach((chunk, chunkIndex) => {\n    output.push({\n      json: {\n        event_key: data.event_key,\n        event_match_status: data.event_match_status,\n        event_match_reason: data.event_match_reason,\n        matched_event_key: data.matched_event_key,\n        event_match_version: data.event_match_version,\n        event_name: data.event_name,\n        spreadsheet_id: data.spreadsheet_id,\n        spreadsheet_url: data.spreadsheet_url,\n\n        channel_name: data.channel_name,\n        video_id: data.video_id,\n        video_title: data.video_title,\n        video_url: data.video_url,\n        published_at: data.published_at,\n\n        record_id: `${data.video_id}-auto-${chunkIndex + 1}`,\n        source: 'automatic',\n        status: 'CAPTURED_AUTO',\n        part_number: chunkIndex + 1,\n        part_count: chunks.length,\n        transcript_text: chunk,\n        captured_at: new Date().toISOString(),\n        notes: 'Retrieved using Supadata native captions',\n        analysis_profile: data.analysis_profile\n\n      },\n      pairedItem: {\n        item: itemIndex,\n      },\n    });\n  });\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2768,
+        112
+      ],
+      "id": "35d03916-4b32-418b-a54e-a5eb0b6678c3",
+      "name": "Prepare Transcript Chunks"
+    },
+    {
+      "parameters": {
+        "maxItems": 10
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1584,
+        -176
+      ],
+      "id": "d0acf844-c91e-42ed-b117-72c157092e6a",
+      "name": "Max Video Limit (10)"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WTTpdZSDVOxOB3Ex",
+          "mode": "list",
+          "cachedResultName": "ufc_events",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/WTTpdZSDVOxOB3Ex"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "active",
+              "condition": "isTrue"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        -432,
+        -1056
+      ],
+      "id": "03bd68f2-7ebb-4453-bbcd-8c6f02dc5d12",
+      "name": "Get Active UFC Event",
+      "executeOnce": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -224,
+        -1056
+      ],
+      "id": "39cb9804-38ba-45cc-b33b-12aa9afba027",
+      "name": "One Active Event Only"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        928,
+        -320
+      ],
+      "id": "52ec5521-20ea-4a47-8327-af57f1d43740",
+      "name": "Attach Active Event"
+    },
+    {
+      "parameters": {
+        "content": "## Template details\n\nGoogle Sheets Template URL: https://docs.google.com/spreadsheets/d/YOUR_FILEID\n\nGoogle Drive Folder URL:\nhttps://drive.google.com/drive/u/0/folders/YOUR_FOLDERID",
+        "height": 272,
+        "width": 656
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        960,
+        -704
+      ],
+      "typeVersion": 1,
+      "id": "95254118-b28a-4cc2-91a1-30b4b0dc6525",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1008,
+        -976
+      ],
+      "id": "1ca50cba-54b1-4b47-b679-9ac760c964ab",
+      "name": "Event Ready"
+    },
+    {
+      "parameters": {
+        "chatId": "0",
+        "text": "={{ $json.telegram_message }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4368,
+        288
+      ],
+      "id": "d8372589-2c90-4e3f-83df-4ec36781975e",
+      "name": "Send Telegram Summary",
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "function readCaptureFeedStats() {\n const names=[\"YouTube — UFC Predictions Tracker\",\"YouTube — The MMA Guru\",\"YouTube — Lucrative James\",\"YouTube — MMA Lock of the Night\",\"YouTube — Kunath MMA\",\"YouTube — TonyHasDiedMMA\",\"YouTube — MMA Husky Hustler\",\"YouTube — Walk the Line MMA\",\"YouTube — Artem MMA\",\"YouTube — BedtimeMMA\",\"YouTube — BetSam\",\"YouTube — JakeGerberMMA\",\"YouTube — Funky Bunch MMA\"];\n const failed=[];let checked=0;\n let root;\n try {root=$('Get YouTube Upload Playlists').first().json;} catch {return {expected:names.length,checked:0,failed_count:0,loaded:0,failed:[]};}\n const channels=Array.isArray(root.items)?root.items:[];\n const ids=[\"UCaU2fDiT9fCTABiiotiG2aw\",\"UCIhQvpinmS8Eq6PrQ021DKQ\",\"UCrxm8U7aEu18LW3YRFZSvNg\",\"UClwn3zgkfyne2Ecj36Dl7ZQ\",\"UCxl-gwVZTPPhhCbQ5DKTP6Q\",\"UCAELXX1-cUSA5Lc7aDFMZsw\",\"UCFjXgUzCT23D11yF4bcEl2g\",\"UCk9hwi3iECE1Xs-dpdFhXEA\",\"UCpSQhfFzpZ9COp_WiKSUEkQ\",\"UCQAMRRo7fPbQMzlJWOexlZg\",\"UC7LH9bWIKZd82LpdouIBOLw\",\"UCADS14Ed6epGTSy9I3VLxCg\",\"UCwOnVxzxkqDOYnEhhffNMAA\"];\n for(let index=0;index<names.length;index++){\n  const name=names[index];let rows=[];\n  try {rows=$(name).all().map(i=>i.json);} catch {}\n  checked++;\n  const channel=channels.find(c=>c.id===ids[index]);\n  let issue='';\n  if(!channel?.contentDetails?.relatedPlaylists?.uploads)issue='Channel uploads unavailable; check YouTube API access.';\n  else if(!rows.length)issue='No API response received.';\n  else if(rows.some(r=>r.error))issue='YouTube API request failed; check quota and credential restrictions.';\n  else if(rows.some(r=>!Array.isArray(r.items)))issue='Unexpected YouTube API response.';\n  else {\n   const last=rows[rows.length-1];\n   const old=last.items.length>0&&last.items.every(v=>Date.parse(v.contentDetails?.videoPublishedAt||v.snippet?.publishedAt)<Date.now()-6*24*60*60*1000);\n   if(last.nextPageToken&&!old)issue='Scan reached the 500-video safety limit; channel check is incomplete.';\n  }\n  if(issue)failed.push({channel:name.replace(/^YouTube — /,''),error:issue});\n }\n return {expected:names.length,checked,failed_count:failed.length,loaded:checked-failed.length,failed};\n}\n// Build one Telegram summary from all videos processed in this run.\n\nconst results = $input.all().map((item) => item.json);\n\nif (results.length === 0) {\n  return [];\n}\n\nconst escapeHtml = (value = '') =>\n  String(value)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;');\n\nconst MAX_ATTEMPTS = 3;\n\nconst captured = results.filter(\n  (item) => item.result_type === 'captured'\n);\n\nconst retrying = results.filter(\n  (item) => item.result_type === 'retry'\n);\n\nconst gaveUp = results.filter(\n  (item) => item.result_type === 'gave_up'\n);\n\nconst eventName =\n  results[0]?.event_name || 'UFC event';\n\nconst spreadsheetUrl =\n  results[0]?.spreadsheet_url || '';\n\nconst lines = [\n  '<b>UFC transcript run complete</b>',\n  '',\n  `<b>Event:</b> ${escapeHtml(eventName)}`,\n  '',\n];\n\nif (captured.length > 0) {\n  lines.push(`<b>Captured (${captured.length}):</b>`);\n\n  for (const item of captured) {\n    lines.push(\n      `• ${escapeHtml(item.channel_name)} — ` +\n      `${escapeHtml(item.video_title)}`\n    );\n  }\n\n  lines.push('');\n}\n\nif (retrying.length > 0) {\n  lines.push(\n    `<b>No English transcript yet — will retry (${retrying.length}):</b>`\n  );\n\n  for (const item of retrying) {\n    lines.push(\n      `• ${escapeHtml(item.channel_name)} — ` +\n      `${escapeHtml(item.video_title)} ` +\n      `(attempt ${item.attempt_count} of ${MAX_ATTEMPTS})`\n    );\n  }\n\n  lines.push('');\n}\n\nif (gaveUp.length > 0) {\n  lines.push(\n    `<b>Gave up — no English transcript (${gaveUp.length}):</b>`\n  );\n\n  for (const item of gaveUp) {\n    lines.push(\n      `• ${escapeHtml(item.channel_name)} — ` +\n      `${escapeHtml(item.video_title)}`\n    );\n  }\n\n  lines.push('');\n}\n\nconst scan=readCaptureFeedStats();\nif(scan.checked){\n lines.push('YouTube channels checked: '+scan.checked+'/'+scan.expected+'.');\n if(scan.failed_count){\n  lines.push('<b>Warning:</b> '+scan.failed_count+' YouTube channels failed; additional videos may have been missed.');\n  for(const failure of scan.failed.slice(0,3))lines.push('• '+escapeHtml(failure.channel)+': '+escapeHtml(failure.error));\n  if(scan.failed_count>3)lines.push('… and '+(scan.failed_count-3)+' more channel failures.');\n }\n lines.push('');\n}\nif (spreadsheetUrl) {\n  lines.push(\n    `<a href=\"${escapeHtml(spreadsheetUrl)}\">` +\n    `Open transcript spreadsheet</a>`\n  );\n}\n\nreturn [\n  {\n    json: {\n      telegram_message: lines.join('\\n'),\n      event_name: eventName,\n      spreadsheet_url: spreadsheetUrl,\n      capture_run_state: scan.failed_count ? 'error' : 'success',\n      feed_failed_count: scan.failed_count,\n      captured_count: captured.length,\n      retry_count: retrying.length,\n      gave_up_count: gaveUp.length,\n      total_processed: results.length,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4144,
+        288
+      ],
+      "id": "d484d0ec-c0a6-47a1-83b4-fd0d70b0519c",
+      "name": "Build Telegram Summary"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8984d430-9b9b-4bf8-8b3e-abbaec7d39bc",
+              "name": "result_type",
+              "value": "captured",
+              "type": "string"
+            },
+            {
+              "id": "2276a0d9-c06d-4fd6-9f60-31dd78320829",
+              "name": "event_name",
+              "value": "={{ $('Event Ready').first().json.event_name }}",
+              "type": "string"
+            },
+            {
+              "id": "f903d386-a754-4bdd-a82a-423c75353d50",
+              "name": "spreadsheet_url",
+              "value": "={{ $('Event Ready').first().json.spreadsheet_url }}",
+              "type": "string"
+            },
+            {
+              "id": "24e8c4fe-a127-4ae5-85e2-5c8f6e87146e",
+              "name": "channel_name",
+              "value": "={{ $('One Tracking Update Per Video').item.json.channel_name }}",
+              "type": "string"
+            },
+            {
+              "id": "a4ed96d4-9e26-4aec-82c9-fb87c796b3a2",
+              "name": "video_id",
+              "value": "={{ $('One Tracking Update Per Video').item.json.video_id }}",
+              "type": "string"
+            },
+            {
+              "id": "ca48bdf4-c764-4d22-a7a8-1ac2ccb529e6",
+              "name": "video_title",
+              "value": "={{ $('One Tracking Update Per Video').item.json.video_title }}",
+              "type": "string"
+            },
+            {
+              "id": "043db202-ffcd-4f38-9dab-04ea0cd8f6df",
+              "name": "video_url",
+              "value": "={{ $('One Tracking Update Per Video').item.json.video_url }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3616,
+        112
+      ],
+      "id": "ab27214f-1f10-42ea-9bf4-b0a5e1e56fcc",
+      "name": "Prepare Captured Result"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -640,
+        -1248
+      ],
+      "id": "76653be5-3920-416d-98bb-efa36d54e340",
+      "name": "Run On Demand"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3,
+        "mode": "append"
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        352,
+        896
+      ],
+      "id": "1658c4f5-31bb-4fe5-99f9-b9f8890acb24",
+      "name": "Merge All Channel Feeds1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        544,
+        432
+      ],
+      "id": "127aec1a-de32-4645-9d17-f3465c7e255f",
+      "name": "Merge All Channel Feeds2"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const row = $json;\n\nconst returnedLang = String(\n  row.lang ??\n  row.transcript_lang ??\n  ''\n)\n  .trim()\n  .toLowerCase();\n\nconst availableLangs = Array.isArray(row.availableLangs)\n  ? row.availableLangs.map((lang) =>\n      String(lang).trim().toLowerCase()\n    )\n  : [];\n\nlet transcriptText = '';\n\nif (typeof row.content === 'string') {\n  transcriptText = row.content\n    .replace(/\\s+/g, ' ')\n    .trim();\n} else if (Array.isArray(row.content)) {\n  transcriptText = row.content\n    .map((segment) => {\n      if (typeof segment === 'string') {\n        return segment;\n      }\n\n      if (\n        segment &&\n        typeof segment === 'object'\n      ) {\n        return String(\n          segment.text ??\n          segment.content ??\n          ''\n        );\n      }\n\n      return '';\n    })\n    .filter(Boolean)\n    .join(' ')\n    .replace(/\\s+/g, ' ')\n    .trim();\n}\n\nconst transcriptReceived =\n  transcriptText.length > 0;\n\n// Only English transcripts are accepted.\nconst transcriptIsEnglish =\n  returnedLang === 'en';\n\nreturn {\n  json: {\n    ...row,\n\n    transcript_text:\n      transcriptText,\n\n    transcript_lang:\n      returnedLang || null,\n\n    transcript_available_langs:\n      availableLangs,\n\n    transcript_received:\n      transcriptReceived,\n\n    transcript_is_english:\n      transcriptIsEnglish,\n\n    transcript_character_count:\n      transcriptText.length,\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2272,
+        128
+      ],
+      "id": "d5fcafee-1443-4824-ba28-1ea6a47546e1",
+      "name": "Validate Transcript Language"
+    },
+    {
+      "id": "f841fbaa-b671-47a7-8bb4-aad53b0a4058",
+      "name": "Get Recorded Videos",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1168,
+        -176
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "cAQonN6NYOY3fqxl",
+          "mode": "list",
+          "cachedResultName": "ufc_videos",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/cAQonN6NYOY3fqxl"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "14810fb2-bb58-42f8-a7ef-e5ccff801816",
+      "name": "Select Videos To Process",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1376,
+        -176
+      ],
+      "parameters": {
+        "jsCode": "function readCaptureFeedStats() {\n const names=[\"YouTube — UFC Predictions Tracker\",\"YouTube — The MMA Guru\",\"YouTube — Lucrative James\",\"YouTube — MMA Lock of the Night\",\"YouTube — Kunath MMA\",\"YouTube — TonyHasDiedMMA\",\"YouTube — MMA Husky Hustler\",\"YouTube — Walk the Line MMA\",\"YouTube — Artem MMA\",\"YouTube — BedtimeMMA\",\"YouTube — BetSam\",\"YouTube — JakeGerberMMA\",\"YouTube — Funky Bunch MMA\"];\n const failed=[];let checked=0;\n let root;\n try {root=$('Get YouTube Upload Playlists').first().json;} catch {return {expected:names.length,checked:0,failed_count:0,loaded:0,failed:[]};}\n const channels=Array.isArray(root.items)?root.items:[];\n const ids=[\"UCaU2fDiT9fCTABiiotiG2aw\",\"UCIhQvpinmS8Eq6PrQ021DKQ\",\"UCrxm8U7aEu18LW3YRFZSvNg\",\"UClwn3zgkfyne2Ecj36Dl7ZQ\",\"UCxl-gwVZTPPhhCbQ5DKTP6Q\",\"UCAELXX1-cUSA5Lc7aDFMZsw\",\"UCFjXgUzCT23D11yF4bcEl2g\",\"UCk9hwi3iECE1Xs-dpdFhXEA\",\"UCpSQhfFzpZ9COp_WiKSUEkQ\",\"UCQAMRRo7fPbQMzlJWOexlZg\",\"UC7LH9bWIKZd82LpdouIBOLw\",\"UCADS14Ed6epGTSy9I3VLxCg\",\"UCwOnVxzxkqDOYnEhhffNMAA\"];\n for(let index=0;index<names.length;index++){\n  const name=names[index];let rows=[];\n  try {rows=$(name).all().map(i=>i.json);} catch {}\n  checked++;\n  const channel=channels.find(c=>c.id===ids[index]);\n  let issue='';\n  if(!channel?.contentDetails?.relatedPlaylists?.uploads)issue='Channel uploads unavailable; check YouTube API access.';\n  else if(!rows.length)issue='No API response received.';\n  else if(rows.some(r=>r.error))issue='YouTube API request failed; check quota and credential restrictions.';\n  else if(rows.some(r=>!Array.isArray(r.items)))issue='Unexpected YouTube API response.';\n  else {\n   const last=rows[rows.length-1];\n   const old=last.items.length>0&&last.items.every(v=>Date.parse(v.contentDetails?.videoPublishedAt||v.snippet?.publishedAt)<Date.now()-6*24*60*60*1000);\n   if(last.nextPageToken&&!old)issue='Scan reached the 500-video safety limit; channel check is incomplete.';\n  }\n  if(issue)failed.push({channel:name.replace(/^YouTube — /,''),error:issue});\n }\n return {expected:names.length,checked,failed_count:failed.length,loaded:checked-failed.length,failed};\n}\n\nconst MAX_ATTEMPTS=3;\nconst minGapMs=5*60*60*1000;\nconst nowMs=Date.now();\nconst candidates=$('Attach Active Event').all().map(i=>i.json);\nconst recordedById=new Map($input.all().map(i=>i.json).filter(r=>r.id!=null&&r.video_id).map(r=>[String(r.video_id),r]));\nconst newVideos=[],retryVideos=[];\nlet alreadyRecorded=0,waitingRetries=0,exhaustedRetries=0;\nfor(const video of candidates){\n if(!video.video_id)continue;\n const row=recordedById.get(String(video.video_id));\n if(!row){newVideos.push({json:{...video,is_retry:false,next_attempt_count:1}});continue;}\n const status=String(row.status||'').trim().toUpperCase();\n if(status!=='RETRY_LATER'){alreadyRecorded++;continue;}\n const attempts=Number(row.attempt_count||0)||0;\n if(attempts>=MAX_ATTEMPTS){exhaustedRetries++;continue;}\n const lastAttempt=Date.parse(row.last_attempt_at);\n if(Number.isFinite(lastAttempt)&&nowMs-lastAttempt<minGapMs){waitingRetries++;continue;}\n retryVideos.push({json:{...video,is_retry:true,next_attempt_count:attempts+1}});\n}\nconst selected=[...newVideos,...retryVideos];\nif(selected.length)return selected;\nconst event=$('Event Ready').first().json;\nconst scan=readCaptureFeedStats();\nconst failed=scan.failed_count;\nconst summary=failed?'No transcripts captured; '+failed+' of '+scan.expected+' YouTube channels failed; scan incomplete':'No new eligible videos to capture';\nreturn [{json:{...event,__no_capture_work:true,scan_stats:scan,eligible_count:candidates.filter(v=>v.video_id).length,already_recorded:alreadyRecorded,waiting_retries:waitingRetries,exhausted_retries:exhaustedRetries,capture_run_state:failed?'error':'idle',capture_run_summary:summary}}];"
+      }
+    },
+    {
+      "id": "3bb07444-ac73-43f3-b06c-7cff656459d7",
+      "name": "Prepare Retry Record",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2768,
+        352
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7b1f3c52-0a11-4d7e-9d0e-3f1a2b6c4e01",
+              "name": "status",
+              "value": "={{ $json.next_attempt_count >= 3 ? 'NO_ENGLISH_TRANSCRIPT' : 'RETRY_LATER' }}",
+              "type": "string"
+            },
+            {
+              "id": "7b1f3c52-0a11-4d7e-9d0e-3f1a2b6c4e02",
+              "name": "failure_reason",
+              "value": "={{ $json.transcript_received ? ('Transcript language ' + ($json.transcript_lang || 'unknown') + ' returned; English unavailable') : ($json.error?.message || $json.message || 'No transcript returned') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      }
+    },
+    {
+      "id": "0b4b7c19-3e99-4c35-91aa-8a2e71b7ea91",
+      "name": "Record Retry Status",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3008,
+        352
+      ],
+      "parameters": {
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "value": "cAQonN6NYOY3fqxl",
+          "mode": "list",
+          "cachedResultName": "ufc_videos",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/cAQonN6NYOY3fqxl"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "video_id",
+              "keyValue": "={{ $json.video_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "video_id": "={{ $json.video_id }}",
+            "channel_name": "={{ $json.channel_name }}",
+            "video_title": "={{ $json.video_title }}",
+            "published_at": "={{ $json.published_at }}",
+            "event_key": "={{ $json.event_key }}",
+            "status": "={{ $json.status }}",
+            "attempt_count": "={{ $json.next_attempt_count }}",
+            "last_attempt_at": "={{ $now.toISO() }}",
+            "last_http_status": 0,
+            "last_error": "={{ $json.failure_reason }}",
+            "transcript_appended": false,
+            "transcript_parts": 0,
+            "analysis_profile": "={{ $json.analysis_profile }}",
+            "event_match_status": "={{ $json.event_match_status || '' }}",
+            "event_match_reason": "={{ $json.event_match_reason || '' }}",
+            "matched_event_key": "={{ $json.matched_event_key || '' }}",
+            "event_match_version": "={{ $json.event_match_version || '' }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "video_id",
+              "displayName": "video_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "channel_name",
+              "displayName": "channel_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "video_title",
+              "displayName": "video_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "published_at",
+              "displayName": "published_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "attempt_count",
+              "displayName": "attempt_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_attempt_at",
+              "displayName": "last_attempt_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_http_status",
+              "displayName": "last_http_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_error",
+              "displayName": "last_error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "placeholder_appended",
+              "displayName": "placeholder_appended",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "transcript_appended",
+              "displayName": "transcript_appended",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "transcript_parts",
+              "displayName": "transcript_parts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "analysis_profile",
+              "displayName": "analysis_profile",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "event_match_status",
+              "displayName": "event_match_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "event_match_reason",
+              "displayName": "event_match_reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "matched_event_key",
+              "displayName": "matched_event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "event_match_version",
+              "displayName": "event_match_version",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "2d6336c5-e92c-4e3c-9324-29a078b39d75",
+      "name": "Prepare Retry Result",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3408,
+        352
+      ],
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7b1f3c52-0a11-4d7e-9d0e-3f1a2b6c4e11",
+              "name": "result_type",
+              "value": "={{ $('Prepare Retry Record').item.json.status === 'NO_ENGLISH_TRANSCRIPT' ? 'gave_up' : 'retry' }}",
+              "type": "string"
+            },
+            {
+              "id": "7b1f3c52-0a11-4d7e-9d0e-3f1a2b6c4e12",
+              "name": "event_name",
+              "value": "={{ $('Event Ready').first().json.event_name }}",
+              "type": "string"
+            },
+            {
+              "id": "7b1f3c52-0a11-4d7e-9d0e-3f1a2b6c4e13",
+              "name": "spreadsheet_url",
+              "value": "={{ $('Event Ready').first().json.spreadsheet_url }}",
+              "type": "string"
+            },
+            {
+              "id": "7b1f3c52-0a11-4d7e-9d0e-3f1a2b6c4e14",
+              "name": "channel_name",
+              "value": "={{ $('Prepare Retry Record').item.json.channel_name }}",
+              "type": "string"
+            },
+            {
+              "id": "7b1f3c52-0a11-4d7e-9d0e-3f1a2b6c4e15",
+              "name": "video_id",
+              "value": "={{ $('Prepare Retry Record').item.json.video_id }}",
+              "type": "string"
+            },
+            {
+              "id": "7b1f3c52-0a11-4d7e-9d0e-3f1a2b6c4e16",
+              "name": "video_title",
+              "value": "={{ $('Prepare Retry Record').item.json.video_title }}",
+              "type": "string"
+            },
+            {
+              "id": "7b1f3c52-0a11-4d7e-9d0e-3f1a2b6c4e17",
+              "name": "video_url",
+              "value": "={{ $('Prepare Retry Record').item.json.video_url }}",
+              "type": "string"
+            },
+            {
+              "id": "7b1f3c52-0a11-4d7e-9d0e-3f1a2b6c4e18",
+              "name": "attempt_count",
+              "value": "={{ $('Prepare Retry Record').item.json.next_attempt_count }}",
+              "type": "number"
+            },
+            {
+              "id": "7b1f3c52-0a11-4d7e-9d0e-3f1a2b6c4e19",
+              "name": "failure_reason",
+              "value": "={{ $('Prepare Retry Record').item.json.failure_reason }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f564717a-a99a-4663-ba62-5c925b3ee585",
+      "name": "Merge Run Results",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3904,
+        288
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "f6d64c17-2428-4fc9-8a35-9e1546a8bb97",
+      "name": "Ensure UFC Event Spreadsheet",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        500,
+        -300
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "LuALxCWYzByUY2Iq",
+          "cachedResultName": "UFC | svc.ensure_event_spreadsheet"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "480f2d41-e206-4c16-adb9-01dfaf8d38d1",
+      "name": "Get UFC Events For Matching",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "WTTpdZSDVOxOB3Ex",
+          "cachedResultName": "ufc_events"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      }
+    },
+    {
+      "id": "69c23460-9d1c-43d5-b1df-571d2b236c30",
+      "name": "Record Capture Start",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Tb9mpsswwq6uJvr6",
+          "cachedResultName": "ufc_pipeline_runs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "run_key",
+              "condition": "eq",
+              "keyValue": "={{ String($execution.id) }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "run_key": "={{ String($execution.id) }}",
+            "workflow_id": "y20ZZYzBVS6y8kC0",
+            "workflow_name": "2. Extract Picker Video Transcripts",
+            "event_key": "={{ $json.event_key }}",
+            "state": "running",
+            "summary": "Capture started",
+            "execution_url": "={{ 'https://N8N_INSTANCE.example/workflow/y20ZZYzBVS6y8kC0/executions/' + $execution.id }}",
+            "started_at": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "run_key",
+              "displayName": "run_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "execution_url",
+              "displayName": "execution_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "started_at",
+              "displayName": "started_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "2265c5c3-bcdc-4b68-82c8-175afecc1351",
+      "name": "Resolve Capture Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "let request={}; try {request=$('Run On Demand').first().json;} catch {}\nconst event=$('Event Ready').first().json;\nreturn [{json:{...event,target_video_id:request.manual_retry===true?String(request.target_video_id||''):'',target_video_row:request.target_video_row||null,manual_retry:request.manual_retry===true}}];"
+      }
+    },
+    {
+      "id": "2c41bcfd-0739-43fb-ae75-c0a6055b234f",
+      "name": "Capture One Video?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ Boolean($json.target_video_id) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "16b37447-0105-4379-af37-2565c02d82df",
+      "name": "Prepare Requested Capture",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "function ufcText(value) {\n return String(value ?? '').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\\s+/g,' ');\n}\nfunction ufcHas(text, phrase) { return phrase && (' '+text+' ').includes(' '+phrase+' '); }\nfunction ufcEventSignals(event, title) {\n const name=ufcText(event.event_name);\n const split=String(event.event_name || '').split(':');\n const prefix=ufcText(split[0]);\n const number=(prefix.match(/\\bufc\\s+(\\d{2,4})\\b/) || [])[1];\n const pair=String(split.slice(1).join(':') || '').split(/\\s+v(?:s)?\\.?\\s+/i);\n const surname=value=>ufcText(value).split(' ').filter(word=>!['jr','sr','ii','iii','iv'].includes(word)).slice(-1)[0] || '';\n const a=surname(pair[0]), b=surname(pair[1]);\n const matchup=pair.length===2 && a.length>=3 && b.length>=3 && ufcHas(title,a) && ufcHas(title,b);\n const numbered=Boolean(number && new RegExp('\\\\bufc\\\\s+'+number+'\\\\b').test(title));\n const venue=prefix.replace(/\\bufc\\b/g,' ').replace(/\\bfight\\s+night\\b/g,' ').replace(/\\b\\d+\\b/g,' ').trim().replace(/\\s+/g,' ');\n const location=venue.length>=3 && ufcHas(title,venue);\n return {event, score: matchup || numbered ? 10 : location ? 4 : 0, reason: matchup ? 'main-event surnames' : numbered ? 'UFC event number' : location ? 'event location' : ''};\n}\nfunction classifyUfcVideo(title, active, events) {\n const text=ufcText(title);\n const pool=[...new Map([...(events||[]),active].filter(event=>event?.event_key&&event.event_name).map(event=>[event.event_key,event])).values()];\n const matches=pool.map(event=>ufcEventSignals(event,text)).filter(match=>match.score>0);\n const strong=matches.filter(match=>match.score===10);\n const candidates=strong.length ? strong : matches;\n if(candidates.length!==1) return {event_match_status:candidates.length>1?'AMBIGUOUS':'UNCONFIRMED',event_match_reason:candidates.length>1?'Title identifies more than one known UFC event':'Title does not clearly identify a known UFC event',matched_event_key:'',event_match_version:'ufc-event-match-v2'};\n const match=candidates[0];\n return {event_match_status:match.event.event_key===active.event_key?'MATCHED':'OTHER_EVENT',event_match_reason:'Matched '+match.event.event_name+' by '+match.reason,matched_event_key:match.event.event_key,event_match_version:'ufc-event-match-v2'};\n}\nconst source=$('Resolve Capture Request').first().json;\nconst row=source.target_video_row;\nif(!row || row.video_id!==source.target_video_id || row.event_key!==source.event_key) throw new Error('Requested UFC capture does not match the active event.');\nif(row.transcript_appended===true||row.transcript_appended==='true') throw new Error('This video already has a captured transcript.');\nconst match=classifyUfcVideo(row.video_title,source,$('Get UFC Events For Matching').all().map(item=>item.json));\nif(match.event_match_status!=='MATCHED') throw new Error('Cannot capture this video: '+match.event_match_reason);\nconst {target_video_row,...event}=source;\nreturn [{json:{...row,...event,...match,video_url:'https://www.youtube.com/watch?v='+row.video_id,is_retry:true,next_attempt_count:Number(row.attempt_count||0)+1}}];"
+      }
+    },
+    {
+      "id": "0db92889-3c1d-4b35-99e2-9bdd2c9ecfaa",
+      "name": "Capture Work Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ Boolean($json.video_id) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "081f7a1d-3bf9-4ebc-9b0f-03f37266fd6b",
+      "name": "Record Capture Idle",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Tb9mpsswwq6uJvr6",
+          "cachedResultName": "ufc_pipeline_runs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "run_key",
+              "condition": "eq",
+              "keyValue": "={{ String($execution.id) }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "run_key": "={{ String($execution.id) }}",
+            "workflow_id": "y20ZZYzBVS6y8kC0",
+            "workflow_name": "2. Extract Picker Video Transcripts",
+            "event_key": "={{ $('Event Ready').first().json.event_key }}",
+            "state": "={{ $json.capture_run_state }}",
+            "summary": "={{ $json.capture_run_summary }}",
+            "execution_url": "={{ 'https://N8N_INSTANCE.example/workflow/y20ZZYzBVS6y8kC0/executions/' + $execution.id }}",
+            "finished_at": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "run_key",
+              "displayName": "run_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "execution_url",
+              "displayName": "execution_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "finished_at",
+              "displayName": "finished_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "22bd0343-ec25-439c-b7b6-301672fe20da",
+      "name": "Record Capture Result",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Tb9mpsswwq6uJvr6",
+          "cachedResultName": "ufc_pipeline_runs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "run_key",
+              "condition": "eq",
+              "keyValue": "={{ String($execution.id) }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "run_key": "={{ String($execution.id) }}",
+            "workflow_id": "y20ZZYzBVS6y8kC0",
+            "workflow_name": "2. Extract Picker Video Transcripts",
+            "event_key": "={{ $('Event Ready').first().json.event_key }}",
+            "state": "={{ $json.capture_run_state || 'success' }}",
+            "summary": "={{ $json.captured_count + ' captured; ' + $json.retry_count + ' waiting for transcript; ' + $json.gave_up_count + ' need attention' + ($json.feed_failed_count ? '; ' + $json.feed_failed_count + ' channel feeds failed' : '') }}",
+            "execution_url": "={{ 'https://N8N_INSTANCE.example/workflow/y20ZZYzBVS6y8kC0/executions/' + $execution.id }}",
+            "finished_at": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "run_key",
+              "displayName": "run_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "execution_url",
+              "displayName": "execution_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "finished_at",
+              "displayName": "finished_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "4f8934ab-9a7d-4718-b93d-fd93986f03b3",
+      "name": "Build Capture Idle Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1600,
+        500
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const source=$('Select Videos To Process').first().json;\nconst esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');\nconst scan=source.scan_stats||{expected:0,checked:0,loaded:0,failed_count:0,failed:[]};\nconst lines=[scan.failed_count?'<b>UFC capture finished with YouTube API errors</b>':'<b>UFC capture complete</b>','', '<b>Event:</b> '+esc(source.event_name),''];\nif(scan.failed_count===scan.expected&&scan.expected>0){\n lines.push('No transcripts captured. All '+scan.expected+' YouTube YouTube channels failed to load, so new videos could not be checked.');\n}else if(scan.failed_count){\n lines.push('No new eligible videos found in the '+scan.loaded+' YouTube channels that loaded. '+scan.failed_count+' of '+scan.expected+' channels failed, so this check is incomplete.');\n}else{\n lines.push('No new eligible videos to capture. Checked '+scan.checked+' YouTube channels.');\n if(source.already_recorded)lines.push(source.already_recorded+' eligible videos were already recorded.');\n}\nif(source.waiting_retries)lines.push(source.waiting_retries+' transcript retries are waiting for the five-hour retry interval.');\nif(source.exhausted_retries)lines.push(source.exhausted_retries+' videos have reached the transcript attempt limit.');\nif(scan.failed_count){\n lines.push('','<b>YouTube API errors:</b>');\n for(const failure of scan.failed.slice(0,4))lines.push('• '+esc(failure.channel)+': '+esc(failure.error));\n if(scan.failed.length>4)lines.push('… and '+(scan.failed.length-4)+' more YouTube channels.');\n lines.push('','Try /capture later. You can also use /addvideo URL to submit one public video directly.');\n}\nif(source.spreadsheet_url)lines.push('','<a href=\"'+esc(source.spreadsheet_url)+'\">Open transcript spreadsheet</a>');\nreturn [{json:{telegram_message:lines.join('\\n'),event_name:source.event_name,spreadsheet_url:source.spreadsheet_url,captured_count:0,retry_count:0,gave_up_count:0,total_processed:0,capture_run_state:source.capture_run_state,capture_run_summary:source.capture_run_summary}}];"
+      }
+    },
+    {
+      "id": "5ef09037-1695-4524-aefa-ed67d7a26dfa",
+      "name": "Get YouTube Upload Playlists",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        200,
+        -1000
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/channels",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "contentDetails,snippet"
+            },
+            {
+              "name": "id",
+              "value": "UCaU2fDiT9fCTABiiotiG2aw,UCIhQvpinmS8Eq6PrQ021DKQ,UCrxm8U7aEu18LW3YRFZSvNg,UClwn3zgkfyne2Ecj36Dl7ZQ,UCxl-gwVZTPPhhCbQ5DKTP6Q,UCAELXX1-cUSA5Lc7aDFMZsw,UCFjXgUzCT23D11yF4bcEl2g,UCk9hwi3iECE1Xs-dpdFhXEA,UCpSQhfFzpZ9COp_WiKSUEkQ,UCQAMRRo7fPbQMzlJWOexlZg,UC7LH9bWIKZd82LpdouIBOLw,UCADS14Ed6epGTSy9I3VLxCg,UCwOnVxzxkqDOYnEhhffNMAA"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    },
+    {
+      "id": "df161956-e7df-4950-98ca-e4850dfd02e7",
+      "name": "YouTube — UFC Predictions Tracker",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        -704
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,contentDetails"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{ $('Get YouTube Upload Playlists').first().json.items?.find(c => c.id === 'UCaU2fDiT9fCTABiiotiG2aw')?.contentDetails?.relatedPlaylists?.uploads || 'channel-unavailable' }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "updateAParameterInEachRequest",
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken || '' }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken || ($response.body.items?.length > 0 && $response.body.items.every(v => Date.parse(v.contentDetails?.videoPublishedAt || v.snippet?.publishedAt) < (Date.now() - 6 * 24 * 60 * 60 * 1000))) }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10,
+              "requestInterval": 100
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    },
+    {
+      "id": "0f064eca-2329-49d8-b25d-e45ba16679fb",
+      "name": "YouTube — The MMA Guru",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        -560
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,contentDetails"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{ $('Get YouTube Upload Playlists').first().json.items?.find(c => c.id === 'UCIhQvpinmS8Eq6PrQ021DKQ')?.contentDetails?.relatedPlaylists?.uploads || 'channel-unavailable' }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "updateAParameterInEachRequest",
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken || '' }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken || ($response.body.items?.length > 0 && $response.body.items.every(v => Date.parse(v.contentDetails?.videoPublishedAt || v.snippet?.publishedAt) < (Date.now() - 6 * 24 * 60 * 60 * 1000))) }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10,
+              "requestInterval": 100
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    },
+    {
+      "id": "cda423bc-796c-4dc4-b1bb-82849b935157",
+      "name": "YouTube — Lucrative James",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        -400
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,contentDetails"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{ $('Get YouTube Upload Playlists').first().json.items?.find(c => c.id === 'UCrxm8U7aEu18LW3YRFZSvNg')?.contentDetails?.relatedPlaylists?.uploads || 'channel-unavailable' }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "updateAParameterInEachRequest",
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken || '' }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken || ($response.body.items?.length > 0 && $response.body.items.every(v => Date.parse(v.contentDetails?.videoPublishedAt || v.snippet?.publishedAt) < (Date.now() - 6 * 24 * 60 * 60 * 1000))) }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10,
+              "requestInterval": 100
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    },
+    {
+      "id": "4de50351-464c-4439-8f5c-12c0a7c51c23",
+      "name": "YouTube — MMA Lock of the Night",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        -240
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,contentDetails"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{ $('Get YouTube Upload Playlists').first().json.items?.find(c => c.id === 'UClwn3zgkfyne2Ecj36Dl7ZQ')?.contentDetails?.relatedPlaylists?.uploads || 'channel-unavailable' }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "updateAParameterInEachRequest",
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken || '' }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken || ($response.body.items?.length > 0 && $response.body.items.every(v => Date.parse(v.contentDetails?.videoPublishedAt || v.snippet?.publishedAt) < (Date.now() - 6 * 24 * 60 * 60 * 1000))) }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10,
+              "requestInterval": 100
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    },
+    {
+      "id": "25041c34-b7aa-447d-99ac-d8fbd7f01a88",
+      "name": "YouTube — Kunath MMA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        -64
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,contentDetails"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{ $('Get YouTube Upload Playlists').first().json.items?.find(c => c.id === 'UCxl-gwVZTPPhhCbQ5DKTP6Q')?.contentDetails?.relatedPlaylists?.uploads || 'channel-unavailable' }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "updateAParameterInEachRequest",
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken || '' }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken || ($response.body.items?.length > 0 && $response.body.items.every(v => Date.parse(v.contentDetails?.videoPublishedAt || v.snippet?.publishedAt) < (Date.now() - 6 * 24 * 60 * 60 * 1000))) }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10,
+              "requestInterval": 100
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    },
+    {
+      "id": "aa702c8e-98d2-4c43-a950-aafcf3b67c77",
+      "name": "YouTube — TonyHasDiedMMA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        96
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,contentDetails"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{ $('Get YouTube Upload Playlists').first().json.items?.find(c => c.id === 'UCAELXX1-cUSA5Lc7aDFMZsw')?.contentDetails?.relatedPlaylists?.uploads || 'channel-unavailable' }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "updateAParameterInEachRequest",
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken || '' }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken || ($response.body.items?.length > 0 && $response.body.items.every(v => Date.parse(v.contentDetails?.videoPublishedAt || v.snippet?.publishedAt) < (Date.now() - 6 * 24 * 60 * 60 * 1000))) }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10,
+              "requestInterval": 100
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    },
+    {
+      "id": "f9e1a186-ce79-487a-9086-9682a8ac6f43",
+      "name": "YouTube — MMA Husky Hustler",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        288
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,contentDetails"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{ $('Get YouTube Upload Playlists').first().json.items?.find(c => c.id === 'UCFjXgUzCT23D11yF4bcEl2g')?.contentDetails?.relatedPlaylists?.uploads || 'channel-unavailable' }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "updateAParameterInEachRequest",
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken || '' }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken || ($response.body.items?.length > 0 && $response.body.items.every(v => Date.parse(v.contentDetails?.videoPublishedAt || v.snippet?.publishedAt) < (Date.now() - 6 * 24 * 60 * 60 * 1000))) }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10,
+              "requestInterval": 100
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    },
+    {
+      "id": "02d4046a-76a3-4d4e-8450-fd42c59771be",
+      "name": "YouTube — Walk the Line MMA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        480
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,contentDetails"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{ $('Get YouTube Upload Playlists').first().json.items?.find(c => c.id === 'UCk9hwi3iECE1Xs-dpdFhXEA')?.contentDetails?.relatedPlaylists?.uploads || 'channel-unavailable' }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "updateAParameterInEachRequest",
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken || '' }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken || ($response.body.items?.length > 0 && $response.body.items.every(v => Date.parse(v.contentDetails?.videoPublishedAt || v.snippet?.publishedAt) < (Date.now() - 6 * 24 * 60 * 60 * 1000))) }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10,
+              "requestInterval": 100
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    },
+    {
+      "id": "0d6a3a0f-6015-495e-97c2-f531a5181721",
+      "name": "YouTube — Artem MMA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        688
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,contentDetails"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{ $('Get YouTube Upload Playlists').first().json.items?.find(c => c.id === 'UCpSQhfFzpZ9COp_WiKSUEkQ')?.contentDetails?.relatedPlaylists?.uploads || 'channel-unavailable' }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "updateAParameterInEachRequest",
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken || '' }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken || ($response.body.items?.length > 0 && $response.body.items.every(v => Date.parse(v.contentDetails?.videoPublishedAt || v.snippet?.publishedAt) < (Date.now() - 6 * 24 * 60 * 60 * 1000))) }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10,
+              "requestInterval": 100
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    },
+    {
+      "id": "80b17b41-0d9b-4bd6-9d60-3c034a8d1b40",
+      "name": "YouTube — BedtimeMMA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        880
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,contentDetails"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{ $('Get YouTube Upload Playlists').first().json.items?.find(c => c.id === 'UCQAMRRo7fPbQMzlJWOexlZg')?.contentDetails?.relatedPlaylists?.uploads || 'channel-unavailable' }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "updateAParameterInEachRequest",
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken || '' }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken || ($response.body.items?.length > 0 && $response.body.items.every(v => Date.parse(v.contentDetails?.videoPublishedAt || v.snippet?.publishedAt) < (Date.now() - 6 * 24 * 60 * 60 * 1000))) }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10,
+              "requestInterval": 100
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    },
+    {
+      "id": "09bda040-57d9-4d83-bfdf-0496a53eb1f5",
+      "name": "YouTube — BetSam",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        1072
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,contentDetails"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{ $('Get YouTube Upload Playlists').first().json.items?.find(c => c.id === 'UC7LH9bWIKZd82LpdouIBOLw')?.contentDetails?.relatedPlaylists?.uploads || 'channel-unavailable' }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "updateAParameterInEachRequest",
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken || '' }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken || ($response.body.items?.length > 0 && $response.body.items.every(v => Date.parse(v.contentDetails?.videoPublishedAt || v.snippet?.publishedAt) < (Date.now() - 6 * 24 * 60 * 60 * 1000))) }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10,
+              "requestInterval": 100
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    },
+    {
+      "id": "da49cc38-86c4-4850-970a-56ed783c8a3d",
+      "name": "YouTube — JakeGerberMMA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        1248
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,contentDetails"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{ $('Get YouTube Upload Playlists').first().json.items?.find(c => c.id === 'UCADS14Ed6epGTSy9I3VLxCg')?.contentDetails?.relatedPlaylists?.uploads || 'channel-unavailable' }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "updateAParameterInEachRequest",
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken || '' }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken || ($response.body.items?.length > 0 && $response.body.items.every(v => Date.parse(v.contentDetails?.videoPublishedAt || v.snippet?.publishedAt) < (Date.now() - 6 * 24 * 60 * 60 * 1000))) }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10,
+              "requestInterval": 100
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    },
+    {
+      "id": "69132e08-d833-42ab-866a-57c63f8d2c21",
+      "name": "YouTube — Funky Bunch MMA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        32,
+        1424
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/playlistItems",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,contentDetails"
+            },
+            {
+              "name": "playlistId",
+              "value": "={{ $('Get YouTube Upload Playlists').first().json.items?.find(c => c.id === 'UCwOnVxzxkqDOYnEhhffNMAA')?.contentDetails?.relatedPlaylists?.uploads || 'channel-unavailable' }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "pagination": {
+            "pagination": {
+              "paginationMode": "updateAParameterInEachRequest",
+              "parameters": {
+                "parameters": [
+                  {
+                    "type": "qs",
+                    "name": "pageToken",
+                    "value": "={{ $response.body.nextPageToken || '' }}"
+                  }
+                ]
+              },
+              "paginationCompleteWhen": "other",
+              "completeExpression": "={{ !$response.body.nextPageToken || ($response.body.items?.length > 0 && $response.body.items.every(v => Date.parse(v.contentDetails?.videoPublishedAt || v.snippet?.publishedAt) < (Date.now() - 6 * 24 * 60 * 60 * 1000))) }}",
+              "limitPagesFetched": true,
+              "maxRequests": 10,
+              "requestInterval": 100
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "alwaysOutputData": true,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    }
+  ],
+  "nodeGroups": [
+    {
+      "id": "7650c91d-ebd3-4f3f-a916-534bad8d372d",
+      "name": "Prepare active event",
+      "nodeNames": [
+        "Get UFC Events For Matching",
+        "Get Active UFC Event",
+        "One Active Event Only",
+        "Ensure UFC Event Spreadsheet"
+      ],
+      "description": "Load known UFC events and prepare the active event spreadsheet."
+    },
+    {
+      "id": "322a2543-a540-4ab4-9428-60c81b59257a",
+      "name": "Capture or retry videos",
+      "nodeNames": [
+        "Get transcript",
+        "Merge All Channel Feeds",
+        "Normalise and Filter Videos",
+        "Transcript Received?",
+        "Append Transcript to Google Sheet",
+        "Record Captured Video",
+        "Combine Video and Transcript",
+        "One Tracking Update Per Video",
+        "Prepare Transcript Chunks",
+        "Max Video Limit (10)",
+        "Attach Active Event",
+        "Event Ready",
+        "Send Telegram Summary",
+        "Build Telegram Summary",
+        "Prepare Captured Result",
+        "Merge All Channel Feeds1",
+        "Merge All Channel Feeds2",
+        "Validate Transcript Language",
+        "Get Recorded Videos",
+        "Select Videos To Process",
+        "Prepare Retry Record",
+        "Record Retry Status",
+        "Prepare Retry Result",
+        "Merge Run Results",
+        "Record Capture Start",
+        "Resolve Capture Request",
+        "Capture One Video?",
+        "Prepare Requested Capture",
+        "Capture Work Found?",
+        "Record Capture Idle",
+        "Record Capture Result",
+        "Build Capture Idle Summary",
+        "YouTube — UFC Predictions Tracker",
+        "YouTube — The MMA Guru",
+        "YouTube — Lucrative James",
+        "YouTube — MMA Lock of the Night",
+        "YouTube — Kunath MMA",
+        "YouTube — TonyHasDiedMMA",
+        "YouTube — MMA Husky Hustler",
+        "YouTube — Walk the Line MMA",
+        "YouTube — Artem MMA",
+        "YouTube — BedtimeMMA",
+        "YouTube — BetSam",
+        "YouTube — JakeGerberMMA",
+        "YouTube — Funky Bunch MMA",
+        "Get YouTube Upload Playlists"
+      ],
+      "description": "Match event titles, capture eligible transcripts, handle one-video retries and record run outcomes."
+    }
+  ]
+}

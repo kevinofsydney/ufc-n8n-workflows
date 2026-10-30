@@ -1,0 +1,158 @@
+{
+  "id": "SkWzi2pqLtbW4HNN",
+  "name": "UFC | svc.list_issues",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "tags": [],
+  "description": "Sends the current issue list to Telegram: open incidents oldest first, then those resolved in the last 7 days.",
+  "connections": {
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Read All Incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read All Incidents": {
+      "main": [
+        [
+          {
+            "node": "Build Issue List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Issue List": {
+      "main": [
+        [
+          {
+            "node": "Send Issue List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Issue List": {
+      "main": [
+        [
+          {
+            "node": "Return Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "30b5cb86-c5c1-4b78-92dd-39a7d87511aa",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "dry_run",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "28d04fdd-174a-4299-9916-961558b9cdbd",
+      "name": "Read All Incidents",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "65319f4f-fa41-4498-aad2-a4b801b89785",
+      "name": "Build Issue List",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const rows=$('Read All Incidents').all().map(function(item){return item.json;}).filter(function(row){return row && row.incident_key;});\nconst esc=function(value){return String(value===undefined||value===null?'':value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};\nconst nl=String.fromCharCode(10);\nconst clip=function(value,max){\n const text=String(value===undefined||value===null?'':value).replace(/\\s+/g,' ').trim();\n if(text.length<=max)return text;\n const cut=text.slice(0,max);\n const lastSpace=cut.lastIndexOf(' ');\n return (lastSpace>max*0.6?cut.slice(0,lastSpace):cut).replace(/[\\s,;:.\\-]+$/,'')+'…';\n};\nconst stamp=function(value){if(!value)return 'unknown';const time=new Date(value);return Number.isFinite(time.getTime())?time.toLocaleDateString('en-AU',{timeZone:'Australia/Sydney',day:'numeric',month:'short'}):'unknown';};\nconst open=rows.filter(function(row){return row.status!=='resolved';}).sort(function(a,b){return String(a.first_seen_at||'').localeCompare(String(b.first_seen_at||''));});\nconst cutoff=Date.now()-7*24*60*60*1000;\nconst resolved=rows.filter(function(row){return row.status==='resolved' && row.resolved_at && Date.parse(row.resolved_at)>=cutoff;}).sort(function(a,b){return String(b.resolved_at||'').localeCompare(String(a.resolved_at||''));});\nconst lines=['<b>UFC issues</b>'];\nif(!open.length){\n lines.push('No open issues.');\n}else{\n lines.push('Open: '+open.length);\n open.slice(0,10).forEach(function(row){\n  const severity=row.severity?(' ['+esc(row.severity)+']'):'';\n  const who=esc(row.workflow_name||row.node_name||row.source||'pipeline');\n  lines.push('#'+row.id+severity+' '+who+' — '+esc(clip(row.owner_note||row.last_message||'(no detail)',110)));\n  lines.push('   ×'+Number(row.occurrences||1)+', since '+stamp(row.first_seen_at)+(row.source==='owner'?' · reported by you':''));\n });\n if(open.length>10)lines.push('… '+(open.length-10)+' more open; check the ufc_incidents table.');\n}\nif(resolved.length){\n lines.push('','<b>Resolved in the last 7 days</b>');\n resolved.slice(0,5).forEach(function(row){\n  const who=esc(row.workflow_name||row.source||'pipeline');\n  const by=row.resolved_by?(' ('+esc(row.resolved_by)+')'):'';\n  lines.push('#'+row.id+' '+who+' — '+esc(clip(row.resolution||'resolved',95))+by);\n });\n}\nlines.push('','<code>/fixed ID</code> closes one. <code>/issue TEXT</code> records one.');\nlet text=lines.join(nl);\nif(text.length>3900)text=text.slice(0,3880)+'…';\nreturn [{json:{text:text,open_count:open.length,resolved_recent:resolved.length,dry_run:$('When Called').first().json.dry_run===true}}];"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "42aa4ad5-4843-4088-b4d1-8e022e828e30",
+      "name": "Send Issue List",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "0",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "894481c7-618d-4719-a6c7-5c0ae5ff9a72",
+      "name": "Return Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const p=$('Build Issue List').first().json;\nreturn [{json:{sent:true,open_count:p.open_count,resolved_recent:p.resolved_recent}}];"
+      },
+      "executeOnce": true
+    }
+  ],
+  "nodeGroups": []
+}

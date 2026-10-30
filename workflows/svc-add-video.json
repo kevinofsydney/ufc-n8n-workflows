@@ -1,0 +1,1049 @@
+{
+  "id": "JcNXgWql9K4RrHm9",
+  "name": "UFC | svc.add_video",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "timezone": "Australia/Sydney",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [],
+  "description": "Accepts /addvideo YouTube URLs from the owner, validates the active event and duplicates, then captures and analyses only that video. Includes a manual dry-run test.",
+  "connections": {
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Parse Add Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Add Video": {
+      "main": [
+        [
+          {
+            "node": "Valid YouTube URL?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Test Request": {
+      "main": [
+        [
+          {
+            "node": "Parse Add Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid YouTube URL?": {
+      "main": [
+        [
+          {
+            "node": "Read UFC Events",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add Video Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read UFC Events": {
+      "main": [
+        [
+          {
+            "node": "Read Existing Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Video Result": {
+      "main": [
+        [
+          {
+            "node": "Notify Owner?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Existing Video": {
+      "main": [
+        [
+          {
+            "node": "Read YouTube Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read YouTube Metadata": {
+      "main": [
+        [
+          {
+            "node": "Validate Add Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Add Video": {
+      "main": [
+        [
+          {
+            "node": "Add This Video?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add This Video?": {
+      "main": [
+        [
+          {
+            "node": "Reserve Video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add Video Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Capture Submitted Video": {
+      "main": [
+        [
+          {
+            "node": "Read Capture Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Capture Result": {
+      "main": [
+        [
+          {
+            "node": "Prepare Single Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Single Analysis": {
+      "main": [
+        [
+          {
+            "node": "Transcript Ready?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcript Ready?": {
+      "main": [
+        [
+          {
+            "node": "Analyse Submitted Video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add Video Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyse Submitted Video": {
+      "main": [
+        [
+          {
+            "node": "Read Analysis Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Analysis Result": {
+      "main": [
+        [
+          {
+            "node": "Build Final Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Final Reply": {
+      "main": [
+        [
+          {
+            "node": "Add Video Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Owner?": {
+      "main": [
+        [
+          {
+            "node": "Send Add Video Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reserve Video": {
+      "main": [
+        [
+          {
+            "node": "Claim Submitted Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claim Submitted Video": {
+      "main": [
+        [
+          {
+            "node": "Prepare Single Capture",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Single Capture": {
+      "main": [
+        [
+          {
+            "node": "Capture Claim Acquired?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Capture Claim Acquired?": {
+      "main": [
+        [
+          {
+            "node": "Capture Submitted Video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Add Video Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Test Manually": {
+      "main": [
+        [
+          {
+            "node": "Manual Test Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "b2310d3c-00c8-4e94-8f66-67de0220e897",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    },
+    {
+      "id": "713b18cb-001c-45da-ba4d-3fab4f57a52d",
+      "name": "Parse Add Video",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        780,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const source=$input.first().json;\nif(Number(source.chat_id)!==0)return [];\nconst dry_run=source.dry_run===true;\nconst usage='Use /addvideo https://www.youtube.com/watch?v=VIDEO_ID. Adds one video for the active UFC event, captures its English transcript and analyses it using OpenRouter credits.';\nconst parts=String(source.args||'').trim().split(/\\s+/).filter(Boolean);\nlet raw=parts.length===1?parts[0]:'';\nraw=raw.replace(/^<([^<>]+)>$/,'$1');\nconst match=raw.match(/^https?:\\/\\/((?:(?:www|m|music)\\.)?youtube\\.com|(?:www\\.)?youtu\\.be)(\\/[^?#]*)(?:\\?([^#]*))?(?:#.*)?$/i);\nlet id='';\nif(match){\n const host=match[1].toLowerCase(),path=match[2],query=match[3]||'';\n if(host==='youtu.be'||host==='www.youtu.be')id=path.replace(/^\\/|\\/$/g,'');\n else if(path==='/watch'){\n  const ids=query.split('&').filter(p=>p.split('=')[0]==='v');\n  if(ids.length===1){try{id=decodeURIComponent(ids[0].slice(2));}catch{}}\n }else {const m=path.match(/^\\/(?:shorts|live|embed)\\/([A-Za-z0-9_-]{11})\\/?$/);if(m)id=m[1];}\n}\nconst valid=/^[A-Za-z0-9_-]{11}$/.test(id);\nreturn [{json:{chat_id:0,dry_run,valid,video_id:valid?id:'',video_url:valid?'https://www.youtube.com/watch?v='+id:'',outcome:valid?'valid':'invalid_url',text:valid?'':usage}}];"
+      }
+    },
+    {
+      "id": "a0b6d3ed-99b7-4180-b7d9-61706f4718e0",
+      "name": "Test Manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        260,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "83e23ead-71a2-4bde-bb00-b1a1ba76af77",
+      "name": "Manual Test Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        520,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return [{json:{chat_id:0,args:'https://www.youtube.com/watch?v=uYy59h-AxFk',dry_run:true}}];"
+      }
+    },
+    {
+      "id": "c1a89d9a-72ad-40c8-acfc-3a1b3cab3a32",
+      "name": "Valid YouTube URL?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1040,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.valid === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "000679d7-7cbf-498d-a928-48abc9fb382e",
+      "name": "Read UFC Events",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1300,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "WTTpdZSDVOxOB3Ex",
+          "cachedResultName": "ufc_events"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "1ecbc35b-dc21-4c74-9945-6be81496a87f",
+      "name": "Add Video Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1300,
+        520
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return $input.all();"
+      }
+    },
+    {
+      "id": "d7d6f2a8-1f70-44f3-b72f-9202bf464d27",
+      "name": "Read Existing Video",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1560,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "cAQonN6NYOY3fqxl",
+          "cachedResultName": "ufc_videos"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "video_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Parse Add Video').first().json.video_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "1b9a40a7-5b48-4437-a97b-9052cc67d3f7",
+      "name": "Read YouTube Metadata",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        0,
+        260
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.youtube.com/oembed",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $('Parse Add Video').first().json.video_url }}"
+            },
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 20000,
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true,
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "0fb0ffdf-90bd-433b-856e-0d05a95e0f7e",
+      "name": "Validate Add Video",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        260
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "function ufcText(value) {\n return String(value ?? '').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\\s+/g,' ');\n}\nfunction ufcHas(text, phrase) { return phrase && (' '+text+' ').includes(' '+phrase+' '); }\nfunction ufcEventSignals(event, title) {\n const name=ufcText(event.event_name);\n const split=String(event.event_name || '').split(':');\n const prefix=ufcText(split[0]);\n const number=(prefix.match(/\\bufc\\s+(\\d{2,4})\\b/) || [])[1];\n const pair=String(split.slice(1).join(':') || '').split(/\\s+v(?:s)?\\.?\\s+/i);\n const surname=value=>ufcText(value).split(' ').filter(word=>!['jr','sr','ii','iii','iv'].includes(word)).slice(-1)[0] || '';\n const a=surname(pair[0]), b=surname(pair[1]);\n const matchup=pair.length===2 && a.length>=3 && b.length>=3 && ufcHas(title,a) && ufcHas(title,b);\n const numbered=Boolean(number && new RegExp('\\\\bufc\\\\s+'+number+'\\\\b').test(title));\n const venue=prefix.replace(/\\bufc\\b/g,' ').replace(/\\bfight\\s+night\\b/g,' ').replace(/\\b\\d+\\b/g,' ').trim().replace(/\\s+/g,' ');\n const location=venue.length>=3 && ufcHas(title,venue);\n return {event, score: matchup || numbered ? 10 : location ? 4 : 0, reason: matchup ? 'main-event surnames' : numbered ? 'UFC event number' : location ? 'event location' : ''};\n}\nfunction classifyUfcVideo(title, active, events) {\n const text=ufcText(title);\n const pool=[...new Map([...(events||[]),active].filter(event=>event?.event_key&&event.event_name).map(event=>[event.event_key,event])).values()];\n const matches=pool.map(event=>ufcEventSignals(event,text)).filter(match=>match.score>0);\n const strong=matches.filter(match=>match.score===10);\n const candidates=strong.length ? strong : matches;\n if(candidates.length!==1) return {event_match_status:candidates.length>1?'AMBIGUOUS':'UNCONFIRMED',event_match_reason:candidates.length>1?'Title identifies more than one known UFC event':'Title does not clearly identify a known UFC event',matched_event_key:'',event_match_version:'ufc-event-match-v2'};\n const match=candidates[0];\n return {event_match_status:match.event.event_key===active.event_key?'MATCHED':'OTHER_EVENT',event_match_reason:'Matched '+match.event.event_name+' by '+match.reason,matched_event_key:match.event.event_key,event_match_version:'ufc-event-match-v2'};\n}\n\nconst request=$('Parse Add Video').first().json;\nconst events=$('Read UFC Events').all().map(i=>i.json).filter(e=>e.event_key);\nconst active=events.filter(e=>e.active===true||e.active==='true');\nconst fail=(outcome,text,extra={})=>[{json:{...request,...extra,accepted:false,should_process:false,outcome,text}}];\nif(active.length!==1)return fail('invalid_active_event','Cannot add a video: expected exactly one active UFC event.');\nconst event=active[0];\nif(!event.spreadsheet_id)return fail('missing_spreadsheet','The active event spreadsheet is not ready. Run /capture first, then try /addvideo again.');\nif(Date.parse(event.event_datetime_local)<=Date.now())return fail('event_started','The active event has started. Add videos only before the event begins.');\nconst rows=$('Read Existing Video').all().map(i=>i.json).filter(r=>r.video_id===request.video_id);\nif(rows.length){\n const completed=rows.length===1&&rows[0].analysis_status==='COMPLETED';\n const same=rows.length===1&&rows[0].event_key===event.event_key;\n return fail('duplicate',completed?'This video has already been analysed. Nothing was added or rerun.':same?'This video is already recorded. Use /status or /retry '+request.video_id+' for unfinished work.':'This video is already recorded for another event, or has duplicate records. Nothing was changed.');\n}\nconst response=$input.first().json;\nlet metadata=response.body??response.data??response;\nif(typeof metadata==='string'){try{metadata=JSON.parse(metadata);}catch{metadata={};}}\nif(response.error||(response.statusCode&&response.statusCode!==200)||!metadata.title||!metadata.author_name)return fail('metadata_unavailable','Could not read this YouTube video. Check that it is public and available, then try again.');\nconst video_title=String(metadata.title).trim(),channel_name=String(metadata.author_name).trim();\nconst match=classifyUfcVideo(video_title,event,events);\nif(match.event_match_status!=='MATCHED')return fail('event_mismatch','Video not added: '+match.event_match_reason+'. Active event: '+event.event_name+'.',{video_title,channel_name,...match});\nconst video={video_id:request.video_id,channel_name,video_title,published_at:null,event_key:event.event_key,analysis_profile:channel_name.toLowerCase().includes('ufc predictions tracker')?'predictions_tracker':'standard_capper',...match};\nreturn [{json:{...request,...video,accepted:true,should_process:!request.dry_run,outcome:request.dry_run?'dry_run_ready':'ready',text:(request.dry_run?'Preview: would add ':'Adding ')+channel_name+' — '+video_title+' for '+event.event_name+'. English transcript extraction will run first, followed by analysis using OpenRouter credits.'}}];"
+      }
+    },
+    {
+      "id": "349c3c77-e9a9-43a3-b2cb-d64bf02203a0",
+      "name": "Add This Video?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        520,
+        260
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.should_process === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "7d75111a-8e1b-4585-a094-de38a9eb566d",
+      "name": "Reserve Video",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        780,
+        260
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "cAQonN6NYOY3fqxl",
+          "cachedResultName": "ufc_videos"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "video_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.video_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "video_id": "={{ $json.video_id }}",
+            "channel_name": "={{ $json.channel_name }}",
+            "video_title": "={{ $json.video_title }}",
+            "event_key": "={{ $json.event_key }}",
+            "analysis_profile": "={{ $json.analysis_profile }}",
+            "event_match_status": "={{ $json.event_match_status }}",
+            "event_match_reason": "={{ $json.event_match_reason }}",
+            "matched_event_key": "={{ $json.matched_event_key }}",
+            "event_match_version": "={{ $json.event_match_version }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "video_id",
+              "displayName": "video_id",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "channel_name",
+              "displayName": "channel_name",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "video_title",
+              "displayName": "video_title",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "analysis_profile",
+              "displayName": "analysis_profile",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "event_match_status",
+              "displayName": "event_match_status",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "event_match_reason",
+              "displayName": "event_match_reason",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "matched_event_key",
+              "displayName": "matched_event_key",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "event_match_version",
+              "displayName": "event_match_version",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "61dce8a7-777b-4c23-9dab-b79009f13fd5",
+      "name": "Prepare Single Capture",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        260
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const request=$('Validate Add Video').first().json;\nconst rows=$input.all().map(i=>i.json).filter(r=>r.video_id===request.video_id&&r.event_key===request.event_key&&r.status==='MANUAL_CAPTURE_REQUESTED');\nif(rows.length!==1)return [{json:{...request,should_capture:false,outcome:'already_claimed',text:'This video is already queued or being processed. Use /status to check progress.'}}];\nconst row=rows[0];\nreturn [{json:{...request,should_capture:true,manual_retry:true,target_video_id:row.video_id,target_video_row:row}}];"
+      }
+    },
+    {
+      "id": "38fb799c-aae2-41ee-9605-b59c75a1c390",
+      "name": "Capture Submitted Video",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        1300,
+        260
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "y20ZZYzBVS6y8kC0"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "6b4cf4b5-2ed3-43f1-8488-f3e104a2c9b2",
+      "name": "Read Capture Result",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1560,
+        260
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "cAQonN6NYOY3fqxl",
+          "cachedResultName": "ufc_videos"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "video_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Parse Add Video').first().json.video_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "53babc02-2a30-44ff-a023-eccf3391164c",
+      "name": "Prepare Single Analysis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        520
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const request=$('Prepare Single Capture').first().json;\nconst rows=$input.all().map(i=>i.json).filter(r=>r.video_id===request.video_id&&r.event_key===request.event_key);\nif(rows.length!==1)throw new Error('Capture did not leave exactly one video row.');\nconst row=rows[0],captured=row.transcript_appended===true||row.transcript_appended==='true';\nconst completed=row.analysis_status==='COMPLETED';\nreturn [{json:{...request,target_video_row:row,should_analyse:captured&&!completed,transcript_appended:captured,analysis_status:row.analysis_status,outcome:completed?'already_completed':captured?'captured':'capture_pending',text:completed?'This video is already analysed.':captured?'Transcript captured. Analysing this video now.':'Video added, but an English transcript is not available yet. Analysis was skipped. Use /retry '+request.video_id+' later. '+String(row.last_error||'').slice(0,300)}}];"
+      }
+    },
+    {
+      "id": "82267b09-55e1-460a-a066-6e7149effe52",
+      "name": "Transcript Ready?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        260,
+        520
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.should_analyse === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "43a6e94e-a080-48a6-ae0e-02408d6ca36e",
+      "name": "Analyse Submitted Video",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        520,
+        520
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "BvLnPFMwQ2vhPkgv"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "c32b79a0-e0d8-4f32-8e02-e6de8aeb324a",
+      "name": "Read Analysis Result",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        780,
+        520
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "cAQonN6NYOY3fqxl",
+          "cachedResultName": "ufc_videos"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "video_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Parse Add Video').first().json.video_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "5b681ee2-51a3-4b93-8891-5e0eeefecc57",
+      "name": "Build Final Reply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1040,
+        520
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const request=$('Prepare Single Analysis').first().json;\nconst rows=$input.all().map(i=>i.json).filter(r=>r.video_id===request.video_id&&r.event_key===request.event_key);\nconst row=rows.length===1?rows[0]:null;\nconst complete=row?.analysis_status==='COMPLETED';\nreturn [{json:{...request,should_analyse:false,analysis_status:row?.analysis_status||'',outcome:complete?'completed':'analysis_pending',text:complete?'Added and analysed: '+request.channel_name+' — '+request.video_title+'. Your picks and analysis are in the event spreadsheet.':'Transcript captured, but analysis did not complete. Use /status or /retry analyse '+request.video_id+'. '+String(row?.analysis_error||'').slice(0,300)}}];"
+      }
+    },
+    {
+      "id": "b25ba5be-5b73-4e7d-ad6e-5f7d306ad472",
+      "name": "Notify Owner?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1560,
+        520
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.dry_run !== true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "07d4089e-b2a7-4891-9167-20585bc2bd3a",
+      "name": "Send Add Video Reply",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        780
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ String($json.chat_id) }}",
+        "text": "={{ String($json.text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "61cd35f6-feeb-48c2-882f-b5bb0d9e9753",
+      "name": "Claim Submitted Video",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1040,
+        540
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "cAQonN6NYOY3fqxl",
+          "cachedResultName": "ufc_videos"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "video_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Validate Add Video').first().json.video_id }}"
+            },
+            {
+              "keyName": "event_key",
+              "condition": "eq",
+              "keyValue": "={{ $('Validate Add Video').first().json.event_key }}"
+            },
+            {
+              "keyName": "status",
+              "condition": "isEmpty"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "MANUAL_CAPTURE_REQUESTED",
+            "retry_requested_at": "={{ $now.toISO() }}",
+            "retry_stage": "capture"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "status",
+              "type": "string"
+            },
+            {
+              "id": "retry_requested_at",
+              "type": "dateTime"
+            },
+            {
+              "id": "retry_stage",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "aa464d9f-53fb-4af9-b934-89c62dfbf4c8",
+      "name": "Capture Claim Acquired?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1300,
+        540
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.should_capture === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    }
+  ],
+  "nodeGroups": [
+    {
+      "id": "d93807e9-0756-4103-a0a9-fd35b386db51",
+      "name": "Add one video",
+      "nodeNames": [
+        "Parse Add Video",
+        "Valid YouTube URL?",
+        "Read UFC Events",
+        "Read Existing Video",
+        "Read YouTube Metadata",
+        "Validate Add Video",
+        "Add This Video?",
+        "Reserve Video",
+        "Prepare Single Capture",
+        "Capture Submitted Video",
+        "Read Capture Result",
+        "Prepare Single Analysis",
+        "Transcript Ready?",
+        "Analyse Submitted Video",
+        "Read Analysis Result",
+        "Build Final Reply",
+        "Add Video Result",
+        "Notify Owner?",
+        "Send Add Video Reply",
+        "Claim Submitted Video",
+        "Capture Claim Acquired?"
+      ],
+      "description": "Checks an owner-submitted YouTube video, captures its English transcript, and analyses only that video for the active event."
+    }
+  ]
+}

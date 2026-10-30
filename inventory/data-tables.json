@@ -1,0 +1,968 @@
+[
+  {
+    "id": "Tb9mpsswwq6uJvr6",
+    "name": "ufc_pipeline_runs",
+    "projectId": "kfViLPZPj3GmFOj5",
+    "createdAt": "2026-10-15T09:55:57.696Z",
+    "updatedAt": "2026-10-30T00:48:12.596Z",
+    "columns": [
+      {
+        "id": "wE7HUswExS2WE9y2",
+        "name": "event_key",
+        "type": "string",
+        "index": 3
+      },
+      {
+        "id": "at8chZ3Rg8j1DpcV",
+        "name": "execution_url",
+        "type": "string",
+        "index": 8
+      },
+      {
+        "id": "5WgFTT949g6CTs2D",
+        "name": "finished_at",
+        "type": "date",
+        "index": 6
+      },
+      {
+        "id": "HzfOALrQshUhi0G5",
+        "name": "run_key",
+        "type": "string",
+        "index": 0
+      },
+      {
+        "id": "2Ufd06mlazLDBl9o",
+        "name": "started_at",
+        "type": "date",
+        "index": 5
+      },
+      {
+        "id": "zmgEWoLbp6fj97EO",
+        "name": "state",
+        "type": "string",
+        "index": 4
+      },
+      {
+        "id": "nsFXcK3FIIMh4YV3",
+        "name": "summary",
+        "type": "string",
+        "index": 7
+      },
+      {
+        "id": "4dTIc7EvwcEEtXme",
+        "name": "workflow_id",
+        "type": "string",
+        "index": 1
+      },
+      {
+        "id": "F99WDXlGqHTZ5zwM",
+        "name": "workflow_name",
+        "type": "string",
+        "index": 2
+      }
+    ]
+  },
+  {
+    "id": "oCOZ7hzgZ2htYL9F",
+    "name": "ufc_fight_card_state",
+    "projectId": "kfViLPZPj3GmFOj5",
+    "createdAt": "2026-10-15T10:30:51.904Z",
+    "updatedAt": "2026-10-30T00:48:02.428Z",
+    "columns": [
+      {
+        "id": "6k4MRUXMsePAhLZH",
+        "name": "card_fingerprint",
+        "type": "string",
+        "index": 6
+      },
+      {
+        "id": "cZD3P9XRdNOI2RdS",
+        "name": "change_checked_at",
+        "type": "date",
+        "index": 13
+      },
+      {
+        "id": "cumYcOVDjakumlP3",
+        "name": "change_status",
+        "type": "string",
+        "index": 12
+      },
+      {
+        "id": "GfDSnoIbsi3yOMC1",
+        "name": "checked_at",
+        "type": "date",
+        "index": 9
+      },
+      {
+        "id": "Qeg3xMnHpuNnaZ6Q",
+        "name": "espn_event_id",
+        "type": "string",
+        "index": 4
+      },
+      {
+        "id": "TMgyYG0mi7ZBsd8A",
+        "name": "event_key",
+        "type": "string",
+        "index": 0
+      },
+      {
+        "id": "mR5z9Xra9PCIIWke",
+        "name": "initialized_at",
+        "type": "date",
+        "index": 8
+      },
+      {
+        "id": "0NmgRz8xynrdBges",
+        "name": "message",
+        "type": "string",
+        "index": 10
+      },
+      {
+        "id": "sDEjvC7ax6oMJ7Kl",
+        "name": "official_card_json",
+        "type": "string",
+        "index": 18
+      },
+      {
+        "id": "SeFG2481xqBiiTDR",
+        "name": "parser_version",
+        "type": "string",
+        "index": 11
+      },
+      {
+        "id": "0gx8Jgp8TdNRgPZG",
+        "name": "pending_change_fingerprint",
+        "type": "string",
+        "index": 15
+      },
+      {
+        "id": "71JL6Q2atxvCcjdi",
+        "name": "pending_change_json",
+        "type": "string",
+        "index": 14
+      },
+      {
+        "id": "VIcmHATolsWjtpdC",
+        "name": "pending_first_seen_at",
+        "type": "date",
+        "index": 17
+      },
+      {
+        "id": "uvFC1OLvilJocvyj",
+        "name": "pending_seen_count",
+        "type": "number",
+        "index": 16
+      },
+      {
+        "id": "86VMPenb4FTdWURc",
+        "name": "source_card_json",
+        "type": "string",
+        "index": 7
+      },
+      {
+        "id": "TSpBZJYkDIFXRsPe",
+        "name": "source_fingerprint",
+        "type": "string",
+        "index": 5
+      },
+      {
+        "id": "L0mcM78RZUHSYQkL",
+        "name": "source_url",
+        "type": "string",
+        "index": 3
+      },
+      {
+        "id": "PZZ1JzaCgZRnj1dn",
+        "name": "spreadsheet_id",
+        "type": "string",
+        "index": 1
+      },
+      {
+        "id": "12st48mWeQcgHj2T",
+        "name": "status",
+        "type": "string",
+        "index": 2
+      }
+    ]
+  },
+  {
+    "id": "cAQonN6NYOY3fqxl",
+    "name": "ufc_videos",
+    "projectId": "kfViLPZPj3GmFOj5",
+    "createdAt": "2026-07-17T12:29:07.988Z",
+    "updatedAt": "2026-10-30T00:47:20.899Z",
+    "columns": [
+      {
+        "id": "sz9l7FGqK82es6su",
+        "name": "analysed_at",
+        "type": "date",
+        "index": 18
+      },
+      {
+        "id": "vqz2bLnFp2RhsFl4",
+        "name": "analysis_attempt_count",
+        "type": "number",
+        "index": 15
+      },
+      {
+        "id": "ijUEUqQuCirdDqjb",
+        "name": "analysis_error",
+        "type": "string",
+        "index": 19
+      },
+      {
+        "id": "Pnveeo6w3kCmn3jA",
+        "name": "analysis_execution_id",
+        "type": "string",
+        "index": 27
+      },
+      {
+        "id": "40dh9TX3cIRSAnwO",
+        "name": "analysis_model",
+        "type": "string",
+        "index": 16
+      },
+      {
+        "id": "kuF2cbW2rxYgbIT2",
+        "name": "analysis_profile",
+        "type": "string",
+        "index": 20
+      },
+      {
+        "id": "8eDQSJ49EuEiWm90",
+        "name": "analysis_prompt_version",
+        "type": "string",
+        "index": 17
+      },
+      {
+        "id": "6nmbQ8jS0iqWunFg",
+        "name": "analysis_status",
+        "type": "string",
+        "index": 14
+      },
+      {
+        "id": "10CVjEm21QkZy8cw",
+        "name": "attempt_count",
+        "type": "number",
+        "index": 6
+      },
+      {
+        "id": "1N86fdQ7rP7ViFtr",
+        "name": "channel_name",
+        "type": "string",
+        "index": 1
+      },
+      {
+        "id": "Sip4KQYyScow5fYG",
+        "name": "completed_at",
+        "type": "date",
+        "index": 13
+      },
+      {
+        "id": "jwnCoFMtVrcFdXPN",
+        "name": "event_key",
+        "type": "string",
+        "index": 4
+      },
+      {
+        "id": "naHjSbTk2J7w66ZU",
+        "name": "event_match_reason",
+        "type": "string",
+        "index": 22
+      },
+      {
+        "id": "rdjbCRwzJAfVTF3y",
+        "name": "event_match_status",
+        "type": "string",
+        "index": 21
+      },
+      {
+        "id": "L1tRGqXTuQGeNuIo",
+        "name": "event_match_version",
+        "type": "string",
+        "index": 24
+      },
+      {
+        "id": "ezN2UjrnNAevvNkp",
+        "name": "last_attempt_at",
+        "type": "date",
+        "index": 7
+      },
+      {
+        "id": "OB6tHikkef7z93OI",
+        "name": "last_error",
+        "type": "string",
+        "index": 9
+      },
+      {
+        "id": "VgARAoxgAX3RONhC",
+        "name": "last_http_status",
+        "type": "number",
+        "index": 8
+      },
+      {
+        "id": "4PxP0yjCw4vDchcA",
+        "name": "matched_event_key",
+        "type": "string",
+        "index": 23
+      },
+      {
+        "id": "wMR1BHodAj3bA4lq",
+        "name": "placeholder_appended",
+        "type": "boolean",
+        "index": 10
+      },
+      {
+        "id": "LUH1V7V9gwNdO8WM",
+        "name": "published_at",
+        "type": "date",
+        "index": 3
+      },
+      {
+        "id": "cDrpGb23iNf4CZ4X",
+        "name": "retry_requested_at",
+        "type": "date",
+        "index": 25
+      },
+      {
+        "id": "0iNimKmpGBGe08XI",
+        "name": "retry_stage",
+        "type": "string",
+        "index": 26
+      },
+      {
+        "id": "En15dxT8YdqvQfjU",
+        "name": "status",
+        "type": "string",
+        "index": 5
+      },
+      {
+        "id": "eD4hdK31rfGKY720",
+        "name": "transcript_appended",
+        "type": "boolean",
+        "index": 11
+      },
+      {
+        "id": "tzmX9tlTD7yb3ZIu",
+        "name": "transcript_parts",
+        "type": "number",
+        "index": 12
+      },
+      {
+        "id": "FYJwvJfAFevAb3Tq",
+        "name": "video_id",
+        "type": "string",
+        "index": 0
+      },
+      {
+        "id": "NPUePdtpKYQ4WVk0",
+        "name": "video_title",
+        "type": "string",
+        "index": 2
+      }
+    ]
+  },
+  {
+    "id": "j1D3nXVJHbVZvnUh",
+    "name": "ufc_monitor_state",
+    "projectId": "kfViLPZPj3GmFOj5",
+    "createdAt": "2026-10-15T09:55:58.148Z",
+    "updatedAt": "2026-10-29T22:00:02.730Z",
+    "columns": [
+      {
+        "id": "kv6U7jLSdhq6V1rS",
+        "name": "balance_source",
+        "type": "string",
+        "index": 5
+      },
+      {
+        "id": "Fl4c8BV2TUBHfoeo",
+        "name": "last_alerted_at",
+        "type": "date",
+        "index": 3
+      },
+      {
+        "id": "DciT1Lni8tEVLp9r",
+        "name": "last_checked_at",
+        "type": "date",
+        "index": 2
+      },
+      {
+        "id": "kgDfFaEqAMcmQV3Q",
+        "name": "monitor_key",
+        "type": "string",
+        "index": 0
+      },
+      {
+        "id": "nSkw0Kh1jT3MEIjs",
+        "name": "remaining_usd",
+        "type": "number",
+        "index": 4
+      },
+      {
+        "id": "6SUvKxXbwIpCHWB5",
+        "name": "status",
+        "type": "string",
+        "index": 6
+      },
+      {
+        "id": "ofeRKijnmx8zyf0t",
+        "name": "threshold_usd",
+        "type": "number",
+        "index": 1
+      }
+    ]
+  },
+  {
+    "id": "0bCqy4NhtJzGAULv",
+    "name": "ufc_consensus_cache",
+    "projectId": "kfViLPZPj3GmFOj5",
+    "createdAt": "2026-10-15T01:00:29.095Z",
+    "updatedAt": "2026-10-29T10:24:18.128Z",
+    "columns": [
+      {
+        "id": "lQLGMRJHcO0Ir2Qb",
+        "name": "cost_usd",
+        "type": "number",
+        "index": 4
+      },
+      {
+        "id": "b5WJIjT9EXyK486G",
+        "name": "created_at",
+        "type": "date",
+        "index": 5
+      },
+      {
+        "id": "sieShv1acrR1z7q8",
+        "name": "event_key",
+        "type": "string",
+        "index": 0
+      },
+      {
+        "id": "epmQwaqyqyO4TUq2",
+        "name": "explanations_json",
+        "type": "string",
+        "index": 2
+      },
+      {
+        "id": "DMkVpyuHVV2zgneq",
+        "name": "input_hash",
+        "type": "string",
+        "index": 1
+      },
+      {
+        "id": "mEVzwRDQ7cN5Wo2L",
+        "name": "model",
+        "type": "string",
+        "index": 3
+      }
+    ]
+  },
+  {
+    "id": "WTTpdZSDVOxOB3Ex",
+    "name": "ufc_events",
+    "projectId": "kfViLPZPj3GmFOj5",
+    "createdAt": "2026-07-17T15:01:43.030Z",
+    "updatedAt": "2026-10-29T01:00:51.358Z",
+    "columns": [
+      {
+        "id": "wwHIOXnaZrmGkZcW",
+        "name": "active",
+        "type": "boolean",
+        "index": 4
+      },
+      {
+        "id": "HHwGuZr6dyofvhyH",
+        "name": "closed_at",
+        "type": "date",
+        "index": 8
+      },
+      {
+        "id": "PpSYgR6kBY4xbxNP",
+        "name": "created_at",
+        "type": "date",
+        "index": 7
+      },
+      {
+        "id": "T8mqNeAyYFPG8ehC",
+        "name": "event_datetime_local",
+        "type": "date",
+        "index": 3
+      },
+      {
+        "id": "aeg6JgS6WpPzPSUz",
+        "name": "event_key",
+        "type": "string",
+        "index": 0
+      },
+      {
+        "id": "Vy9LKC6hwjUiwQ2N",
+        "name": "event_name",
+        "type": "string",
+        "index": 2
+      },
+      {
+        "id": "wDoKGwznh5TKB342",
+        "name": "graded_at",
+        "type": "date",
+        "index": 10
+      },
+      {
+        "id": "FHjBrcs5x43nZqKx",
+        "name": "notes",
+        "type": "string",
+        "index": 9
+      },
+      {
+        "id": "r7ZVWPkttOwIgOVS",
+        "name": "source_event_id",
+        "type": "string",
+        "index": 1
+      },
+      {
+        "id": "FpP9m1IjQcyjMbgI",
+        "name": "spreadsheet_id",
+        "type": "string",
+        "index": 5
+      },
+      {
+        "id": "6JorSc1y94GUPiSw",
+        "name": "spreadsheet_url",
+        "type": "string",
+        "index": 6
+      }
+    ]
+  },
+  {
+    "id": "bPLtuvVfcVLTLv2h",
+    "name": "ufc_incidents",
+    "projectId": "kfViLPZPj3GmFOj5",
+    "createdAt": "2026-10-27T01:41:26.900Z",
+    "updatedAt": "2026-10-28T08:43:15.544Z",
+    "columns": [
+      {
+        "id": "98EUmWjwa6yClFFp",
+        "name": "category",
+        "type": "string",
+        "index": 5
+      },
+      {
+        "id": "RlxoSUIVaFrL7sjF",
+        "name": "diagnosed_at",
+        "type": "date",
+        "index": 21
+      },
+      {
+        "id": "f6qTALfep9iv8mUa",
+        "name": "diagnosis_attempts",
+        "type": "number",
+        "index": 22
+      },
+      {
+        "id": "wc5g4G6fxvE9X6ue",
+        "name": "diagnosis_by",
+        "type": "string",
+        "index": 20
+      },
+      {
+        "id": "hk3gU2v6UDDk1Jg6",
+        "name": "diagnosis_json",
+        "type": "string",
+        "index": 24
+      },
+      {
+        "id": "WtTAj4Dpu3AzTRSo",
+        "name": "diagnosis_status",
+        "type": "string",
+        "index": 19
+      },
+      {
+        "id": "EGN66lNxudoo9UFQ",
+        "name": "diagnosis_summary",
+        "type": "string",
+        "index": 23
+      },
+      {
+        "id": "XIUO2YPj6GEmr1Ed",
+        "name": "first_seen_at",
+        "type": "date",
+        "index": 10
+      },
+      {
+        "id": "HtLwEK5VfmcHcP12",
+        "name": "fixed_in_version",
+        "type": "string",
+        "index": 28
+      },
+      {
+        "id": "aT8oo6rGyYasGza0",
+        "name": "incident_key",
+        "type": "string",
+        "index": 0
+      },
+      {
+        "id": "HFWHG08q2r9FZTwU",
+        "name": "last_alerted_at",
+        "type": "date",
+        "index": 16
+      },
+      {
+        "id": "KB6Wz3iQAWVluboa",
+        "name": "last_execution_id",
+        "type": "string",
+        "index": 12
+      },
+      {
+        "id": "3i1enuZuUHUmeahM",
+        "name": "last_execution_url",
+        "type": "string",
+        "index": 13
+      },
+      {
+        "id": "pLGzeOrRiWU9Ghdb",
+        "name": "last_message",
+        "type": "string",
+        "index": 7
+      },
+      {
+        "id": "TD6JhYLsDFnhDFv2",
+        "name": "last_retry_at",
+        "type": "date",
+        "index": 15
+      },
+      {
+        "id": "zUchbfmyzq9xI2Uc",
+        "name": "last_seen_at",
+        "type": "date",
+        "index": 11
+      },
+      {
+        "id": "amqJVjbZe1QCYowS",
+        "name": "node_name",
+        "type": "string",
+        "index": 4
+      },
+      {
+        "id": "Wg4qidAmsjbvhJNW",
+        "name": "occurrences",
+        "type": "number",
+        "index": 9
+      },
+      {
+        "id": "xcYszICuDUDUHHoA",
+        "name": "owner_note",
+        "type": "string",
+        "index": 26
+      },
+      {
+        "id": "4wFq9kJvaNoPnpHB",
+        "name": "resolution",
+        "type": "string",
+        "index": 18
+      },
+      {
+        "id": "7NoSCVDpiS0sauC3",
+        "name": "resolved_at",
+        "type": "date",
+        "index": 17
+      },
+      {
+        "id": "AtrmRWSwu3YLeM0Q",
+        "name": "resolved_by",
+        "type": "string",
+        "index": 27
+      },
+      {
+        "id": "yZCx4Wyhg5UB3Joz",
+        "name": "retry_count",
+        "type": "number",
+        "index": 14
+      },
+      {
+        "id": "z7aU885X0P8OaxvC",
+        "name": "severity",
+        "type": "string",
+        "index": 25
+      },
+      {
+        "id": "6em5gWawctCDC27Q",
+        "name": "signature",
+        "type": "string",
+        "index": 6
+      },
+      {
+        "id": "U85mgD6CenDmvOLl",
+        "name": "source",
+        "type": "string",
+        "index": 1
+      },
+      {
+        "id": "ALFNdzD2PFo5PGma",
+        "name": "status",
+        "type": "string",
+        "index": 8
+      },
+      {
+        "id": "byfBZrI4pUe8xKyH",
+        "name": "workflow_id",
+        "type": "string",
+        "index": 2
+      },
+      {
+        "id": "2UFf9hBDOHW4lo2S",
+        "name": "workflow_name",
+        "type": "string",
+        "index": 3
+      }
+    ]
+  },
+  {
+    "id": "1qPnxl4is7YBJW0X",
+    "name": "ufc_prop_grades",
+    "projectId": "kfViLPZPj3GmFOj5",
+    "createdAt": "2026-10-15T00:16:13.135Z",
+    "updatedAt": "2026-10-24T23:00:58.990Z",
+    "columns": [
+      {
+        "id": "Zc3bwZuFrWHzTroB",
+        "name": "channel_name",
+        "type": "string",
+        "index": 2
+      },
+      {
+        "id": "oUfmRJISd6vsGdQ4",
+        "name": "event_key",
+        "type": "string",
+        "index": 1
+      },
+      {
+        "id": "JZvpqW5JcJnGaIgm",
+        "name": "fight_order",
+        "type": "number",
+        "index": 4
+      },
+      {
+        "id": "js4I0gFe1AWUgF9n",
+        "name": "graded_at",
+        "type": "date",
+        "index": 9
+      },
+      {
+        "id": "iKrbwNH2ohQqK2w3",
+        "name": "market",
+        "type": "string",
+        "index": 5
+      },
+      {
+        "id": "VqpnikiQxrppief8",
+        "name": "prop_id",
+        "type": "string",
+        "index": 0
+      },
+      {
+        "id": "AJzpp5AtZIPb51Tq",
+        "name": "recommendation_strength",
+        "type": "string",
+        "index": 7
+      },
+      {
+        "id": "NgZFZVVYEJqGqzCC",
+        "name": "result",
+        "type": "string",
+        "index": 8
+      },
+      {
+        "id": "A15tvKhG9v2HFEfs",
+        "name": "selection",
+        "type": "string",
+        "index": 6
+      },
+      {
+        "id": "Fr2GfTgS6j3K7X6h",
+        "name": "video_id",
+        "type": "string",
+        "index": 3
+      }
+    ]
+  },
+  {
+    "id": "r3YKyjLCAU8EiANs",
+    "name": "ufc_pick_grades",
+    "projectId": "kfViLPZPj3GmFOj5",
+    "createdAt": "2026-10-15T00:16:12.628Z",
+    "updatedAt": "2026-10-24T23:00:43.176Z",
+    "columns": [
+      {
+        "id": "2y7Q0CcfLWijXhyy",
+        "name": "channel_name",
+        "type": "string",
+        "index": 2
+      },
+      {
+        "id": "4s5ehKM6e8JEgAFF",
+        "name": "confidence_score",
+        "type": "number",
+        "index": 8
+      },
+      {
+        "id": "fWwgfg314LduRVO5",
+        "name": "event_key",
+        "type": "string",
+        "index": 1
+      },
+      {
+        "id": "ozsIf7mqjaZAOXL3",
+        "name": "fight_order",
+        "type": "number",
+        "index": 4
+      },
+      {
+        "id": "sEzUgJ1FfHaL88jA",
+        "name": "fighter_a",
+        "type": "string",
+        "index": 5
+      },
+      {
+        "id": "3min3d3DFuicRc4G",
+        "name": "fighter_b",
+        "type": "string",
+        "index": 6
+      },
+      {
+        "id": "RzoikoSjcLGbMFyW",
+        "name": "graded_at",
+        "type": "date",
+        "index": 11
+      },
+      {
+        "id": "IuiVEp1jgxXwSqYd",
+        "name": "pick_id",
+        "type": "string",
+        "index": 0
+      },
+      {
+        "id": "wODqJy9HxixLlJ2c",
+        "name": "picked_fighter",
+        "type": "string",
+        "index": 7
+      },
+      {
+        "id": "yKsmzdCQ49AWFK2X",
+        "name": "result",
+        "type": "string",
+        "index": 9
+      },
+      {
+        "id": "0Z4slkdo9KuSOIxN",
+        "name": "video_id",
+        "type": "string",
+        "index": 3
+      },
+      {
+        "id": "CWSpIQWieKgiYJAU",
+        "name": "winner",
+        "type": "string",
+        "index": 10
+      }
+    ]
+  },
+  {
+    "id": "N1yxE7DS3wzwTwK6",
+    "name": "ufc_fight_results",
+    "projectId": "kfViLPZPj3GmFOj5",
+    "createdAt": "2026-10-15T00:16:12.080Z",
+    "updatedAt": "2026-10-24T23:00:29.325Z",
+    "columns": [
+      {
+        "id": "wfxGAcetrSyIaKfB",
+        "name": "clock",
+        "type": "string",
+        "index": 9
+      },
+      {
+        "id": "qybFTGZJitmar3CS",
+        "name": "elapsed_minutes",
+        "type": "number",
+        "index": 11
+      },
+      {
+        "id": "KHN6UkIS0QES2IQt",
+        "name": "elapsed_rounds",
+        "type": "number",
+        "index": 10
+      },
+      {
+        "id": "6JaQOiYRXPbdgzRv",
+        "name": "espn_competition_id",
+        "type": "string",
+        "index": 2
+      },
+      {
+        "id": "fcUQvmFGrtVDWls7",
+        "name": "espn_event_id",
+        "type": "string",
+        "index": 1
+      },
+      {
+        "id": "t7pA2JMAEvIm8BH6",
+        "name": "event_key",
+        "type": "string",
+        "index": 0
+      },
+      {
+        "id": "olXxilHFPZZS8CbD",
+        "name": "fighter_a",
+        "type": "string",
+        "index": 3
+      },
+      {
+        "id": "rrsJxOs0CIx5ZcOa",
+        "name": "fighter_b",
+        "type": "string",
+        "index": 4
+      },
+      {
+        "id": "G4eLUPYeWylLrE8i",
+        "name": "method",
+        "type": "string",
+        "index": 6
+      },
+      {
+        "id": "sMy9i2WXe02p9kDl",
+        "name": "method_detail",
+        "type": "string",
+        "index": 7
+      },
+      {
+        "id": "7ZQ5JPw9x2fneqpc",
+        "name": "recorded_at",
+        "type": "date",
+        "index": 14
+      },
+      {
+        "id": "ktCRzetyh7XnP3Zc",
+        "name": "round",
+        "type": "number",
+        "index": 8
+      },
+      {
+        "id": "lF2asN8ff9pzpjxp",
+        "name": "scheduled_rounds",
+        "type": "number",
+        "index": 12
+      },
+      {
+        "id": "aOUQHT5Qk9DuRJ4E",
+        "name": "weight_class",
+        "type": "string",
+        "index": 13
+      },
+      {
+        "id": "IMkTs0S3W1BsiqFa",
+        "name": "winner",
+        "type": "string",
+        "index": 5
+      }
+    ]
+  }
+]

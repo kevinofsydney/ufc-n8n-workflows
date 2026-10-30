@@ -1,0 +1,355 @@
+{
+  "id": "mOCorio8pJ9qlB8q",
+  "name": "UFC | svc.record_diagnosis",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki",
+    "timezone": "Australia/Sydney",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [],
+  "description": "Saves a diagnosis to its incident and sends it to the owner's Telegram in a fixed, escaped format. The only way diagnosers report anything.",
+  "connections": {
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Read Incident",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Incident": {
+      "main": [
+        [
+          {
+            "node": "Prepare Diagnosis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Diagnosis": {
+      "main": [
+        [
+          {
+            "node": "Save Diagnosis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Diagnosis": {
+      "main": [
+        [
+          {
+            "node": "Send Diagnosis?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Diagnosis?": {
+      "main": [
+        [
+          {
+            "node": "Send Diagnosis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Recorded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Diagnosis": {
+      "main": [
+        [
+          {
+            "node": "Return Recorded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "542ec5a7-9b84-471a-8b10-d2c4f516099c",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "incident_key",
+              "type": "string"
+            },
+            {
+              "name": "diagnosed_by",
+              "type": "string"
+            },
+            {
+              "name": "summary",
+              "type": "string"
+            },
+            {
+              "name": "root_cause",
+              "type": "string"
+            },
+            {
+              "name": "evidence",
+              "type": "string"
+            },
+            {
+              "name": "affected",
+              "type": "string"
+            },
+            {
+              "name": "proposed_fix",
+              "type": "string"
+            },
+            {
+              "name": "needs_human",
+              "type": "boolean"
+            },
+            {
+              "name": "human_steps",
+              "type": "string"
+            },
+            {
+              "name": "confidence",
+              "type": "string"
+            },
+            {
+              "name": "dry_run",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "bb1b63ad-651b-47cb-b0bd-a74d533868b6",
+      "name": "Read Incident",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "matchType": "allConditions",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "incident_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.incident_key }}"
+            }
+          ]
+        }
+      },
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "ea2d8c5a-2d65-459b-8c48-e7ecd5a3b679",
+      "name": "Prepare Diagnosis",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Validates a diagnosis, formats the Telegram message and builds the incident update. The message always\n// goes to the owner's chat with fixed formatting; diagnosers only supply text, which is escaped here.\nconst req=$('When Called').first().json;\nconst text=(v,max)=>String(v??'').trim().slice(0,max);\nconst esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');\nconst key=text(req.incident_key,300);\nconst incident=$('Read Incident').all().map(i=>i.json).find(r=>r.incident_key===key);\nif(!incident)throw new Error('No incident with key '+key+'.');\nconst by=text(req.diagnosed_by,40)||'unknown';\nconst confidence=['high','medium','low'].includes(text(req.confidence,10).toLowerCase())?text(req.confidence,10).toLowerCase():'low';\nconst d={summary:text(req.summary,400),root_cause:text(req.root_cause,1500),evidence:text(req.evidence,1500),affected:text(req.affected,600),\n proposed_fix:text(req.proposed_fix,1500),needs_human:req.needs_human===true||String(req.needs_human).toLowerCase()==='true',human_steps:text(req.human_steps,800),confidence};\nif(!d.summary||!d.root_cause)throw new Error('A diagnosis needs at least a summary and a root cause.');\nconst lines=['<b>Incident diagnosis</b>'+(key.startsWith('test|')?' <i>(TEST)</i>':''),\n '<b>Workflow:</b> '+esc(incident.workflow_name||incident.node_name),\n '<b>Summary:</b> '+esc(d.summary),\n '<b>Root cause</b> ('+confidence+' confidence): '+esc(d.root_cause)];\nif(d.evidence)lines.push('<b>Evidence:</b> '+esc(d.evidence));\nif(d.affected)lines.push('<b>Affected:</b> '+esc(d.affected));\nif(d.proposed_fix)lines.push('<b>Proposed fix:</b> '+esc(d.proposed_fix));\nif(d.needs_human)lines.push('<b>Needs you:</b> '+esc(d.human_steps||'Yes; see the proposed fix.'));\nlines.push('<i>Diagnosed by '+esc(by)+'. Read-only: nothing was changed.</i>');\nlet message=lines.join('\\n');\nif(message.length>3900)message=message.slice(0,3880)+'…';\nreturn [{json:{incident_key:key,update:{diagnosis_status:'done',diagnosis_by:by,diagnosed_at:new Date().toISOString(),diagnosis_summary:d.summary,diagnosis_json:JSON.stringify(d)},\n telegram_message:message,dry_run:req.dry_run===true}}];\n"
+      }
+    },
+    {
+      "id": "b2768813-5b7a-4edf-9a0f-5a68c4fda220",
+      "name": "Save Diagnosis",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "incident_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.incident_key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "diagnosis_status": "={{ $json.update.diagnosis_status }}",
+            "diagnosis_by": "={{ $json.update.diagnosis_by }}",
+            "diagnosed_at": "={{ $json.update.diagnosed_at }}",
+            "diagnosis_summary": "={{ $json.update.diagnosis_summary }}",
+            "diagnosis_json": "={{ $json.update.diagnosis_json }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "diagnosis_status",
+              "displayName": "diagnosis_status",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "diagnosis_by",
+              "displayName": "diagnosis_by",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "diagnosed_at",
+              "displayName": "diagnosed_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "diagnosis_summary",
+              "displayName": "diagnosis_summary",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "diagnosis_json",
+              "displayName": "diagnosis_json",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            }
+          ]
+        },
+        "options": {
+          "dryRun": "={{ $json.dry_run === true }}"
+        }
+      }
+    },
+    {
+      "id": "25b8cf17-0894-4fcb-a629-6654c96067d9",
+      "name": "Send Diagnosis?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Prepare Diagnosis').first().json.dry_run !== true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a09ed492-19a3-4427-9a80-93cffdea2988",
+      "name": "Send Diagnosis",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        -80
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "0",
+        "text": "={{ $('Prepare Diagnosis').first().json.telegram_message }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "5192a888-2a58-4269-83c8-a6901e1e173b",
+      "name": "Return Recorded",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const p=$('Prepare Diagnosis').first().json;\nreturn [{json:{recorded:true,incident_key:p.incident_key,telegram_sent:p.dry_run!==true,dry_run:p.dry_run}}];"
+      },
+      "executeOnce": true
+    }
+  ],
+  "nodeGroups": []
+}

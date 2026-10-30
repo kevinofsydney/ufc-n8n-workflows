@@ -1,0 +1,607 @@
+{
+  "id": "LuALxCWYzByUY2Iq",
+  "name": "UFC | svc.ensure_event_spreadsheet",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "timezone": "Australia/Sydney",
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki"
+  },
+  "tags": [],
+  "description": "Reuses or creates the UFC event spreadsheet, saves its link and populates an empty Fight Card before returning the event.",
+  "connections": {
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Validate Event Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Event Request": {
+      "main": [
+        [
+          {
+            "node": "Read UFC Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read UFC Event": {
+      "main": [
+        [
+          {
+            "node": "Validate Stored Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Stored Event": {
+      "main": [
+        [
+          {
+            "node": "Spreadsheet Already Saved?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spreadsheet Already Saved?": {
+      "main": [
+        [
+          {
+            "node": "UFC Event Ready",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Find Existing UFC Spreadsheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Existing UFC Spreadsheet": {
+      "main": [
+        [
+          {
+            "node": "Select Existing Copy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Existing Copy": {
+      "main": [
+        [
+          {
+            "node": "Existing Copy Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Existing Copy Found?": {
+      "main": [
+        [
+          {
+            "node": "Prepare UFC Spreadsheet Details",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Copy UFC Transcript Template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy UFC Transcript Template": {
+      "main": [
+        [
+          {
+            "node": "Prepare UFC Spreadsheet Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare UFC Spreadsheet Details": {
+      "main": [
+        [
+          {
+            "node": "Save UFC Spreadsheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save UFC Spreadsheet": {
+      "main": [
+        [
+          {
+            "node": "UFC Event Ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "UFC Event Ready": {
+      "main": [
+        [
+          {
+            "node": "Populate Empty UFC Fight Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "b4cb98d4-499e-4266-a698-e539cbc00db9",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    },
+    {
+      "id": "85d32708-6489-404e-b833-26eab9243064",
+      "name": "Validate Event Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const items=$input.all();\nif(items.length !== 1 || !String(items[0].json.event_key || '').trim()) throw new Error('UFC spreadsheet setup needs exactly one event_key.');\nreturn [{json:{...items[0].json,event_key:String(items[0].json.event_key).trim()}}];"
+      }
+    },
+    {
+      "id": "9921b4c5-7134-4c69-8cc6-50c937efb76d",
+      "name": "Read UFC Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WTTpdZSDVOxOB3Ex",
+          "mode": "list",
+          "cachedResultName": "ufc_events",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/WTTpdZSDVOxOB3Ex"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.event_key }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "cadddb76-b633-44f3-bd28-a4acffb33bcf",
+      "name": "Validate Stored Event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const request = $('Validate Event Request').first().json;\nconst events = $input.all().map(item=>item.json).filter(event=>event.event_key === request.event_key);\nif(events.length !== 1 || !events[0].event_name) throw new Error('UFC spreadsheet setup expected one stored event for ' + request.event_key + '; found ' + events.length + '.');\nconst event = {...request,...events[0]};\nif (event.spreadsheet_id && !/^[A-Za-z0-9_-]+$/.test(String(event.spreadsheet_id))) throw new Error('Stored UFC spreadsheet_id is invalid for ' + event.event_key + '.');\nconst escapedName = (event.event_name + ' — Transcripts').replace(/\\\\/g,'\\\\\\\\').replace(/'/g, \"\\\\'\");\nreturn [{json:{...event,__drive_query: \"name = '\" + escapedName + \"' and 'YOUR_FOLDERID' in parents and mimeType = 'application/vnd.google-apps.spreadsheet' and trashed = false\"}}];"
+      }
+    },
+    {
+      "id": "c82770cb-ab9d-4e66-b75e-e5f2586eb57c",
+      "name": "Spreadsheet Already Saved?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ String($json.spreadsheet_id || '').trim() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "b94ec349-541c-4147-aa1c-a53f91d68187",
+      "name": "Find Existing UFC Spreadsheet",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1120,
+        80
+      ],
+      "parameters": {
+        "resource": "fileFolder",
+        "operation": "search",
+        "searchMethod": "query",
+        "queryString": "={{ $json.__drive_query }}",
+        "returnAll": true,
+        "filter": {
+          "includeTrashed": false
+        },
+        "options": {
+          "fields": [
+            "id",
+            "name"
+          ]
+        }
+      },
+      "alwaysOutputData": true,
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "googleDriveOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "abba41b0-899f-450e-b331-93330ff25543",
+      "name": "Select Existing Copy",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        80
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const matches=$input.all().map(item=>item.json).filter(file=>file.id);\nif(matches.length>1) throw new Error('More than one UFC spreadsheet matches this event. Choose the correct spreadsheet_id in ufc_events before retrying.');\nreturn [{json:{...$('Validate Stored Event').first().json,__copy_id:matches[0]?.id || ''}}];"
+      }
+    },
+    {
+      "id": "c2e49037-a749-4453-b7b8-10e5bf66b542",
+      "name": "Existing Copy Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1568,
+        80
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ String($json.__copy_id || '').trim() }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "ba57f09a-9a93-4baf-a366-cc9f0494fd70",
+      "name": "Copy UFC Transcript Template",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1792,
+        144
+      ],
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "YOUR_FILEID",
+          "mode": "id"
+        },
+        "name": "={{ $json.event_name + ' — Transcripts' }}",
+        "sameFolder": false,
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "YOUR_FOLDERID",
+          "mode": "id"
+        },
+        "options": {},
+        "resource": "file"
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "name": "googleDriveOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "b02623c3-b78c-4d33-9265-e95210e1d1a0",
+      "name": "Prepare UFC Spreadsheet Details",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2016,
+        80
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const event=$('Validate Stored Event').first().json;\nconst spreadsheetId=String($input.first().json.id || $input.first().json.__copy_id || '');\nif(!/^[A-Za-z0-9_-]+$/.test(spreadsheetId)) throw new Error('Google Drive did not return a valid UFC spreadsheet ID.');\nconst {__drive_query,...output}=event;\nreturn [{json:{...output,spreadsheet_id:spreadsheetId,spreadsheet_url:'https://docs.google.com/spreadsheets/d/'+spreadsheetId+'/edit'}}];"
+      }
+    },
+    {
+      "id": "9bd501dd-aa4f-4a11-9bd2-21f1ce89b640",
+      "name": "Save UFC Spreadsheet",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2240,
+        80
+      ],
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WTTpdZSDVOxOB3Ex",
+          "mode": "list",
+          "cachedResultName": "ufc_events",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/WTTpdZSDVOxOB3Ex"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_key",
+              "keyValue": "={{ $json.event_key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "spreadsheet_id": "={{ $json.spreadsheet_id }}",
+            "spreadsheet_url": "={{ $json.spreadsheet_url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "event_name",
+              "displayName": "event_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "event_datetime_local",
+              "displayName": "event_datetime_local",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "active",
+              "displayName": "active",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "spreadsheet_id",
+              "displayName": "spreadsheet_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "spreadsheet_url",
+              "displayName": "spreadsheet_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "closed_at",
+              "displayName": "closed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "resource": "row"
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "5fd020a3-9064-4d81-a677-d0f34f4375c1",
+      "name": "UFC Event Ready",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2464,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const rows=$input.all().map(item=>item.json).filter(event=>event.event_key && event.spreadsheet_id);\nif(rows.length !== 1) throw new Error('UFC spreadsheet setup did not return one saved event.');\nconst {__drive_query,__copy_id,...event}=rows[0];\nreturn [{json:event}];"
+      }
+    },
+    {
+      "id": "b7f17648-260c-40ca-a638-461a929756ec",
+      "name": "Populate Empty UFC Fight Card",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        2700,
+        0
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "SBBK0hOGx2uPYpm4",
+          "cachedResultName": "UFC | svc.populate_fight_card"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    }
+  ],
+  "nodeGroups": [
+    {
+      "id": "e9a0ed50-707e-466c-b592-fe9c8f2b0ecd",
+      "name": "Find stored event",
+      "nodeNames": [
+        "Validate Event Request",
+        "Read UFC Event",
+        "Validate Stored Event"
+      ],
+      "description": "Validate the requested event and use its saved spreadsheet when available."
+    },
+    {
+      "id": "9f265c33-aca7-4b3b-8e93-f69f862888b9",
+      "name": "Recover or create spreadsheet",
+      "nodeNames": [
+        "Find Existing UFC Spreadsheet",
+        "Select Existing Copy",
+        "Existing Copy Found?",
+        "Copy UFC Transcript Template",
+        "Prepare UFC Spreadsheet Details",
+        "Save UFC Spreadsheet"
+      ],
+      "description": "Reuse a matching Drive copy or copy the UFC template, then save its link on the event."
+    }
+  ]
+}

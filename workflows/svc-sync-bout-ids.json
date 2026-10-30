@@ -1,0 +1,662 @@
+{
+  "id": "ya1uS9XFsrlhq6e3",
+  "name": "UFC | svc.sync_bout_ids",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki",
+    "timezone": "Australia/Sydney",
+    "executionTimeout": 300,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [],
+  "description": "Gives every fight a stable bout_id: writes Fight Card column I and re-keys Picks, Props and Fight Analysis rows from fight_order to bout IDs. Writes only those columns, verifies by read-back, and is a no-op when already in sync.",
+  "connections": {
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Read Fight Card State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Fight Card State": {
+      "main": [
+        [
+          {
+            "node": "Read Fight Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Fight Card": {
+      "main": [
+        [
+          {
+            "node": "Read Picks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Picks": {
+      "main": [
+        [
+          {
+            "node": "Read Props",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Props": {
+      "main": [
+        [
+          {
+            "node": "Read Fight Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Fight Analysis": {
+      "main": [
+        [
+          {
+            "node": "Plan Bout IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Plan Bout IDs": {
+      "main": [
+        [
+          {
+            "node": "Bout IDs Need Writing?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bout IDs Need Writing?": {
+      "main": [
+        [
+          {
+            "node": "Split Column Writes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Bout ID Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Column Writes": {
+      "main": [
+        [
+          {
+            "node": "Each Column Write",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Each Column Write": {
+      "main": [
+        [
+          {
+            "node": "Recheck Fight Card",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Write Column",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Column": {
+      "main": [
+        [
+          {
+            "node": "Each Column Write",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Explain Write Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recheck Fight Card": {
+      "main": [
+        [
+          {
+            "node": "Recheck Picks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recheck Picks": {
+      "main": [
+        [
+          {
+            "node": "Recheck Props",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recheck Props": {
+      "main": [
+        [
+          {
+            "node": "Recheck Fight Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recheck Fight Analysis": {
+      "main": [
+        [
+          {
+            "node": "Verify Bout IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify Bout IDs": {
+      "main": [
+        [
+          {
+            "node": "Return Bout ID Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "d12823af-01b6-40c1-a060-084263ad5bc8",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    },
+    {
+      "id": "4c1479c9-b705-4c4c-8f44-f2b55c89e474",
+      "name": "Plan Bout IDs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Gives every Fight Card bout and every Picks/Props/Fight Analysis row a stable bout_id, and\n// rewrites legacy fight_order-based row IDs (video|pick|3) to bout-based IDs (video|pick|ufc:13133).\n// Only column I of Fight Card and the id + bout_id columns of each tab are written. Re-running is a no-op.\nconst BASE=['fight_order','fighter_a','fighter_b','fighter_a_aliases','fighter_b_aliases','bout_type','scheduled_rounds','weight_class'];\nconst TABS=[\n {sheet:'Picks',node:'Read Picks',idCol:'pick_id',kind:'pick'},\n {sheet:'Props',node:'Read Props',idCol:'prop_id',kind:'prop'},\n {sheet:'Fight Analysis',node:'Read Fight Analysis',idCol:'fight_analysis_id',kind:'fight'},\n];\nconst text=v=>String(v??'').trim();\nconst norm=v=>text(v).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');\nconst pair=(a,b)=>[norm(a),norm(b)].sort().join('|');\nconst surname=v=>{const words=text(v).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().split(/\\s+/).map(w=>w.replace(/[^a-z0-9]/g,'')).filter(w=>w&&!['jr','sr','ii','iii','iv'].includes(w));return words[words.length-1]||'';};\nconst surnamePair=(a,b)=>[surname(a),surname(b)].sort().join('|');\nconst samePair=(a1,b1,a2,b2)=>pair(a1,b1)===pair(a2,b2)||surnamePair(a1,b1)===surnamePair(a2,b2);\nconst colName=index=>{let n=index+1,s='';while(n>0){const m=(n-1)%26;s=String.fromCharCode(65+m)+s;n=Math.floor((n-1)/26);}return s;};\n\nconst event=$('When Called').first().json;\nif(!event.event_key||!/^[A-Za-z0-9_-]+$/.test(String(event.spreadsheet_id||'')))throw new Error('Bout ID sync needs an event with a saved spreadsheet.');\nconst states=$('Read Fight Card State').all().map(i=>i.json).filter(s=>s.event_key===event.event_key&&s.spreadsheet_id===event.spreadsheet_id);\nif(states.length>1)throw new Error('Duplicate fight-card state records need review before syncing bout IDs.');\nconst state=states[0];\nif(!state||!['READY','PRESERVED'].includes(state.status))throw new Error('Bout ID sync needs a READY or PRESERVED fight card.');\nconst saved=JSON.parse(state.source_card_json||'[]');\n\n// Fight Card: each row must match the saved card at the same fight order.\nconst fcRows=$('Read Fight Card').first().json.rows||[];\nif(BASE.some((h,i)=>text(fcRows[0]?.[i])!==h))throw new Error('Fight Card headers changed. Bout ID sync stopped.');\nconst fcHeaderI=text(fcRows[0]?.[8]);\nif(fcHeaderI&&fcHeaderI!=='bout_id')throw new Error('Fight Card column I is already used for '+fcHeaderI+'.');\nconst fcData=fcRows.slice(1);\nconst fcCount=fcData.filter(r=>r.slice(0,8).some(v=>text(v))).length;\nif(!fcCount)throw new Error('Fight Card is empty. Bout ID sync stopped.');\nif(fcData.slice(0,fcCount).some(r=>!r.slice(0,8).some(v=>text(v))))throw new Error('Fight Card has blank rows between fights. Review before syncing bout IDs.');\nconst bouts=fcData.slice(0,fcCount).map((r,i)=>{\n const order=Number(r[0]);\n if(order!==i+1)throw new Error('Fight Card has invalid order at row '+(i+2)+'.');\n const s=saved.find(b=>Number(b.fight_order)===order);\n if(!s||pair(s.fighter_a,s.fighter_b)!==pair(r[1],r[2]))throw new Error('Fight Card fight '+order+' does not match the saved card. Review before syncing bout IDs.');\n // Cards entered by hand have no UFC id; derive a stable one from the fighters.\n const boutId=text(s.bout_id)||('card:'+[norm(r[1]),norm(r[2])].sort().join('-'));\n const current=text(r[8]);\n // A name-based id is upgraded once the saved card learns the bout's UFC id; any other change is refused.\n const upgrade=current.startsWith('card:')&&boutId.startsWith('ufc:');\n if(current&&current!==boutId&&!upgrade)throw new Error('Fight Card fight '+order+' has bout_id '+current+' but the saved card says '+boutId+'.');\n return {order,fighter_a:text(r[1]),fighter_b:text(r[2]),bout_id:boutId,current,old_id:upgrade?current:null};\n});\nif(new Set(bouts.map(b=>b.bout_id)).size!==bouts.length)throw new Error('Fight Card bout IDs are not unique.');\nconst byOrder=new Map(bouts.map(b=>[b.order,b]));\nconst byId=new Map([...bouts.map(b=>[b.bout_id,b]),...bouts.filter(b=>b.old_id).map(b=>[b.old_id,b])]);\n\nconst writes=[];\nconst expected=[];\nconst summary={ufc_ids_adopted:bouts.filter(b=>b.old_id).length,fight_card_bout_ids_written:0,headers_added:[],rows_rekeyed:{},rows_bout_id_set:{}};\nif(fcHeaderI!=='bout_id'||bouts.some(b=>b.current!==b.bout_id)){\n const rows=[['bout_id'],...bouts.map(b=>[b.bout_id])];\n writes.push({label:'Fight Card bout_id',range:\"'Fight Card'!I1:I\"+rows.length,rows});\n summary.fight_card_bout_ids_written=bouts.filter(b=>b.current!==b.bout_id).length;\n}\nexpected.push({sheet:'Fight Card',node:'Recheck Fight Card',column:8,values:['bout_id',...bouts.map(b=>b.bout_id)]});\n\nconst idWrites=[];\nfor(const tab of TABS){\n const rows=$(tab.node).first().json.rows||[];\n const header=(rows[0]||[]).map(text);\n if(!header.length)throw new Error(tab.sheet+' has no header row.');\n const col=name=>header.indexOf(name);\n const idx={id:col(tab.idCol),order:col('fight_order'),a:col('fighter_a'),b:col('fighter_b'),event:col('event_key'),video:col('video_id')};\n const statusIdx=col('review_status');\n const missing=Object.entries(idx).filter(([,i])=>i<0).map(([k])=>k);\n if(missing.length)throw new Error(tab.sheet+' is missing columns needed for bout IDs: '+missing.join(', ')+'.');\n const addHeader=col('bout_id')<0;\n const boutIdx=addHeader?header.length:col('bout_id');\n const ids=[tab.idCol],boutIds=['bout_id'];\n let rekeyed=0,boutSet=0;\n rows.slice(1).forEach((r,k)=>{\n  const rowNo=k+2;\n  const id=text(r[idx.id]),bout=text(r[boutIdx]);\n  // Rows voided by a card change keep their ids; their bout has left the card.\n  if(!r.some(v=>text(v))||text(r[idx.event])!==event.event_key||(statusIdx>=0&&text(r[statusIdx]).startsWith('VOID'))){ids.push(id);boutIds.push(bout);return;}\n  const order=Number(r[idx.order]);\n  const b=bout?byId.get(bout):byOrder.get(order);\n  if(!b)throw new Error(tab.sheet+' row '+rowNo+' does not match any bout on the Fight Card.');\n  if(b.order!==order)throw new Error(tab.sheet+' row '+rowNo+' has fight_order '+order+' but bout '+b.bout_id+' is fight '+b.order+'.');\n  if(!samePair(r[idx.a],r[idx.b],b.fighter_a,b.fighter_b))throw new Error(tab.sheet+' row '+rowNo+' fighters do not match Fight Card fight '+b.order+'.');\n  const video=text(r[idx.video]);\n  const m=tab.kind==='prop'?id.match(/^([^|]+)\\|prop\\|([^|]+)\\|(.+)$/):id.match(new RegExp('^([^|]+)\\\\|'+tab.kind+'\\\\|([^|]+)$'));\n  if(!m||m[1]!==video)throw new Error(tab.sheet+' row '+rowNo+' has an unrecognised '+tab.idCol+': '+id);\n  if(/^\\d+$/.test(m[2])&&Number(m[2])!==order)throw new Error(tab.sheet+' row '+rowNo+' ID fight number does not match its fight_order.');\n  if(!/^\\d+$/.test(m[2])&&m[2]!==b.bout_id&&m[2]!==b.old_id)throw new Error(tab.sheet+' row '+rowNo+' ID points at a different bout than its bout_id.');\n  const newId=tab.kind==='prop'?m[1]+'|prop|'+b.bout_id+'|'+m[3]:m[1]+'|'+tab.kind+'|'+b.bout_id;\n  if(newId!==id)rekeyed++;\n  if(bout!==b.bout_id)boutSet++;\n  ids.push(newId);boutIds.push(b.bout_id);\n });\n const seen=new Set();\n ids.slice(1).filter(Boolean).forEach(v=>{if(seen.has(v))throw new Error(tab.sheet+' would contain duplicate '+tab.idCol+' '+v+'.');seen.add(v);});\n const boutCol=colName(boutIdx),idCol=colName(idx.id);\n if(addHeader||boutSet)writes.push({label:tab.sheet+' bout_id',range:\"'\"+tab.sheet+\"'!\"+boutCol+'1:'+boutCol+boutIds.length,rows:boutIds.map(v=>[v]),new_column:addHeader});\n // ID columns are written after every bout_id column, so a partial run can always be resumed.\n if(rekeyed)idWrites.push({label:tab.sheet+' '+tab.idCol,range:\"'\"+tab.sheet+\"'!\"+idCol+'1:'+idCol+ids.length,rows:ids.map(v=>[v])});\n expected.push({sheet:tab.sheet,node:'Recheck '+tab.sheet,column:boutIdx,values:boutIds});\n expected.push({sheet:tab.sheet,node:'Recheck '+tab.sheet,column:idx.id,values:ids});\n if(addHeader)summary.headers_added.push(tab.sheet);\n summary.rows_rekeyed[tab.sheet]=rekeyed;\n summary.rows_bout_id_set[tab.sheet]=boutSet;\n}\nwrites.push(...idWrites);\nconst dryRun=event.dry_run===true;\nreturn [{json:{event,bout_ids:Object.fromEntries(bouts.map(b=>[b.order,b.bout_id])),writes,expected,summary,dry_run:dryRun,needs_write:writes.length>0&&!dryRun}}];\n"
+      }
+    },
+    {
+      "id": "c25c9873-9a2d-474b-a63b-48739f0f373d",
+      "name": "Read Fight Card State",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "oCOZ7hzgZ2htYL9F",
+          "cachedResultName": "ufc_fight_card_state"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.event_key }}"
+            },
+            {
+              "keyName": "spreadsheet_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.spreadsheet_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "a1bf0d4c-e6ae-481b-a6e9-a728bd2fe6b0",
+      "name": "Read Fight Card",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('When Called').first().json.spreadsheet_id }}",
+        "range": "'Fight Card'!A:I",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "continue": true,
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "54507acc-d1e2-4725-8919-c87e5d136381",
+      "name": "Read Picks",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        672,
+        0
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('When Called').first().json.spreadsheet_id }}",
+        "range": "'Picks'!A:ZZ",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "continue": true,
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "408bd80d-3973-448b-8274-185e8c9682e0",
+      "name": "Read Props",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        896,
+        0
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('When Called').first().json.spreadsheet_id }}",
+        "range": "'Props'!A:ZZ",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "continue": true,
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "e4caf9ae-5384-43cd-820f-1207ecac331c",
+      "name": "Read Fight Analysis",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        0
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('When Called').first().json.spreadsheet_id }}",
+        "range": "'Fight Analysis'!A:ZZ",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "continue": true,
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "c6693f6f-2fda-4a07-a4a2-0bb0d432b1f0",
+      "name": "Bout IDs Need Writing?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1568,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.needs_write }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "e5c20d78-075a-46f3-9aae-adb861927087",
+      "name": "Split Column Writes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        -160
+      ],
+      "parameters": {
+        "jsCode": "return $('Plan Bout IDs').first().json.writes.map(w=>({json:w}));"
+      }
+    },
+    {
+      "id": "6b712a2a-f03c-4fd5-b3a1-07a34baa95e3",
+      "name": "Each Column Write",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2016,
+        -160
+      ],
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      }
+    },
+    {
+      "id": "84d4d393-0637-4a68-b4eb-18edafe4ebed",
+      "name": "Write Column",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        -240
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "update",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('When Called').first().json.spreadsheet_id }}",
+        "range": "={{ $json.range }}",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "valueInputMode": "RAW"
+        }
+      },
+      "onError": "continueErrorOutput",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "b9017d5e-7284-4638-840c-4c000c482b6e",
+      "name": "Recheck Fight Card",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        2240,
+        -40
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('When Called').first().json.spreadsheet_id }}",
+        "range": "'Fight Card'!A:I",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "continue": true,
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "929a449e-d84a-46b9-8f9c-06dc276802a4",
+      "name": "Recheck Picks",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        2464,
+        -40
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('When Called').first().json.spreadsheet_id }}",
+        "range": "'Picks'!A:ZZ",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "continue": true,
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "0e0656a0-cfc5-44ca-ab4e-f4f6d031a365",
+      "name": "Recheck Props",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        2688,
+        -40
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('When Called').first().json.spreadsheet_id }}",
+        "range": "'Props'!A:ZZ",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "continue": true,
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "a13b5705-011a-4ec5-b944-5abd9ca5e3e3",
+      "name": "Recheck Fight Analysis",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 1,
+      "position": [
+        2912,
+        -40
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "authentication": "oAuth2",
+        "sheetId": "={{ $('When Called').first().json.spreadsheet_id }}",
+        "range": "'Fight Analysis'!A:ZZ",
+        "rawData": true,
+        "dataProperty": "rows",
+        "options": {
+          "continue": true,
+          "valueRenderMode": "UNFORMATTED_VALUE"
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "2ea64193-f18d-4fab-8733-17ebef31ba73",
+      "name": "Verify Bout IDs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3136,
+        -40
+      ],
+      "parameters": {
+        "jsCode": "// Reads every written column back and confirms it holds exactly what was planned.\nconst plan=$('Plan Bout IDs').first().json;\nconst text=v=>String(v??'').trim();\nconst problems=[];\nfor(const check of plan.expected){\n const rows=$(check.node).first().json.rows||[];\n if(rows.length!==check.values.length)problems.push(check.sheet+' has '+rows.length+' rows; expected '+check.values.length+'. It changed during the sync.');\n check.values.forEach((value,i)=>{\n  if(text(rows[i]?.[check.column])!==text(value))problems.push(check.sheet+' row '+(i+1)+' column '+(check.column+1)+' reads \"'+text(rows[i]?.[check.column])+'\", expected \"'+value+'\".');\n });\n}\nif(problems.length)throw new Error('Bout ID sync read-back failed: '+problems.slice(0,5).join(' | ')+(problems.length>5?' (+'+(problems.length-5)+' more)':''));\nreturn [{json:{verified:true}}];\n"
+      }
+    },
+    {
+      "id": "bf1c0f80-a572-40bd-bfa5-8fe1112c07bc",
+      "name": "Return Bout ID Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3360,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const plan=$('Plan Bout IDs').first().json;\nconst status=plan.dry_run?'PREVIEW':plan.writes.length?'SYNCED':'UNCHANGED';\nreturn [{json:{...plan.event,bout_id_sync:{status,...plan.summary,writes:plan.writes.map(w=>w.label)},fight_bout_ids:plan.bout_ids}}];\n"
+      }
+    },
+    {
+      "id": "b20dd40e-6fcb-45a1-9312-fd9bfcef84eb",
+      "name": "Explain Write Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2464,
+        -320
+      ],
+      "parameters": {
+        "jsCode": "// Turns a failed column write into a message that says which tab needs room.\nlet write={};\ntry{write=$('Each Column Write').item.json;}catch{write=$input.first().json;}\nconst raw=$input.first().json.error;\nconst detail=typeof raw==='string'?raw:(raw?.description||raw?.message||JSON.stringify(raw||{}));\nconst tab=(String(write.range||'').match(/^'(.+)'!/)||[])[1]||'the target';\nconst hint=/grid limits/i.test(detail)||write.new_column?' The '+tab+' tab has no empty column for bout_id: add a bout_id header in its next empty column (or insert one empty column at the end), then re-run.':'';\nthrow new Error('Could not write '+(write.label||'a bout ID column')+' ('+(write.range||'unknown range')+'): '+detail+'.'+hint);\n"
+      }
+    }
+  ],
+  "nodeGroups": [
+    {
+      "id": "2a6faa47-7029-4046-b1e2-9ba0159aaa64",
+      "name": "Read card and pick tabs",
+      "nodeNames": [
+        "Read Fight Card State",
+        "Read Fight Card",
+        "Read Picks",
+        "Read Props",
+        "Read Fight Analysis",
+        "Plan Bout IDs"
+      ],
+      "description": "Load the saved card state, Fight Card and the Picks, Props and Fight Analysis tabs, then plan the bout_id column writes."
+    },
+    {
+      "id": "ef39b49f-82f0-41dc-9430-7ca1e1ae04fa",
+      "name": "Verify written columns",
+      "nodeNames": [
+        "Recheck Fight Card",
+        "Recheck Picks",
+        "Recheck Props",
+        "Recheck Fight Analysis",
+        "Verify Bout IDs"
+      ],
+      "description": "Read every tab back and confirm each written column holds exactly the planned values."
+    }
+  ]
+}

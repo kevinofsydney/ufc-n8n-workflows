@@ -1,0 +1,703 @@
+{
+  "id": "oC1PuXuYb1pdeO0J",
+  "name": "UFC | svc.health_sweep",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki",
+    "timezone": "Australia/Sydney",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [],
+  "description": "Every 30 minutes, checks for problems that never raise an error (missed or stuck runs, card and video issues), keeps ufc_incidents up to date and resolves cleared incidents.",
+  "connections": {
+    "Every 30 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Read Pipeline Runs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Sweep": {
+      "main": [
+        [
+          {
+            "node": "Read Pipeline Runs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Pipeline Runs": {
+      "main": [
+        [
+          {
+            "node": "Read Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Events": {
+      "main": [
+        [
+          {
+            "node": "Read Card States",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Card States": {
+      "main": [
+        [
+          {
+            "node": "Read Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Videos": {
+      "main": [
+        [
+          {
+            "node": "Read Incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Incidents": {
+      "main": [
+        [
+          {
+            "node": "Sweep Pipeline Health",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sweep Pipeline Health": {
+      "main": [
+        [
+          {
+            "node": "Split Incident Updates",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send Health Alert?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Diagnose Unhandled Incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Incident Updates": {
+      "main": [
+        [
+          {
+            "node": "Any Updates?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Any Updates?": {
+      "main": [
+        [
+          {
+            "node": "Record Health Incident",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Health Alert?": {
+      "main": [
+        [
+          {
+            "node": "Send Health Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "1f0a9b05-0004-4175-9119-0deedfedfe50",
+      "name": "Every 30 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        -100
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "35747188-a079-442a-b25b-411e0c7f17cb",
+      "name": "Run Sweep",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        100
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    },
+    {
+      "id": "31771845-3b5a-491b-8a3e-b684afaaffbb",
+      "name": "Read Pipeline Runs",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Tb9mpsswwq6uJvr6",
+          "cachedResultName": "ufc_pipeline_runs"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "bfb92eb2-7cd2-4c32-9ba9-c7f6d5eba379",
+      "name": "Read Events",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        448,
+        0
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "WTTpdZSDVOxOB3Ex",
+          "cachedResultName": "ufc_events"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "6ba67f77-dc57-4e97-b6ab-25a671460f66",
+      "name": "Read Card States",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        0
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "oCOZ7hzgZ2htYL9F",
+          "cachedResultName": "ufc_fight_card_state"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "9ccef8d7-e67e-41da-86e8-e7ee3dc7e643",
+      "name": "Read Videos",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        0
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "cAQonN6NYOY3fqxl",
+          "cachedResultName": "ufc_videos"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "b2ef9021-52e8-4ef0-a899-862e244b77e7",
+      "name": "Read Incidents",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        0
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "e426f413-8f38-485d-8df6-b2fd5992ef0c",
+      "name": "Sweep Pipeline Health",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Health sweep: finds problems that never raise an error, keeps their incidents up to date, and resolves\n// incidents that have cleared. Alerts go out as one message per sweep, each problem at most once a day.\nconst WATCH={y20ZZYzBVS6y8kC0:{name:'2. Extract Picker Video Transcripts',maxGapHours:38},BvLnPFMwQ2vhPkgv:{name:'3. Analyse Picker Video Transcripts',maxGapHours:38}};\nconst STUCK_RUN_HOURS=2,STUCK_VIDEO_HOURS=3,CARD_CHANGED_HOURS=13,CARD_READY_DAYS=5,WAITING_CHANGE_HOURS=24;\nlet request={};try{request=$('Run Sweep').first().json;}catch(e){request={};}\nconst now=Date.now(),nowIso=new Date(now).toISOString();\nconst hours=t=>t?(now-Date.parse(t))/3600e3:Infinity;\nconst text=v=>String(v??'').trim();\nconst esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');\nconst rows=n=>$(n).all().map(i=>i.json).filter(r=>r&&r.id!==undefined);\nconst runs=rows('Read Pipeline Runs'),events=rows('Read Events'),states=rows('Read Card States'),videos=rows('Read Videos'),incidents=rows('Read Incidents');\nconst when=r=>r.started_at||r.finished_at||r.createdAt;\n\n// 1. Find every problem that is true right now.\nconst problems=[];\nconst add=(check,subject,workflow,message)=>problems.push({incident_key:'health|'+check+'|'+subject,check,workflow,message});\nfor(const [id,w] of Object.entries(WATCH)){\n const own=runs.filter(r=>r.workflow_id===id||text(r.workflow_name).replace(/^UFC \\| /,'')===w.name).sort((a,b)=>Date.parse(when(b))-Date.parse(when(a)));\n const latest=own[0];\n if(!latest)add('no_runs',id,w.name,w.name+' has no recorded runs.');\n else if(hours(when(latest))>w.maxGapHours)add('missed_runs',id,w.name,w.name+' has not run for '+Math.round(hours(when(latest)))+' hours (expected at least every '+w.maxGapHours+').');\n else if(latest.state==='running'&&hours(latest.started_at)>STUCK_RUN_HOURS)add('stuck_run',id,w.name,w.name+' started '+Math.round(hours(latest.started_at))+' hours ago and never finished (execution '+esc(latest.run_key)+').');\n}\nconst active=events.filter(e=>e.active===true||String(e.active)==='true');\nif(active.length!==1)add('active_event','count','1. Set Active UFC Event',active.length?active.length+' events are marked active; the pipeline expects exactly one.':'No UFC event is marked active.');\nconst event=active.length===1?active[0]:null;\nif(event){\n if(!/^[A-Za-z0-9_-]+$/.test(text(event.spreadsheet_id)))add('no_spreadsheet',event.event_key,'svc.ensure_event_spreadsheet',esc(event.event_name)+' has no spreadsheet yet.');\n const state=states.find(s=>s.event_key===event.event_key&&s.spreadsheet_id===event.spreadsheet_id);\n const daysOut=(Date.parse(event.event_datetime_local)-now)/864e5;\n if(daysOut>0&&daysOut<=CARD_READY_DAYS&&(!state||!['READY','PRESERVED'].includes(state.status)))add('card_not_ready',event.event_key,'svc.populate_fight_card','The fight card for '+esc(event.event_name)+' is '+(state?state.status:'not set up')+' with '+Math.round(daysOut*24)+' hours to go.');\n if(state&&state.change_status==='NEEDS_REVIEW')add('card_needs_review',event.event_key,'svc.apply_card_changes','A card change for '+esc(event.event_name)+' needs review (too many removals at once).');\n if(state&&['CHANGED','PARTLY_APPLIED'].includes(state.change_status)&&hours(state.pending_first_seen_at)>WAITING_CHANGE_HOURS&&daysOut>0)add('card_change_waiting',event.event_key,'svc.apply_card_changes','A card change for '+esc(event.event_name)+' has been waiting '+Math.round(hours(state.pending_first_seen_at))+' hours (removals need ESPN to drop the bout too).');\n const mine=videos.filter(v=>v.event_key===event.event_key);\n const stuck=mine.filter(v=>v.analysis_status==='PROCESSING'&&hours(v.last_attempt_at||v.updatedAt)>STUCK_VIDEO_HOURS);\n if(stuck.length)add('stuck_videos',event.event_key,'3. Analyse Picker Video Transcripts',stuck.length+' video'+(stuck.length>1?'s have':' has')+' been PROCESSING for over '+STUCK_VIDEO_HOURS+' hours: '+stuck.slice(0,3).map(v=>esc(v.channel_name)).join(', ')+'.');\n const waiting=mine.filter(v=>v.analysis_status==='CARD_CHANGED'&&hours(v.retry_requested_at||v.updatedAt)>CARD_CHANGED_HOURS);\n if(waiting.length)add('reanalysis_waiting',event.event_key,'3. Analyse Picker Video Transcripts',waiting.length+' video'+(waiting.length>1?'s':'')+' flagged for re-analysis after a card change '+(waiting.length>1?'have':'has')+' waited over '+CARD_CHANGED_HOURS+' hours.');\n}\n\n// 2. Update health incidents: open or refresh active problems, resolve cleared ones.\nconst byKey=new Map(incidents.map(r=>[r.incident_key,r]));\nconst updates=[],alertLines=[],resolvedLines=[];\nfor(const p of problems){\n const prev=byKey.get(p.incident_key);\n const reopened=!!prev&&prev.status==='resolved';\n const alert=!prev||reopened||hours(prev.last_alerted_at)>=24;\n updates.push({incident_key:p.incident_key,source:'health',workflow_id:'',workflow_name:p.workflow,node_name:p.check,category:'health',signature:p.check,last_message:p.message,\n  status:'open',occurrences:(prev&&!reopened?Number(prev.occurrences||0):0)+1,first_seen_at:prev&&!reopened?prev.first_seen_at:nowIso,last_seen_at:nowIso,\n  last_execution_id:'',last_execution_url:'',retry_count:0,last_retry_at:null,last_alerted_at:alert?nowIso:prev.last_alerted_at,resolved_at:null,resolution:''});\n if(alert)alertLines.push('• '+p.message+(prev&&!reopened?' <i>(still open)</i>':''));\n}\nconst activeKeys=new Set(problems.map(p=>p.incident_key));\nconst resolve=(r,why)=>{updates.push({...r,status:'resolved',resolved_at:nowIso,resolution:why});};\nfor(const r of incidents){\n if(r.status==='resolved')continue;\n if(r.source==='health'){if(!activeKeys.has(r.incident_key)){resolve(r,'Condition cleared');if(r.last_alerted_at)resolvedLines.push('• '+esc(r.last_message));}continue;}\n // Error incidents: the sweep only closes them on positive evidence — a later successful run of the\n // same workflow, or a retry that held. Time-based closing after 12 quiet hours belongs to\n // svc.auto_resolve_incidents, which owns that rule so the two cannot disagree.\n if(r.status==='retrying'){if(hours(r.last_retry_at)>0.75)resolve(r,'Automatic retry succeeded (no further failure)');continue;}\n const later=runs.find(x=>(x.workflow_id===r.workflow_id)&&['success','idle'].includes(x.state)&&Date.parse(when(x))>Date.parse(r.last_seen_at));\n if(later)resolve(r,'A later run succeeded ('+text(later.run_key)+')');\n}\nfor(const u of updates){delete u.id;delete u.createdAt;delete u.updatedAt;}\nconst lines=[];\nif(alertLines.length)lines.push('<b>UFC pipeline health check</b>',...alertLines);\nif(resolvedLines.length)lines.push(...(lines.length?['']:['<b>UFC pipeline health check</b>']),'<b>Resolved:</b>',...resolvedLines);\nreturn [{json:{checked_at:nowIso,problems:problems.map(p=>p.incident_key),updates,telegram_message:lines.join('\\n'),dry_run:request.dry_run===true}}];\n"
+      }
+    },
+    {
+      "id": "bcca5487-9209-4dcf-b91b-96f1faec6623",
+      "name": "Split Incident Updates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        -100
+      ],
+      "parameters": {
+        "jsCode": "const u=$('Sweep Pipeline Health').first().json.updates;\nreturn u.length?u.map(x=>({json:x})):[{json:{incident_key:null}}];"
+      }
+    },
+    {
+      "id": "afb28f98-c86a-4f54-ba2e-f563db58133c",
+      "name": "Any Updates?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1680,
+        -100
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ !!$json.incident_key }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "70831a2e-b1a2-4153-89a2-290fed5bc581",
+      "name": "Record Health Incident",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1792,
+        -100
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "incident_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.incident_key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "incident_key": "={{ $json.incident_key }}",
+            "source": "={{ $json.source }}",
+            "workflow_id": "={{ $json.workflow_id }}",
+            "workflow_name": "={{ $json.workflow_name }}",
+            "node_name": "={{ $json.node_name }}",
+            "category": "={{ $json.category }}",
+            "signature": "={{ $json.signature }}",
+            "last_message": "={{ $json.last_message }}",
+            "status": "={{ $json.status }}",
+            "occurrences": "={{ $json.occurrences }}",
+            "first_seen_at": "={{ $json.first_seen_at }}",
+            "last_seen_at": "={{ $json.last_seen_at }}",
+            "last_execution_id": "={{ $json.last_execution_id }}",
+            "last_execution_url": "={{ $json.last_execution_url }}",
+            "retry_count": "={{ $json.retry_count }}",
+            "last_retry_at": "={{ $json.last_retry_at }}",
+            "last_alerted_at": "={{ $json.last_alerted_at }}",
+            "resolved_at": "={{ $json.resolved_at }}",
+            "resolution": "={{ $json.resolution }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "incident_key",
+              "displayName": "incident_key",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "node_name",
+              "displayName": "node_name",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "signature",
+              "displayName": "signature",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "occurrences",
+              "displayName": "occurrences",
+              "type": "number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "first_seen_at",
+              "displayName": "first_seen_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "last_seen_at",
+              "displayName": "last_seen_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "last_execution_id",
+              "displayName": "last_execution_id",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "last_execution_url",
+              "displayName": "last_execution_url",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "retry_count",
+              "displayName": "retry_count",
+              "type": "number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "last_retry_at",
+              "displayName": "last_retry_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "last_alerted_at",
+              "displayName": "last_alerted_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "resolved_at",
+              "displayName": "resolved_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "resolution",
+              "displayName": "resolution",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            }
+          ]
+        },
+        "options": {
+          "dryRun": "={{ $('Sweep Pipeline Health').first().json.dry_run === true }}"
+        }
+      }
+    },
+    {
+      "id": "0bee20ab-43c9-48cd-9c3f-378ca9a1a61b",
+      "name": "Send Health Alert?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1568,
+        100
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ !!$('Sweep Pipeline Health').first().json.telegram_message && $('Sweep Pipeline Health').first().json.dry_run !== true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "c04fb7cf-741e-4edc-acf1-db5b2d7e7cca",
+      "name": "Send Health Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1792,
+        100
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "0",
+        "text": "={{ $('Sweep Pipeline Health').first().json.telegram_message }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "6145ed75-a76a-46fb-9d8b-d0b910b0bfe7",
+      "name": "Diagnose Unhandled Incidents",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.2,
+      "position": [
+        1568,
+        300
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "UB711gFJFn9OuZwb",
+          "cachedResultName": "UFC | svc.diagnose_incident"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "incident_key": "",
+            "older_than_minutes": 210,
+            "dry_run": "={{ $('Sweep Pipeline Health').first().json.dry_run === true }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "incident_key",
+              "displayName": "incident_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "string",
+              "removed": false
+            },
+            {
+              "id": "older_than_minutes",
+              "displayName": "older_than_minutes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "number",
+              "removed": false
+            },
+            {
+              "id": "dry_run",
+              "displayName": "dry_run",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "canBeUsedToMatch": true,
+              "type": "boolean",
+              "removed": false
+            }
+          ]
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      },
+      "onError": "continueRegularOutput",
+      "executeOnce": true
+    }
+  ],
+  "nodeGroups": [
+    {
+      "id": "6beec153-e458-4a5f-add3-2d8f0303c013",
+      "name": "Read pipeline state",
+      "nodeNames": [
+        "Read Pipeline Runs",
+        "Read Events",
+        "Read Card States",
+        "Read Videos",
+        "Read Incidents",
+        "Sweep Pipeline Health"
+      ],
+      "description": "Read run logs, events, card states, videos and open incidents, then find problems that never raise an error."
+    }
+  ]
+}

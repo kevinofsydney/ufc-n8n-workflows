@@ -1,0 +1,294 @@
+{
+  "mxXosIjmMSiItiYM": [
+    "Select the next future UFC event and make it the single active event used by capture, analysis and Telegram views.",
+    [
+      "Read events ordered by event_datetime_local, discard invalid/past dates and choose the nearest future event.",
+      "If none exists, send a Telegram warning. Otherwise deactivate existing active rows, activate the selected row, and notify the owner.",
+      "Pass the chosen event to ensure_event_spreadsheet, which also ensures its Fight Card is usable."
+    ],
+    "The deactivate/activate sequence is separate writes, not a database transaction. A failure between them can leave no active event; health_sweep detects that. The weekly schedule omits triggerAtDay, whose node default is Sunday."
+  ],
+  "y20ZZYzBVS6y8kC0": [
+    "Discover eligible prediction videos for the active event and save English transcript chunks to its spreadsheet.",
+    [
+      "Load all known events and the active event, ensure its spreadsheet, and write a running pipeline ledger entry.",
+      "Ordinary scans resolve all 13 channel uploads playlists with channels.list and fetch playlistItems.list pages. Each page holds 50 videos; stop on no nextPageToken or an entirely older-than-six-days page, with ten pages maximum per channel.",
+      "Normalize video IDs, owners and original publication dates. Keep recent UFC prediction/pick/breakdown titles; reject excluded formats and ambiguous or other-event titles.",
+      "Skip previously recorded videos; permit RETRY_LATER below three attempts after a five-hour gap. Process at most ten selected videos per run, with new videos ahead of retries.",
+      "Fetch English native captions with Supadata. Validate language and content, split at 49,000 characters and upsert transcript chunks by record_id.",
+      "Record CAPTURED_AUTO and transcript_appended on success; otherwise record RETRY_LATER or NO_ENGLISH_TRANSCRIPT and attempt/error metadata.",
+      "Send one completion summary and finish the run ledger. Empty scans report nothing new; API failures explicitly report an incomplete scan.",
+      "A targeted manual_retry request bypasses discovery and processes only the validated target_video_row."
+    ],
+    "Capture does not automatically invoke analysis. Scheduled analysis, /analyse or add_video handles that next step. YouTube Data API discovers metadata; Supadata still extracts captions. A completed n8n execution can contain channel errors, so inspect the run state and Telegram summary."
+  ],
+  "BvLnPFMwQ2vhPkgv": [
+    "Turn captured transcripts into structured winner picks, props and fight reasoning while preserving event and fight identity.",
+    [
+      "Load the active event, ensure its card and spreadsheet, validate the sheet contract, synchronize bout IDs, detect official card changes and apply eligible changes before extraction.",
+      "Select captured videos for this event with no analysis, retryable FAILED/RETRY state, stale PROCESSING state, explicit targeted retry or CARD_CHANGED. Automatic analysis normally caps attempts at three; PROCESSING becomes stale after one hour.",
+      "Reassemble transcript parts in order, build official-card context and mark each selected video PROCESSING, incrementing the analysis attempt count.",
+      "Request strict JSON extraction through OpenRouter using openai/gpt-6-luna-pro with deepseek/deepseek-v4.1-flash-1017 fallback, maximum 20,000 output tokens and configured provider output-price ceiling 0.66 USD per million tokens.",
+      "Parse and validate extracted fighters, fight order, confidence, props and reasoning. When a non-bingo card of at least five bouts yields fewer than three winner picks and under 30% coverage, make one diversity retry with DeepSeek.",
+      "Build stable row identifiers and write Picks, Props, Fight Analysis and Extraction Log records; verify the configured completion signals before marking the video COMPLETED.",
+      "Record model, prompt version, token/cost information and validation outcomes; deliver the Telegram summary and finish the analysis run ledger."
+    ],
+    "Explicit manual targets can bypass the automatic attempt cap; completed videos are protected by the retry service. Verify All Writes checks picks, props and extraction_log signals; it is not a transaction or a complete read-back audit of every spreadsheet cell. Fight Analysis has its own upstream write path. Configured models and ceilings are snapshot settings, not a promise of current vendor pricing."
+  ],
+  "MWmlPIyBDUKoheXO": [
+    "Maintain the event catalogue by scraping the official UFC upcoming-events page.",
+    [
+      "Fetch ufc.com/events with browser headers and STYXKEY_region=USA.US.en.Default to select the US English edition.",
+      "Extract individual event entries, normalize names, URLs, dates and event keys, then filter eligible events.",
+      "Compare against ufc_events, update existing event metadata or insert new rows, and send a Telegram notification for newly added events."
+    ],
+    "The US-region cookie is intentional because the n8n hosting region can otherwise receive another edition. This workflow discovers events; workflow 1 decides which one is active. Scraper selectors and date normalization depend on the current UFC site."
+  ],
+  "MabSJBF0Vt6sMICp": [
+    "Provide the owner-only Telegram command and inline-button entry point for the system.",
+    [
+      "Accept message and callback_query updates restricted to the configured owner chat. Normalize commands, arguments and callback data and answer button presses.",
+      "Route consensus, status, capture, analyse, grade, leaderboard, credits, retry, fixed, issue, issues, addvideo, videos and video requests.",
+      "For capture, analysis and grading, acknowledge immediately and dispatch the worker without waiting. Other routes generally wait for their service.",
+      "Build /status from events, videos, card state and pipeline-run tables; use the fallback menu for unrecognized commands."
+    ],
+    "The initial Capture started acknowledgement confirms dispatch, not a successful capture. The worker's final summary and ledger state establish the outcome. Telegram trigger ownership must remain unique when cloning this workflow."
+  ],
+  "VkgPostfkMxFPWj6": [
+    "Aggregate saved official picks into a weighted consensus and optionally explain each bout.",
+    [
+      "Read the active event's Picks, Props and Fight Analysis plus historical pick grades and consensus cache.",
+      "Exclude VOID rows and select each channel's latest official pick per fight. Compute a confidence-led vote weight: confidence_score/5 multiplied by a shrunk historical-record factor capped to 0.85–1.15.",
+      "Use 100 prior picks at the global graded baseline to shrink records, with a slope of two. Plain mode assigns each pick weight one.",
+      "Group votes by fight, report weighted support, counts, confidence and method votes. Reuse cached explanations when the input hash matches; otherwise ask openai/gpt-6-luna and cache parsed explanations.",
+      "Respond to /consensus; scheduled digests only proceed when the active event is 1–30 hours away."
+    ],
+    "Weighted vote share is support from the tracked channels, not a calibrated chance of winning. Latest extraction wins per channel and fight. The scheduled daily check can return no items outside its event window."
+  ],
+  "PulwhLsIZhfvCGxl": [
+    "Grade saved predictions against completed ESPN fight results and persist the historical record.",
+    [
+      "Choose the most recent eligible finished event with a spreadsheet. Treat start plus four hours as the initial eligibility gate; scheduled backfill excludes already graded events and events older than 180 days.",
+      "For on-demand /grade, optionally match event text and allow a regrade. Scheduled notifications are limited to events within three days; explicit requests notify.",
+      "Match an ESPN event around the stored event date, retrieve competition status, build fight results and upsert ufc_fight_results.",
+      "Exclude VOID rows, take the latest official winner pick per channel and fight, match fighters to results and grade CORRECT, INCORRECT, VOID or UNMATCHED.",
+      "Grade supported method, method-and-round, inside-distance, over/under rounds and duration props. Leave unsupported selections UNGRADED and unknown matches UNMATCHED.",
+      "Upsert pick/prop grade rows, update the event grading marker and send a scorecard when configured."
+    ],
+    "The four-hour gate alone does not prove all bouts finished; ESPN status and result matching remain necessary. Name matching uses normalized tokens and surnames. Read the grading source before changing rules such as exact over/under boundary behavior."
+  ],
+  "YeYpgLGiYlzCTopn": [
+    "Report the all-time picker leaderboard from saved grades.",
+    [
+      "Read ufc_pick_grades and ufc_prop_grades.",
+      "Aggregate correct/incorrect outcomes, high-confidence performance and prop results by channel.",
+      "Require at least 15 winner picks to rank a picker; high confidence uses score seven or above. Format and send the Telegram leaderboard."
+    ],
+    "This reads historical grades rather than calling ESPN, capture or an LLM. Missing/ungraded/void outcomes should not be interpreted as losses; the source code defines the denominators."
+  ],
+  "f2CKNtQUpZ5Rm80Z": [
+    "Answer credit-balance requests and monitor OpenRouter credit availability.",
+    [
+      "Read the openrouter row in ufc_monitor_state and distinguish a scheduled check from an explicit request.",
+      "Query /api/v1/credits and /api/v1/key with the stored OpenRouter credential.",
+      "Prefer account credits when permission allows; otherwise use the available key limit/usage information and label the source.",
+      "Save the check, remaining balance and status. Notify according to Format Balance; default threshold is USD 5 and successful low-credit deliveries update last_alerted_at."
+    ],
+    "The explicit schedule timezone is Australia/Sydney at 09:00 and 21:00. Key-limited credit information is not necessarily the whole-account balance. A missing balance is unknown, not zero."
+  ],
+  "LuALxCWYzByUY2Iq": [
+    "Return a valid event spreadsheet, reusing an existing copy before creating a new one.",
+    [
+      "Validate one event request and load the canonical stored ufc_events row.",
+      "Reuse a saved spreadsheet ID, otherwise search the configured Drive destination for an existing event copy.",
+      "If no copy exists, copy the transcript template, construct the spreadsheet details and save its ID and URL on the event.",
+      "Call populate_fight_card and return the ready event with card metadata."
+    ],
+    "This is a shared prerequisite used by activation, capture and analysis. Reuse/search reduces duplicate spreadsheets but is not a global creation lock. Google Drive and Sheets credentials need access to the template, folder and event files."
+  ],
+  "GQs7zaGeF1vZBRaj": [
+    "Check the event spreadsheet contract before analysis without changing sheet data.",
+    [
+      "Require exactly one event with a valid spreadsheet ID and construct tab/header contracts.",
+      "Read headers for Picks, Props, Extraction Log, Fight Analysis and Transcripts, plus Fight Card and card-state data.",
+      "Validate required columns, exact/allowed header rules and the card-state expectations; return the event with schema metadata or throw an actionable mismatch."
+    ],
+    "Some tabs require exact schemas; Transcripts and Fight Card allow additional fields. Picks has legacy permitted duplicate extraction metadata headers. Optional bout_id columns support the stable-ID migration. Do not weaken this guard just to let malformed sheets continue."
+  ],
+  "SBBK0hOGx2uPYpm4": [
+    "Build a verified Fight Card for an empty event sheet while protecting existing extraction.",
+    [
+      "Validate the event and classify the existing Fight Card and saved card state.",
+      "For an empty destination, inspect existing extraction before any population write.",
+      "Fetch the official UFC event page with the US-region cookie and ESPN data around the event date. Cross-check card identity, competitors, order and rounds.",
+      "Fetch official athlete profiles for verified nickname/alias context and construct the Fight Card matrix.",
+      "Recheck that the destination is still safe, write the card, read it back and verify before recording READY state and event metadata.",
+      "Preserve existing cards; a separate verified path can backfill missing weight classes and read them back. Pending/unpublished official cards return the configured pending state."
+    ],
+    "UFC supplies official order/names; ESPN is a verification source. This is not the general card-replacement worker: detect_card_changes and apply_card_changes handle subsequent changes. Existing extracted picks must not be silently overwritten."
+  ],
+  "ya1uS9XFsrlhq6e3": [
+    "Give bouts stable identities and align spreadsheet references to those identities.",
+    [
+      "Read Fight Card state and Fight Card A:I plus all Picks, Props and Fight Analysis columns.",
+      "Plan stable bout_id values, preferring official UFC bout identities where available, and map existing extraction rows to bouts.",
+      "If already synchronized, return unchanged. Otherwise write only planned identity/reference columns sequentially.",
+      "Read all affected tabs back and verify the planned identities before returning status."
+    ],
+    "fight_order can change when the card is rearranged; bout_id is the durable association. Keep Fight Card column I available and preserve existing row IDs and identity mappings. A read-back failure stops completion."
+  ],
+  "UDRrGRyeFPL9Lk3S": [
+    "Detect differences between the saved Fight Card and the current official card.",
+    [
+      "Prepare the event source URL and skip unsuitable requests according to the guard path.",
+      "Read saved Fight Card and state, fetch the official UFC page and ESPN cross-check data.",
+      "Compare bouts to identify additions, removals, replacements, order changes, metadata changes and adoption of official UFC bout IDs.",
+      "Persist the comparison, fingerprints and pending change details in ufc_fight_card_state and return card-check metadata."
+    ],
+    "This workflow records a proposed difference and does not edit the spreadsheet. Removal/replacement safety depends on cross-source confirmation and the apply worker's gates; a changed page alone should not erase predictions."
+  ],
+  "jWFGMw2faC2zLseh": [
+    "Apply eligible recorded Fight Card changes and queue affected videos for re-analysis.",
+    [
+      "Read pending card state, Fight Card, Picks, Props, Fight Analysis, event videos and transcripts.",
+      "Plan changes, preserving stable bout associations. Reorder existing references, void rows for removed/replaced bouts and identify videos needing a fresh extraction.",
+      "Apply only allowed changes. Require the configured removal confirmation and review gates; uncertain or excessive removals remain pending/NEEDS_REVIEW.",
+      "Write planned spreadsheet columns sequentially and read the affected tabs back to verify the result.",
+      "Record applied/partially applied state, flag relevant captured videos CARD_CHANGED, and send one change summary when configured."
+    ],
+    "This worker mutates sheet data. It does not itself run the analysis model; CARD_CHANGED videos are selected by the next analysis pass. Column writes are not atomic, so PARTLY_APPLIED and verification failures need inspection before retrying."
+  ],
+  "G1EMMFVSzpGE4q3Q": [
+    "Accept a targeted owner retry for one unfinished active-event video.",
+    [
+      "Parse /retry [capture|analyse] VIDEO_ID or a supported YouTube watch URL and require the owner chat.",
+      "Require exactly one active event and one matching video row, with an unambiguous title match.",
+      "Enforce a five-minute request gap; auto-select capture if no transcript exists or analysis if it does.",
+      "Reject already captured capture requests, completed analyses and recently PROCESSING analyses. Save RETRY_REQUESTED metadata without resetting attempt counters.",
+      "Dispatch only the selected capture/analysis worker with manual_retry, target_video_id and the saved row, without waiting for worker completion."
+    ],
+    "Manual targeting can permit work beyond automatic retry caps; it is deliberate, not a counter reset. The immediate retry reply is a queued acknowledgement. Worker completion reporting remains separate."
+  ],
+  "JcNXgWql9K4RrHm9": [
+    "Capture and analyse one owner-submitted public YouTube video from /addvideo.",
+    [
+      "Parse and canonicalize an allowed YouTube URL; reject malformed/ambiguous URLs and non-owner input.",
+      "Read public oEmbed metadata, the event catalogue and any saved video with the same ID.",
+      "Require one future active event with a spreadsheet and a title identifying that event. Reject duplicates and videos assigned elsewhere; manual test defaults to dry_run.",
+      "Reserve a video row, then conditionally claim an empty status as MANUAL_CAPTURE_REQUESTED. Only a successful claim dispatches capture.",
+      "Run targeted capture and wait, reread the row, then run targeted analysis only if capture succeeded and analysis is unfinished.",
+      "Reread the final record and send a success/failure/duplicate reply with useful navigation."
+    ],
+    "This route still uses oEmbed for submitted-video metadata; the YouTube Data API migration concerns channel discovery. The conditional claim reduces duplicate dispatch but is not a universal lock across every scheduled worker."
+  ],
+  "IodUUBrjWAVd0cHi": [
+    "Browse captured event videos and reopen saved analysis summaries in Telegram.",
+    [
+      "Normalize owner-only /videos [page] and /video VIDEO_ID [summaryPage] [listPage] requests.",
+      "Read active-event metadata and video rows, retain captured videos only and deduplicate video IDs.",
+      "List eight videos per page, with analysis status and navigation. A video detail verifies event scope and reads saved Picks and Props.",
+      "Build escaped, bounded HTML summary pages, preserve the return list page, and provide watch/spreadsheet links.",
+      "Flatten callback buttons and route to one of twelve native Telegram nodes with fixed keyboard row counts."
+    ],
+    "This service does not call capture or an LLM and does not charge analysis credits. A pending/failed analysis is shown explicitly. Fixed keyboard-size branches work around Telegram node validation constraints on dynamically sized keyboard arrays."
+  ],
+  "SrL8ScYMIBiJ9Gki": [
+    "Record production workflow failures as incidents, suppress repeat alerts and retry selected transient failures.",
+    [
+      "Receive an Error Trigger payload or a supported direct test payload and restrict handling to the UFC allowlist.",
+      "Format the failed workflow/node/execution link, update applicable run/video state and normalize the error into a stable signature and incident key.",
+      "Classify transient network/rate-limit/server failures and inspect existing incident rows.",
+      "For top-level transient failures in capture, analysis or grading, allow one retry after five minutes within the configured six-hour retry window. Integrated sub-workflow failures rely on their caller.",
+      "Persist the incident; alert on new/reopened failures, failed retries or daily reminders, with recent cross-workflow alert suppression.",
+      "When selected, wait and rerun the allowed workflow with empty input; otherwise finish after logging/notification."
+    ],
+    "Error Triggers concern production execution failures, not every manual test or handled per-item error. The retry re-invokes the worker with empty input, not the original arbitrary request. Alert suppression currently treats any recently alerted sibling incident as a suppression candidate; do not assume it compares signatures across workflows."
+  ],
+  "oC1PuXuYb1pdeO0J": [
+    "Detect silent pipeline problems and maintain health incidents every 30 minutes.",
+    [
+      "Read events, videos, Fight Card state, pipeline runs and incidents.",
+      "Check capture/analysis run gaps over 38 hours, running ledger entries older than two hours, and whether exactly one event is active.",
+      "Check missing event spreadsheets, cards not READY/PRESERVED within five days of start, NEEDS_REVIEW card changes and changes pending more than 24 hours.",
+      "Check active-event videos PROCESSING over three hours and CARD_CHANGED re-analysis waiting over 13 hours.",
+      "Upsert health incidents, send new/reopened or daily reminder alerts and resolve health conditions that clear. Resolve suitable error incidents when later success/idle evidence exists; retrying incidents use the configured 45-minute no-further-failure rule.",
+      "Dispatch diagnose_incident without waiting to investigate eligible incidents."
+    ],
+    "Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence."
+  ],
+  "gfR9qKH6xCTJXzcg": [
+    "Close quiet error incidents on a time-based rule.",
+    [
+      "Every 30 minutes, read incidents and select unresolved error-sourced records with no recurrence for 12 hours.",
+      "Exclude owner-reported and test incidents.",
+      "Set selected incidents resolved with a quiet-period explanation and send a compact Telegram summary."
+    ],
+    "Time-based closure means no recurrence was observed; it does not prove a code fix. health_sweep separately owns positive-evidence and health-condition resolution."
+  ],
+  "neIv7kEoopd67GLj": [
+    "Choose and claim incidents for diagnosis so concurrent diagnosers can coordinate.",
+    [
+      "Validate claimer as agent, workflow or manual and read incidents.",
+      "Normally choose open, previously alerted, non-test incidents whose diagnosis is missing/stale, respecting optional minimum alert age.",
+      "Allow at most two diagnosis attempts per opening, treat claims older than 60 minutes as stale, and select up to three incidents.",
+      "Save in_progress claim metadata unless dry_run, then return compact incident context and claims."
+    ],
+    "An explicit incident_key follows a special selection branch and bypasses normal eligibility filtering. Claims are coordination metadata, not a demonstrated transactional compare-and-swap lock; overlapping runs should be monitored."
+  ],
+  "UB711gFJFn9OuZwb": [
+    "Investigate eligible incidents using a bounded AI diagnosis workflow and save the findings.",
+    [
+      "Call list_incidents_to_diagnose and split the returned incidents.",
+      "Run the Diagnose Incident AI Agent node with DeepSeek V4.1 Flash through OpenRouter and a structured output parser.",
+      "Use configured n8n read-only MCP tools, compact read_execution, public page fetching and Exa search to gather evidence.",
+      "Collect summary, root cause, evidence, affected resources, proposed fix, human steps and confidence.",
+      "Call record_diagnosis to persist the result and send the escaped Telegram diagnosis."
+    ],
+    "This is a workflow containing an AI Agent node, not an export of a separate first-class n8n Agent. The prompt forbids remediation; attached investigation tools are intended to be read-only. Claims and diagnosis recording do write incident metadata. The model node allows 25 iterations even though the prompt advises about 15 tool calls."
+  ],
+  "pHQCLT93NxqScBgQ": [
+    "Return compact read-only execution evidence for diagnosers.",
+    [
+      "Accept workflow_id, execution_id, optional comma-separated node_names and max_chars.",
+      "Read execution data through the authenticated n8n MCP HTTP endpoint.",
+      "Trim large strings and samples, retain counts/error/failing-node context and return the compact summary."
+    ],
+    "This keeps giant HTML pages/transcripts out of diagnostic context. It does not execute or modify the workflow. Limits/truncation mean the summary is evidence, not a complete execution archive."
+  ],
+  "mOCorio8pJ9qlB8q": [
+    "Persist a diagnosis and send the owner a consistently formatted diagnosis message.",
+    [
+      "Validate the structured incident diagnosis input and load the corresponding incident.",
+      "Build escaped summary/evidence/proposed-fix/human-action text and update diagnosis metadata on that incident.",
+      "Send the fixed-format Telegram message, then return recorded status. Respect the configured dry-run gate."
+    ],
+    "Recording a diagnosis does not resolve the incident or apply its proposed fix. Confidence and human_steps describe the investigator's assessment, not verified remediation."
+  ],
+  "fZB3SuyzKNXurQyI": [
+    "Record an owner-reported issue in the same incident system used for pipeline failures.",
+    [
+      "Accept note and optional severity/workflow/category information from the router or a direct call.",
+      "Normalize the report, find an already-open equivalent issue and either create it or increment occurrences.",
+      "Store source=owner, send a confirmation and return the incident key/status, respecting dry_run."
+    ],
+    "Owner reports are intentionally protected from the quiet-error auto-resolution service. Use /fixed after resolving them."
+  ],
+  "SkWzi2pqLtbW4HNN": [
+    "Send a readable list of open and recently resolved incidents.",
+    [
+      "Read ufc_incidents and build an escaped issue list.",
+      "Show open incidents oldest first and include records resolved in the last seven days.",
+      "Send the Telegram response unless dry_run and return summary metadata."
+    ],
+    "This is a view of the incident ledger; it neither diagnoses nor closes issues."
+  ],
+  "XN5zvwsajUldmPgN": [
+    "Mark a selected incident resolved with an owner-supplied resolution.",
+    [
+      "Accept incident ID/key, resolution and optional fixed_in_version; the router translates /fixed into these fields.",
+      "Read incidents and require the requested match.",
+      "Set status=resolved, resolved_by=owner and the resolution/version metadata, then confirm in Telegram unless dry_run."
+    ],
+    "This records that a fix was made; it does not deploy a fix or verify all workflows. A recurring condition can reopen an incident."
+  ]
+}

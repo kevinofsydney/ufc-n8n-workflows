@@ -1,0 +1,3968 @@
+{
+  "id": "BvLnPFMwQ2vhPkgv",
+  "name": "UFC | 3. Analyse Picker Video Transcripts",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki"
+  },
+  "tags": [],
+  "connections": {
+    "Get Active UFC Event": {
+      "main": [
+        [
+          {
+            "node": "One Active Event Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Captured Videos": {
+      "main": [
+        [
+          {
+            "node": "Keep Videos Needing Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Transcript Rows": {
+      "main": [
+        [
+          {
+            "node": "Build Complete Transcripts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Complete Transcripts": {
+      "main": [
+        [
+          {
+            "node": "Match Videos to Transcripts",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Loop Over Videos": {
+      "main": [
+        [
+          {
+            "node": "Record Analysis Result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Analysis Processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Active Event": {
+      "main": [
+        [
+          {
+            "node": "Attach Fight Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Analysis Processing": {
+      "main": [
+        [
+          {
+            "node": "Build OpenRouter Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Fight Card": {
+      "main": [
+        [
+          {
+            "node": "Build Fight Card Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Fight Card Context": {
+      "main": [
+        [
+          {
+            "node": "Attach Fight Card",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Attach Fight Card": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build OpenRouter Request": {
+      "main": [
+        [
+          {
+            "node": "Call OpenRouter Extraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call OpenRouter Extraction": {
+      "main": [
+        [
+          {
+            "node": "Parse OpenRouter Extraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse OpenRouter Extraction": {
+      "main": [
+        [
+          {
+            "node": "Validate and Sort Extraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate and Sort Extraction": {
+      "main": [
+        [
+          {
+            "node": "Assess Extraction Coverage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Extraction Rows": {
+      "main": [
+        [
+          {
+            "node": "Prepare Pick Rows",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare Prop Rows",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare Extraction Log",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare Fight Analysis Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Pick Rows": {
+      "main": [
+        [
+          {
+            "node": "Prop Rows Exist?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Prop Rows": {
+      "main": [
+        [
+          {
+            "node": "Prop Rows Exist?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Extraction Log": {
+      "main": [
+        [
+          {
+            "node": "Upsert Extraction Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Picks": {
+      "main": [
+        [
+          {
+            "node": "Pick Branch Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Props": {
+      "main": [
+        [
+          {
+            "node": "Prop Branch Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upsert Extraction Log": {
+      "main": [
+        [
+          {
+            "node": "Log Branch Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick Branch Complete": {
+      "main": [
+        [
+          {
+            "node": "Merge Picks and Props",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prop Branch Complete": {
+      "main": [
+        [
+          {
+            "node": "Merge Picks and Props",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Log Branch Complete": {
+      "main": [
+        [
+          {
+            "node": "Wait For All Writes",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Picks and Props": {
+      "main": [
+        [
+          {
+            "node": "Wait For All Writes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait For All Writes": {
+      "main": [
+        [
+          {
+            "node": "Verify All Writes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Analysis Complete": {
+      "main": [
+        [
+          {
+            "node": "Build Telegram Pick Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verify All Writes": {
+      "main": [
+        [
+          {
+            "node": "Record Analysis Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Telegram Pick Summary": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Skip Props": {
+      "main": [
+        [
+          {
+            "node": "Prop Branch Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prop Rows Exist?": {
+      "main": [
+        [
+          {
+            "node": "Upsert Props",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Skip Props",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prop Rows Exist?1": {
+      "main": [
+        [
+          {
+            "node": "Upsert Picks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Skip Picks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Skip Picks": {
+      "main": [
+        [
+          {
+            "node": "Pick Branch Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assess Extraction Coverage": {
+      "main": [
+        [
+          {
+            "node": "Retry Needed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retry Needed?": {
+      "main": [
+        [
+          {
+            "node": "Build Retry OpenRouter Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Extraction Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Retry OpenRouter Request": {
+      "main": [
+        [
+          {
+            "node": "Call Retry OpenRouter Extraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Retry OpenRouter Extraction": {
+      "main": [
+        [
+          {
+            "node": "Parse Retry OpenRouter Extraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Retry OpenRouter Extraction": {
+      "main": [
+        [
+          {
+            "node": "Validate Retry Extraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Retry Extraction": {
+      "main": [
+        [
+          {
+            "node": "Prepare Extraction Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Fight Analysis Rows": {
+      "main": [
+        [
+          {
+            "node": "Fight Analysis Rows Exist?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fight Analysis Rows Exist?": {
+      "main": [
+        [
+          {
+            "node": "Upsert Fight Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Match Videos to Transcripts": {
+      "main": [
+        [
+          {
+            "node": "Max Analysis Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Max Analysis Videos": {
+      "main": [
+        [
+          {
+            "node": "Attach Active Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check UFC Spreadsheet": {
+      "main": [
+        [
+          {
+            "node": "Get Captured Videos",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read Transcript Rows",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Attach Active Event",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Read Fight Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get UFC Events For Matching",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get UFC Events For Matching",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get UFC Events For Matching": {
+      "main": [
+        [
+          {
+            "node": "Get Active UFC Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "One Active Event Only": {
+      "main": [
+        [
+          {
+            "node": "Record Analysis Start",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Analysis Start": {
+      "main": [
+        [
+          {
+            "node": "Restore Analysis Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Keep Videos Needing Analysis": {
+      "main": [
+        [
+          {
+            "node": "Analysis Work Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analysis Work Found?": {
+      "main": [
+        [
+          {
+            "node": "Match Videos to Transcripts",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record Analysis Idle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restore Analysis Event": {
+      "main": [
+        [
+          {
+            "node": "Ensure UFC Fight Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ensure UFC Fight Card": {
+      "main": [
+        [
+          {
+            "node": "Fight Card Ready?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fight Card Ready?": {
+      "main": [
+        [
+          {
+            "node": "Detect Card Changes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record Analysis Card Pending",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sync Bout IDs": {
+      "main": [
+        [
+          {
+            "node": "Check UFC Spreadsheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Card Changes": {
+      "main": [
+        [
+          {
+            "node": "Apply Card Changes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Continue Without Card Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continue Without Card Check": {
+      "main": [
+        [
+          {
+            "node": "Sync Bout IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Card Changes": {
+      "main": [
+        [
+          {
+            "node": "Sync Bout IDs",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Continue Without Card Apply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Continue Without Card Apply": {
+      "main": [
+        [
+          {
+            "node": "Sync Bout IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                2,
+                3,
+                4,
+                5,
+                6
+              ],
+              "triggerAtHour": 6,
+              "triggerAtMinute": 30
+            },
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                2,
+                3,
+                4,
+                5,
+                6,
+                1
+              ],
+              "triggerAtHour": 18,
+              "triggerAtMinute": 30
+            },
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                0,
+                3,
+                4,
+                5,
+                6,
+                2
+              ],
+              "triggerAtHour": 12,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        688
+      ],
+      "id": "ecee1583-8c1d-4457-9580-7003cf151502",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WTTpdZSDVOxOB3Ex",
+          "mode": "list",
+          "cachedResultName": "ufc_events",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/WTTpdZSDVOxOB3Ex"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "active",
+              "condition": "isTrue"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        688
+      ],
+      "id": "b117297e-a548-4d59-abe6-1d5ebe082bde",
+      "name": "Get Active UFC Event",
+      "executeOnce": true
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        448,
+        688
+      ],
+      "id": "85d08542-b3a3-4fc8-bec7-dcd88d3d5b20",
+      "name": "One Active Event Only"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "cAQonN6NYOY3fqxl",
+          "mode": "list",
+          "cachedResultName": "ufc_videos",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/cAQonN6NYOY3fqxl"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_key",
+              "keyValue": "={{ $('One Active Event Only').first().json.event_key }}"
+            },
+            {
+              "keyName": "transcript_appended",
+              "condition": "isTrue"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        432
+      ],
+      "id": "1a39c8da-0b92-4613-87d1-123ef65382af",
+      "name": "Get Captured Videos",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "// Select videos that:\n// 0. Are about the active event (title mentions its city/number or fighters).\n// 1. Have never been analysed.\n// 2. Previously failed and still have retry attempts remaining.\n// 3. Were explicitly marked RETRY and still have attempts remaining.\n// 4. Were left stuck in PROCESSING by an interrupted workflow and are stale.\n//\n// analysis_attempt_count should be incremented only by\n// the node named \"Mark Analysis Processing\".\n\nconst MAX_ANALYSIS_ATTEMPTS = 3;\n\n// A PROCESSING record older than this is considered abandoned.\nconst STALE_PROCESSING_HOURS = 1;\n\nconst nowMs = Date.now();\nconst staleThresholdMs =\n  STALE_PROCESSING_HOURS * 60 * 60 * 1000;\n\nfunction ufcText(value) {\n return String(value ?? '').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\\s+/g,' ');\n}\nfunction ufcHas(text, phrase) { return phrase && (' '+text+' ').includes(' '+phrase+' '); }\nfunction ufcEventSignals(event, title) {\n const name=ufcText(event.event_name);\n const split=String(event.event_name || '').split(':');\n const prefix=ufcText(split[0]);\n const number=(prefix.match(/\\bufc\\s+(\\d{2,4})\\b/) || [])[1];\n const pair=String(split.slice(1).join(':') || '').split(/\\s+v(?:s)?\\.?\\s+/i);\n const surname=value=>ufcText(value).split(' ').filter(word=>!['jr','sr','ii','iii','iv'].includes(word)).slice(-1)[0] || '';\n const a=surname(pair[0]), b=surname(pair[1]);\n const matchup=pair.length===2 && a.length>=3 && b.length>=3 && ufcHas(title,a) && ufcHas(title,b);\n const numbered=Boolean(number && new RegExp('\\\\bufc\\\\s+'+number+'\\\\b').test(title));\n const venue=prefix.replace(/\\bufc\\b/g,' ').replace(/\\bfight\\s+night\\b/g,' ').replace(/\\b\\d+\\b/g,' ').trim().replace(/\\s+/g,' ');\n const location=venue.length>=3 && ufcHas(title,venue);\n return {event, score: matchup || numbered ? 10 : location ? 4 : 0, reason: matchup ? 'main-event surnames' : numbered ? 'UFC event number' : location ? 'event location' : ''};\n}\nfunction classifyUfcVideo(title, active, events) {\n const text=ufcText(title);\n const pool=[...new Map([...(events||[]),active].filter(event=>event?.event_key&&event.event_name).map(event=>[event.event_key,event])).values()];\n const matches=pool.map(event=>ufcEventSignals(event,text)).filter(match=>match.score>0);\n const strong=matches.filter(match=>match.score===10);\n const candidates=strong.length ? strong : matches;\n if(candidates.length!==1) return {event_match_status:candidates.length>1?'AMBIGUOUS':'UNCONFIRMED',event_match_reason:candidates.length>1?'Title identifies more than one known UFC event':'Title does not clearly identify a known UFC event',matched_event_key:'',event_match_version:'ufc-event-match-v2'};\n const match=candidates[0];\n return {event_match_status:match.event.event_key===active.event_key?'MATCHED':'OTHER_EVENT',event_match_reason:'Matched '+match.event.event_name+' by '+match.reason,matched_event_key:match.event.event_key,event_match_version:'ufc-event-match-v2'};\n}\nconst activeEvent=$('One Active Event Only').first().json;\nconst knownEvents=$('Get UFC Events For Matching').all().map(item=>item.json);\nlet request={}; try {request=$('When Executed by Another Workflow').first().json;} catch {}\nconst target=request.manual_retry===true ? String(request.target_video_id || '') : '';\nconst selected = $input.all().filter((item) => {\n  const row = item.json;\n\n  if (!row.video_id || (target && row.video_id !== target) || classifyUfcVideo(row.video_title,activeEvent,knownEvents).event_match_status !== 'MATCHED') {\n    return false;\n  }\n\n  const status = String(\n    row.analysis_status || ''\n  )\n    .trim()\n    .toUpperCase();\n\n  const attempts = Number(\n    row.analysis_attempt_count || 0\n  );\n\n  const validAttempts =\n    Number.isFinite(attempts) && attempts >= 0\n      ? attempts\n      : 0;\n\n  const hasAttemptsRemaining =\n    validAttempts < MAX_ANALYSIS_ATTEMPTS || Boolean(target);\n\n  /*\n  Prefer last_attempt_at because it records when analysis began.\n  Fall back to updatedAt for older rows.\n  */\n  const processingTimestamp =\n    row.last_attempt_at ||\n    row.updatedAt ||\n    null;\n\n  const processingTimeMs =\n    processingTimestamp\n      ? Date.parse(processingTimestamp)\n      : NaN;\n\n  const processingIsStale =\n    status === 'PROCESSING' &&\n    (\n      !Number.isFinite(processingTimeMs) ||\n      nowMs - processingTimeMs >= staleThresholdMs\n    );\n\n  const neverAnalysed =\n    status === '';\n\n  const retryableFailure =\n    status === 'FAILED' &&\n    hasAttemptsRemaining;\n\n  const markedForRetry =\n    status === 'RETRY' &&\n    hasAttemptsRemaining;\n\n  // Flagged by svc.apply_card_changes after the fight card changed; re-analysed whatever its attempt count.\n  const cardChanged =\n    status === 'CARD_CHANGED';\n\n  const retryableStaleProcessing =\n    processingIsStale &&\n    hasAttemptsRemaining;\n\n  return (\n    (target && status === 'RETRY_REQUESTED') || neverAnalysed || cardChanged ||\n    retryableFailure ||\n    markedForRetry ||\n    retryableStaleProcessing\n  );\n});\n\nreturn selected.length ? selected : [{json:{__no_analysis_work:true}}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        432
+      ],
+      "id": "246360ad-05d6-46cc-a8b4-63e11d09e765",
+      "name": "Keep Videos Needing Analysis"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('One Active Event Only').first().json.spreadsheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Transcripts",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        896,
+        624
+      ],
+      "id": "d5420a4d-7543-4b35-b83a-680c73742376",
+      "name": "Read Transcript Rows",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Reassemble chunked transcript rows into one complete transcript per video.\n\nconst rows = $input.all().map((item) => item.json);\nconst grouped = new Map();\n\nfor (const row of rows) {\n  const videoId = String(row.video_id || '').trim();\n  const transcriptText = String(row.transcript_text || '').trim();\n\n  if (!videoId || !transcriptText) {\n    continue;\n  }\n\n  if (!grouped.has(videoId)) {\n    grouped.set(videoId, {\n      video_id: videoId,\n      channel_name: row.channel_name || '',\n      video_title: row.video_title || '',\n      video_url: row.video_url || '',\n      published_at: row.published_at || '',\n      parts: [],\n    });\n  }\n\n  grouped.get(videoId).parts.push({\n    part_number: Number(row.part_number || 1),\n    text: transcriptText,\n  });\n}\n\nconst output = [];\n\nfor (const video of grouped.values()) {\n  video.parts.sort((a, b) => a.part_number - b.part_number);\n\n  const fullTranscript = video.parts\n    .map((part) => part.text)\n    .join('\\n\\n');\n\n  output.push({\n    json: {\n      video_id: video.video_id,\n      channel_name: video.channel_name,\n      video_title: video.video_title,\n      video_url: video.video_url,\n      published_at: video.published_at,\n      transcript_part_count: video.parts.length,\n      transcript_text: fullTranscript,\n      input_characters: fullTranscript.length,\n    },\n  });\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        624
+      ],
+      "id": "b9a063ef-6dfd-4b93-a7f8-7e171a4ecd6a",
+      "name": "Build Complete Transcripts"
+    },
+    {
+      "parameters": {
+        "maxItems": 5
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        432
+      ],
+      "id": "79bd6b4b-43f4-4e29-a459-d015ceed3a35",
+      "name": "Max Analysis Videos"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "fieldsToMatchString": "video_id",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1344,
+        528
+      ],
+      "id": "8c7dadeb-5007-4489-81db-65a90312d524",
+      "name": "Match Videos to Transcripts"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1568,
+        592
+      ],
+      "id": "4f93792d-b9da-4847-bd7c-7376b92be070",
+      "name": "Attach Active Event"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        2016,
+        688
+      ],
+      "id": "a81ff1a9-5c8e-480a-9927-5b7cf5751d3b",
+      "name": "Loop Over Videos"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "cAQonN6NYOY3fqxl",
+          "mode": "list",
+          "cachedResultName": "ufc_videos",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/cAQonN6NYOY3fqxl"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "video_id",
+              "keyValue": "={{$json.video_id}}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "analysis_status": "PROCESSING",
+            "analysis_attempt_count": "={{ Number($json.analysis_attempt_count || 0) + 1 }}",
+            "last_attempt_at": "={{ $now.toISO() }}",
+            "analysis_execution_id": "={{ String($execution.id) }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "video_id",
+              "displayName": "video_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "channel_name",
+              "displayName": "channel_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "video_title",
+              "displayName": "video_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "published_at",
+              "displayName": "published_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "attempt_count",
+              "displayName": "attempt_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "last_attempt_at",
+              "displayName": "last_attempt_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "last_http_status",
+              "displayName": "last_http_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "last_error",
+              "displayName": "last_error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "placeholder_appended",
+              "displayName": "placeholder_appended",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "transcript_appended",
+              "displayName": "transcript_appended",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "transcript_parts",
+              "displayName": "transcript_parts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "completed_at",
+              "displayName": "completed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "analysis_status",
+              "displayName": "analysis_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "analysis_attempt_count",
+              "displayName": "analysis_attempt_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "analysis_model",
+              "displayName": "analysis_model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "analysis_prompt_version",
+              "displayName": "analysis_prompt_version",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "analysed_at",
+              "displayName": "analysed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "analysis_error",
+              "displayName": "analysis_error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "analysis_execution_id",
+              "displayName": "analysis_execution_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2240,
+        528
+      ],
+      "id": "0aee6dbd-6e88-46ff-82d0-94a0bc494f2e",
+      "name": "Mark Analysis Processing"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('One Active Event Only').first().json.spreadsheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Fight Card",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1344,
+        928
+      ],
+      "id": "5796463e-71cf-49f3-98f6-b6696b7e5444",
+      "name": "Read Fight Card",
+      "notes": "If this returns empty, then you haven't put the fight card in the fight card tab of the fight Google Sheet.",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const fights = $input.all()\n  .map((item) => item.json)\n  .filter((row) => row.fighter_a && row.fighter_b)\n  .sort(\n    (a, b) =>\n      Number(a.fight_order || 999) -\n      Number(b.fight_order || 999)\n  );\n\nconst missingBoutIds = fights\n  .filter((fight) => !String(fight.bout_id || '').trim())\n  .map((fight) => fight.fight_order);\n\nif (missingBoutIds.length > 0) {\n  throw new Error(\n    `Fight Card is missing bout_id for fight ${missingBoutIds.join(', ')}. ` +\n    'Run svc.sync_bout_ids before analysis.'\n  );\n}\n\nconst lines = fights.map((fight) => {\n  const aliasesA = String(fight.fighter_a_aliases || '').trim();\n  const aliasesB = String(fight.fighter_b_aliases || '').trim();\n\n  return [\n    `Fight ${fight.fight_order}:`,\n    `- Fighter A: ${fight.fighter_a}`,\n    aliasesA ? `- Fighter A aliases: ${aliasesA}` : null,\n    `- Fighter B: ${fight.fighter_b}`,\n    aliasesB ? `- Fighter B aliases: ${aliasesB}` : null,\n    fight.weight_class ? `- Weight class: ${fight.weight_class}` : null,\n    `- Scheduled rounds: ${fight.scheduled_rounds || 3}`,\n    `- Bout type: ${fight.bout_type || ''}`,\n  ]\n    .filter(Boolean)\n    .join('\\n');\n});\n\nreturn [\n  {\n    json: {\n      fight_card_context: lines.join('\\n\\n'),\n      fight_count: fights.length,\n      fight_bout_ids: Object.fromEntries(\n        fights.map((fight) => [\n          Number(fight.fight_order),\n          String(fight.bout_id).trim(),\n        ])\n      ),\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        928
+      ],
+      "id": "debb704c-d1f6-44e2-9891-b4d41029903a",
+      "name": "Build Fight Card Context"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1792,
+        688
+      ],
+      "id": "6bfeb15f-133b-4b6c-8811-1cbd2413c39f",
+      "name": "Attach Fight Card"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const source = $('Loop Over Videos').item.json;\n\nconst officialCard = String(\n  source.fight_card_context ??\n  source.officialCard ??\n  source.official_card ??\n  ''\n).trim();\n\nconst transcript = String(\n  source.transcript_text ??\n  source.transcript ??\n  source.complete_transcript ??\n  ''\n).trim();\n\nif (!officialCard) {\n  throw new Error(\n    'Build OpenRouter Request could not find the official fight card. ' +\n    `Available fields: ${Object.keys(source).join(', ')}`\n  );\n}\n\nif (!transcript) {\n  throw new Error(\n    'Build OpenRouter Request could not find the transcript. ' +\n    `Available fields: ${Object.keys(source).join(', ')}`\n  );\n}\n\nconst SYSTEM_PROMPT = String.raw`\nROLE\n\nYou extract a fight-picker's UFC winner picks, betting props, fighter analysis, matchup analysis, and supporting reasoning from a YouTube transcript and return one JSON object matching the supplied JSON Schema.\n\nThe transcript is auto-generated and may contain misspelled fighter names, missing punctuation, repeated sections, advertisements, and rambling discussion.\n\nExtract only what the speaker actually states or clearly communicates.\n\nNever invent:\n- a pick\n- a prop\n- a method\n- a round\n- odds\n- a stake\n- a confidence statement\n- a fighter's record\n- a winning or losing streak\n- recent results\n- skills or weaknesses\n- injury information\n- supporting reasoning\n\nDo not supplement the transcript with your own MMA knowledge or prior knowledge about the fighters.\n\n\nINPUTS\n\nYou will receive:\n\n1. OFFICIAL_CARD\n\nThe authoritative list of fights, canonical fighter names, fight_order values, aliases, and scheduled rounds.\n\n2. TRANSCRIPT\n\nThe possibly messy auto-generated transcript.\n\nOFFICIAL_CARD is the ground truth for:\n- fighter names\n- matchups\n- fight ordering\n\n\nOUTPUT CONTRACT\n\n- Return one JSON object only.\n- Do not return markdown.\n- Do not return code fences.\n- Do not return commentary.\n- Do not return working notes.\n- Match the supplied schema exactly.\n- Include every required field.\n- Use null for an absent nullable value.\n- Use an empty props array when no qualifying props exist.\n- Do not add fields outside the schema.\n\n\nEXTRACTION PROCESS\n\nFor every fight meaningfully discussed by the speaker:\n\n1. Identify Fighter A using OFFICIAL_CARD.\n2. Identify Fighter B using OFFICIAL_CARD.\n3. Summarize what the speaker says about Fighter A.\n4. Summarize what the speaker says about Fighter B.\n5. Summarize how the speaker expects the fight itself to unfold.\n6. Determine the speaker's final winner pick, if one exists.\n7. Identify the concise reasons supporting that winner pick.\n8. Identify every clear method, round, distance, total, duration, double-chance, odds, stake, or other prop prediction.\n9. Identify whether each prop is merely a prediction, a lean, a recommended wager, or a best bet.\n\nDo not output internal working notes.\n\n\nFIGHTER CONTEXT\n\nFor each discussed fight, return:\n\nfighter_a_context\nfighter_b_context\n\nEach should be a thorough 3–4 sentence summary of what the speaker says about that fighter, including the specific strengths, weaknesses, statistics, recent results and concerns the speaker actually cites.\n\nUseful information may include, when actually mentioned:\n\n- recent form\n- winning or losing streaks\n- recent performances\n- quality of opposition\n- UFC experience\n- age or physical attributes\n- athleticism\n- durability\n- cardio\n- pace\n- power\n- striking\n- boxing\n- kicking\n- wrestling\n- takedowns\n- takedown defense\n- grappling\n- submission ability\n- positional control\n- defensive weaknesses\n- offensive strengths\n- stylistic tendencies\n- improvements or regression\n- concerns raised by the speaker\n\nIMPORTANT:\n\n- Do not invent a fighter biography.\n- Do not state a winning streak unless the speaker says or clearly describes one.\n- Do not state recent results unless the speaker provides them.\n- Do not introduce facts from your own knowledge.\n- If the speaker gives very little information about one fighter, summarize only what was actually said.\n- If essentially no meaningful fighter-specific analysis is provided, use null.\n\n\nFIGHT OUTLOOK\n\nFor each discussed fight, return:\n\nfight_outlook\n\nThis should be a thorough 3–5 sentence summary of how the speaker thinks the matchup will play out, including the key factors the speaker says will decide it.\n\nIt should explain things such as:\n\n- which fighter is expected to control the range\n- who is expected to pressure\n- whether wrestling or grappling is expected to matter\n- whether one fighter is expected to have a speed, power, cardio, or technical advantage\n- where each fighter may have success\n- what the key matchup dynamic is\n- whether the speaker expects a competitive fight\n- whether the speaker expects a finish or decision\n- how the selected winner is expected to get the better of the opponent\n\nDo not force a winner into fight_outlook if the speaker does not choose one.\n\nDo not invent tactical analysis that the speaker did not provide.\n\n\nFIGHT INCLUSION\n\n- Include a fight only when the speaker discusses or analyses it.\n- Omit fights that are not discussed.\n- Include an analysed fight even when no final winner is chosen.\n- For such a fight, output winner_pick = null.\n- Return fights in ascending canonical fight_order.\n- Do not create a fight object for a matchup absent from OFFICIAL_CARD.\n\n\nFIGHTER NAME NORMALIZATION\n\n- Map nicknames, first-name-only references, phonetic spellings, and ASR errors to the relevant canonical fighter from OFFICIAL_CARD.\n- Use the exact canonical fighter spelling in every structured fighter field.\n- Also normalize fighter names inside:\n  - evidence_quote\n  - reasoning_summary\n  - fighter_a_context\n  - fighter_b_context\n  - fight_outlook\n  - selection\n- Ignore a fighter or matchup when it cannot be reliably mapped to OFFICIAL_CARD.\n- Never invent a mapping when uncertain.\n\n\nWINNER PICK RULES\n\n- winner_pick contains only the speaker's final selected winner and the reasons that fighter wins.\n- Do not store method, round, total, duration, or distance predictions only inside winner_pick. Those belong in props.\n- If the speaker changes their mind, keep only the final position.\n- If the speaker discusses the fight but does not choose a winner, use winner_pick = null.\n- A winner pick can be official even when the speaker says they will not bet it.\n- reasoning_summary must contain only reasons the speaker actually stated.\n- reasoning_summary should be 3–5 sentences: the main reasons the speaker gives, the specific factors or statistics the speaker cites, and any concerns or risks the speaker raises about the pick.\n\n\nPROP RULES\n\nA prop is any clear non-moneyline prediction or wager, including:\n\n- method of victory\n- method plus a round or round range\n- winning round\n- inside the distance\n- goes the distance\n- over or under a round line\n- fight duration\n- double chance\n- another clearly stated fight market\n\nCapture a clear specific outcome even when the speaker describes it as a prediction rather than a wager.\n\nDo not create a prop merely because a winner was selected.\n\nThere must be a stated:\n- method\n- round\n- range\n- distance\n- total\n- duration\n- or another specific market\n\nMultiple distinct props for one fight are allowed.\n\nExamples:\n\n- Fighter by submission plus Under 1.5 rounds = two distinct props.\n- Fighter by KO in Round 2 = one method_and_round prop, not separate method and round props.\n\nWhen a prop names a winning fighter, prop.fighter should normally equal winner_pick.picked_fighter.\n\nOnly differ when the speaker genuinely predicts a prop involving the other fighter.\n\n\nMARKET ENCODING\n\nmethod_of_victory\n\n- Use when a named fighter and method are stated, with no round or round range.\n- fighter = canonical fighter.\n- method = KO_TKO, submission, or decision.\n- round = null.\n- round_range = null.\n\n\nmethod_and_round\n\n- Use when a named fighter and method are stated together with either a single round or a round range.\n- For a single round: round = 1–5 and round_range = null.\n- For a range: round = null and round_range uses a compact value such as R2-R3.\n- For \"within two rounds\": use round = null and round_range = R1-R2.\n\n\ninside_distance\n\n- Use when a named fighter is predicted to finish, but KO versus submission is unclear.\n- fighter = canonical fighter.\n- method = inside_distance.\n- If a single round is stated, populate round.\n- If a range is stated, populate round_range.\n\n\nwinning_round\n\n- Use when an ending round is predicted but no method is specified.\n- Populate fighter only if a fighter is named.\n- method = unknown or null.\n\n\ngoes_distance\n\n- Use when the fight is predicted to reach the scorecards but no decision winner is named.\n- fighter = null.\n- method = null.\n- round = null.\n- round_range = null.\n- If a named fighter is predicted to win by decision, use method_of_victory with method = decision instead.\n\n\nover_under_rounds\n\n- Use for explicit over or under round lines.\n- Put the line in selection, such as Under 1.5 rounds.\n- fighter = null.\n- method = null.\n- round = null.\n- round_range = null.\n\n\nfight_duration\n\n- Use for an explicit time or duration market that is not a normal round over/under.\n\n\ndouble_chance\n\n- Use for combinations such as Fighter A or the fight goes to decision.\n- Describe the complete combination in selection.\n\n\nother\n\n- Use only when no defined market fits.\n\n\nSelection should be short and human-readable.\n\n\nODDS AND STAKES\n\n- Capture odds only when explicitly stated.\n- Preserve the spoken form, such as -125, +250, pick 'em, or even money.\n- Do not calculate, convert, or infer odds.\n- Put odds on the object to which they apply.\n- Capture stake_units only when the speaker explicitly gives a unit size.\n- Do not convert currency into units.\n- Otherwise output null.\n\n\nCONFIDENCE\n\nUse confidence_score as the primary value:\n\n- 1–2 = very_low\n- 3–4 = low\n- 5–6 = medium\n- 7–8 = high\n- 9–10 = very_high\n\nKeep confidence_label and confidence_score consistent on every winner_pick and prop.\n\nconfidence_basis:\n\nexplicit\n- The speaker uses confidence language such as:\n  - lock\n  - easy\n  - confident\n  - low confidence\n  - torn\n  - coin flip\n  - no idea\n\ninferred\n- The score is estimated from wording and context without explicit confidence language.\n\n\nOFFICIAL PICKS AND RECOMMENDATION STRENGTH\n\nis_official_pick = true when the speaker commits to the winner.\n\nExamples:\n- my pick is\n- I am taking\n- give me\n- I am going with\n- my official prediction\n- equivalent clear commitment\n\nis_official_pick = false for:\n- unresolved thinking\n- hypothetical discussion\n- noncommittal preference\n\n\nFor props:\n\nprediction_only\n\nA clear forecast not framed as betting advice.\n\n\nlean\n\nTentative betting interest.\n\n\nrecommended_bet\n\nExplicitly recommended as a wager.\n\n\nbest_bet\n\nCalled a:\n- lock\n- hammer\n- safest play\n- strongest play\n- easiest money\n- best bet\n\n\nEVIDENCE AND REASONING\n\nevidence_quote is a short normalized evidence excerpt or close paraphrase of what the speaker said.\n\n- It may correct ASR mistakes and fighter names.\n- It must preserve the speaker's actual meaning.\n- It must not introduce new information.\n- A winner_pick evidence_quote should support why the fighter wins.\n- A prop evidence_quote should support the specific method, round, total, or other market.\n\nreasoning_summary:\n\n- Use only reasoning stated by the speaker.\n- Do not add independent MMA analysis.\n- For a winner_pick, be specific rather than brief: include the concrete factors the speaker cites (3–5 sentences).\n- For a prop, keep it to one or two sentences.\n\n\nIGNORE\n\nIgnore:\n\n- sponsor reads\n- advertisements\n- giveaways\n- channel promotion\n- requests to like or subscribe\n- off-topic discussion\n- picks attributed only to another person\n- betting lines mentioned without a corresponding prediction or recommendation\n\n\nFINAL SELF-CHECK\n\nBefore returning, silently verify:\n\n1. The response is one JSON object with no surrounding text.\n2. Every required schema field is present.\n3. Every absent nullable field is null.\n4. No additional fields are present.\n5. Every fighter name matches OFFICIAL_CARD exactly.\n6. Every fight was actually discussed.\n7. Fights are ordered by ascending fight_order.\n8. fighter_a_context describes only Fighter A and only information provided by the speaker.\n9. fighter_b_context describes only Fighter B and only information provided by the speaker.\n10. fight_outlook summarizes the speaker's expected matchup dynamics without inventing analysis.\n11. winner_pick contains only the final winner and supporting reasoning.\n12. Every stated method, round, round range, total, odds, and stake appearing in evidence is represented in the structured fields.\n13. round and round_range are not both populated on the same prop.\n14. Confidence label and score agree.\n15. No prop was invented.\n`;\n\nconst SCHEMA = {\n  type: 'object',\n\n  properties: {\n    fights: {\n      type: 'array',\n\n      items: {\n        type: 'object',\n\n        properties: {\n          fight_order: {\n            type: 'integer',\n            minimum: 1,\n          },\n\n          fighter_a: {\n            type: 'string',\n          },\n\n          fighter_b: {\n            type: 'string',\n          },\n\n          fighter_a_context: {\n            type: ['string', 'null'],\n            maxLength: 1100,\n          },\n\n          fighter_b_context: {\n            type: ['string', 'null'],\n            maxLength: 1100,\n          },\n\n          fight_outlook: {\n            type: ['string', 'null'],\n            maxLength: 1300,\n          },\n\n          winner_pick: {\n            anyOf: [\n              {\n                type: 'object',\n\n                properties: {\n                  picked_fighter: {\n                    type: 'string',\n                  },\n\n                  confidence_label: {\n                    type: 'string',\n                    enum: [\n                      'very_low',\n                      'low',\n                      'medium',\n                      'high',\n                      'very_high',\n                    ],\n                  },\n\n                  confidence_score: {\n                    type: 'integer',\n                    minimum: 1,\n                    maximum: 10,\n                  },\n\n                  confidence_basis: {\n                    type: 'string',\n                    enum: [\n                      'explicit',\n                      'inferred',\n                    ],\n                  },\n\n                  is_official_pick: {\n                    type: 'boolean',\n                  },\n\n                  odds_mentioned: {\n                    type: [\n                      'string',\n                      'null',\n                    ],\n                    maxLength: 50,\n                  },\n\n                  evidence_quote: {\n                    type: 'string',\n                    maxLength: 300,\n                  },\n\n                  reasoning_summary: {\n                    type: 'string',\n                    maxLength: 900,\n                  },\n                },\n\n                required: [\n                  'picked_fighter',\n                  'confidence_label',\n                  'confidence_score',\n                  'confidence_basis',\n                  'is_official_pick',\n                  'odds_mentioned',\n                  'evidence_quote',\n                  'reasoning_summary',\n                ],\n\n                additionalProperties: false,\n              },\n\n              {\n                type: 'null',\n              },\n            ],\n          },\n\n          props: {\n            type: 'array',\n\n            items: {\n              type: 'object',\n\n              properties: {\n                market: {\n                  type: 'string',\n                  enum: [\n                    'method_of_victory',\n                    'method_and_round',\n                    'inside_distance',\n                    'goes_distance',\n                    'fight_duration',\n                    'over_under_rounds',\n                    'double_chance',\n                    'winning_round',\n                    'other',\n                  ],\n                },\n\n                selection: {\n                  type: 'string',\n                  maxLength: 160,\n                },\n\n                fighter: {\n                  type: [\n                    'string',\n                    'null',\n                  ],\n                },\n\n                method: {\n                  type: [\n                    'string',\n                    'null',\n                  ],\n\n                  enum: [\n                    'KO_TKO',\n                    'submission',\n                    'decision',\n                    'inside_distance',\n                    'unknown',\n                    null,\n                  ],\n                },\n\n                round: {\n                  type: [\n                    'integer',\n                    'null',\n                  ],\n\n                  minimum: 1,\n                  maximum: 5,\n                },\n\n                round_range: {\n                  type: [\n                    'string',\n                    'null',\n                  ],\n                  maxLength: 20,\n                },\n\n                odds_mentioned: {\n                  type: [\n                    'string',\n                    'null',\n                  ],\n                  maxLength: 50,\n                },\n\n                stake_units: {\n                  type: [\n                    'number',\n                    'null',\n                  ],\n                  minimum: 0.5,\n                  multipleOf: 0.5,\n                },\n\n                confidence_label: {\n                  type: 'string',\n                  enum: [\n                    'very_low',\n                    'low',\n                    'medium',\n                    'high',\n                    'very_high',\n                  ],\n                },\n\n                confidence_score: {\n                  type: 'integer',\n                  minimum: 1,\n                  maximum: 10,\n                },\n\n                confidence_basis: {\n                  type: 'string',\n                  enum: [\n                    'explicit',\n                    'inferred',\n                  ],\n                },\n\n                recommendation_strength: {\n                  type: 'string',\n                  enum: [\n                    'prediction_only',\n                    'lean',\n                    'recommended_bet',\n                    'best_bet',\n                  ],\n                },\n\n                evidence_quote: {\n                  type: 'string',\n                  maxLength: 300,\n                },\n\n                reasoning_summary: {\n                  type: 'string',\n                  maxLength: 400,\n                },\n              },\n\n              required: [\n                'market',\n                'selection',\n                'fighter',\n                'method',\n                'round',\n                'round_range',\n                'odds_mentioned',\n                'stake_units',\n                'confidence_label',\n                'confidence_score',\n                'confidence_basis',\n                'recommendation_strength',\n                'evidence_quote',\n                'reasoning_summary',\n              ],\n\n              additionalProperties: false,\n            },\n          },\n        },\n\n        required: [\n          'fight_order',\n          'fighter_a',\n          'fighter_b',\n          'fighter_a_context',\n          'fighter_b_context',\n          'fight_outlook',\n          'winner_pick',\n          'props',\n        ],\n\n        additionalProperties: false,\n      },\n    },\n  },\n\n  required: [\n    'fights',\n  ],\n\n  additionalProperties: false,\n};\n\nconst userMessage = [\n  'OFFICIAL_CARD',\n  '',\n  officialCard,\n  '',\n  'TRANSCRIPT',\n  '',\n  transcript,\n].join('\\n');\n\nreturn {\n  json: {\n    ...source,\n\n    openrouter_payload: {\n      /*\n      GPT-6 Luna Pro is the same underlying GPT-6 Luna model\n      served with reasoning.mode=pro.\n\n      The dedicated OpenRouter slug applies Pro reasoning\n      automatically.\n      */\n      model: 'openai/gpt-6-luna-pro',\n\n      messages: [\n        {\n          role: 'system',\n          content: SYSTEM_PROMPT,\n        },\n        {\n          role: 'user',\n          content: userMessage,\n        },\n      ],\n\n      /*\n      Increased from 8k because we now request:\n      - Fighter A context\n      - Fighter B context\n      - Fight outlook\n\n      for every discussed fight.\n      */\n      max_tokens: 20000,\n\n      stream: false,\n\n      /*\n      Allow schema-capable providers under the output-price ceiling,\n      including the DeepSeek fallback. Do not disable Pro reasoning\n      on the primary model.\n      */\n      // OpenRouter tries DeepSeek if the GPT model cannot serve the request.\n      models: [\n        'openai/gpt-6-luna-pro',\n        'deepseek/deepseek-v4.1-flash-1017',\n      ],\n\n      // Cap every eligible provider's output rate at $0.66 per million tokens.\n      provider: {\n        max_price: {\n          completion: 0.66,\n        },\n        require_parameters: true,\n        allow_fallbacks: true,\n      },\n\n      response_format: {\n        type: 'json_schema',\n\n        json_schema: {\n          name: 'ufc_pick_extraction',\n          strict: true,\n          schema: SCHEMA,\n        },\n      },\n    },\n  },\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2448,
+        528
+      ],
+      "id": "bbebd17c-fe7c-4bf9-8805-82a83610f244",
+      "name": "Build OpenRouter Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-OpenRouter-Metadata",
+              "value": "enabled"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.openrouter_payload }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 240000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2672,
+        528
+      ],
+      "id": "e0f5a36f-b7b5-4ae8-8e4d-a1b08cf1ec9c",
+      "name": "Call OpenRouter Extraction",
+      "credentials": {
+        "openRouterApi": {
+          "name": "openRouterApi credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputItems = $input.all();\n\nif (inputItems.length !== 1) {\n  throw new Error(\n    `Parse OpenRouter Extraction expected exactly 1 input item, received ${inputItems.length}`\n  );\n}\n\nconst response = inputItems[0].json;\n\nconst source =\n  $('Loop Over Videos').item.json;\n\n/*\nHandle OpenRouter API-level errors.\n*/\nif (response?.error) {\n  throw new Error(\n    `OpenRouter error: ${JSON.stringify(response.error).slice(0, 3000)}`\n  );\n}\n\n/*\nA normal Chat Completions response should contain at least one choice.\n*/\nconst choice =\n  response?.choices?.[0];\n\nif (!choice) {\n  throw new Error(\n    `OpenRouter returned no choices. Response: ${JSON.stringify(response).slice(0, 3000)}`\n  );\n}\n\nconst finishReason =\n  String(choice.finish_reason || '');\n\nconst nativeFinishReason =\n  String(choice.native_finish_reason || '');\n\nconst reasoningTokens =\n  response?.usage?.completion_tokens_details?.reasoning_tokens ??\n  response?.usage?.reasoning_tokens ??\n  null;\n\n/*\nReject truncated/incomplete model responses.\n*/\nif (finishReason !== 'stop') {\n  throw new Error(\n    `Extraction did not finish normally. ` +\n    `finish_reason=${finishReason || 'missing'}, ` +\n    `native_finish_reason=${nativeFinishReason || 'missing'}, ` +\n    `completion_tokens=${response?.usage?.completion_tokens ?? 'unknown'}, ` +\n    `reasoning_tokens=${reasoningTokens ?? 'unknown'}`\n  );\n}\n\nconst content =\n  choice?.message?.content;\n\nif (\n  content == null ||\n  String(content).trim() === ''\n) {\n  throw new Error(\n    `OpenRouter returned empty content. ` +\n    `finish_reason=${finishReason}, ` +\n    `reasoning_tokens=${reasoningTokens ?? 'unknown'}`\n  );\n}\n\n/*\nParse the model response.\n*/\nlet extracted;\n\nif (\n  typeof content === 'object' &&\n  content !== null\n) {\n  extracted = content;\n} else {\n  const cleaned = String(content)\n    .trim()\n    .replace(/^```json\\s*/i, '')\n    .replace(/^```\\s*/i, '')\n    .replace(/\\s*```$/i, '');\n\n  try {\n    extracted =\n      JSON.parse(cleaned);\n  } catch (error) {\n    throw new Error(\n      `Could not parse OpenRouter JSON: ${error.message}. ` +\n      `Response begins: ${cleaned.slice(0, 2000)}`\n    );\n  }\n}\n\n/*\nTop-level result must be a JSON object.\n*/\nif (\n  !extracted ||\n  typeof extracted !== 'object' ||\n  Array.isArray(extracted)\n) {\n  throw new Error(\n    'Parsed extraction is not a JSON object'\n  );\n}\n\n/*\nThe ONLY required top-level extraction field is fights.\n\nParlays are no longer part of this workflow.\n*/\nif (!Array.isArray(extracted.fights)) {\n  throw new Error(\n    'Parsed extraction does not contain a fights array'\n  );\n}\n\n/*\nNormalize each fight.\n\nNo props is valid, so missing props becomes [].\nNo winner pick is valid, so missing winner_pick becomes null.\n*/\nconst fights =\n  extracted.fights.map(\n    (fight, index) => {\n      if (\n        !fight ||\n        typeof fight !== 'object' ||\n        Array.isArray(fight)\n      ) {\n        throw new Error(\n          `Fight at array index ${index} is not a valid object`\n        );\n      }\n\n      const normalizedFight = {\n        ...fight,\n      };\n\n      if (\n        normalizedFight.props === undefined ||\n        normalizedFight.props === null\n      ) {\n        normalizedFight.props = [];\n      }\n\n      if (\n        !Array.isArray(normalizedFight.props)\n      ) {\n        throw new Error(\n          `Fight ${\n            normalizedFight.fight_order ?? index + 1\n          } contains an invalid props value`\n        );\n      }\n\n      if (\n        normalizedFight.winner_pick === undefined\n      ) {\n        normalizedFight.winner_pick = null;\n      }\n\n      return normalizedFight;\n    }\n  );\n\n/*\nReturn source metadata plus the normalized extraction.\n\nNo parlays field is created or expected anywhere here.\n*/\nreturn [\n  {\n    json: {\n      ...source,\n\n      output: {\n        fights,\n      },\n\n      fights,\n\n      openrouter_model:\n        response.model ?? null,\n\n      openrouter_provider:\n        response.provider ?? null,\n\n      openrouter_finish_reason:\n        finishReason,\n\n      openrouter_native_finish_reason:\n        nativeFinishReason || null,\n\n      openrouter_prompt_tokens:\n        response?.usage?.prompt_tokens ?? null,\n\n      openrouter_completion_tokens:\n        response?.usage?.completion_tokens ?? null,\n\n      openrouter_reasoning_tokens:\n        reasoningTokens,\n\n      openrouter_total_tokens:\n        response?.usage?.total_tokens ?? null,\n\n      openrouter_cost:\n        response?.usage?.cost ?? null,\n\n      openrouter_metadata:\n        response?.openrouter_metadata ?? null,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2896,
+        528
+      ],
+      "id": "baf01fc2-5544-4d3f-8c32-42fcb78dc388",
+      "name": "Parse OpenRouter Extraction"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const source = $json;\n\nconst extracted =\n  source.output || source;\n\nconst rawFights =\n  Array.isArray(extracted.fights)\n    ? extracted.fights\n    : [];\n\nconst validationErrors = [];\nconst seenFightOrders = new Set();\n\nfunction normalizeFight(rawFight) {\n  const fight = {\n    ...rawFight,\n  };\n\n  let fighterA =\n    String(fight.fighter_a || '').trim();\n\n  let fighterB =\n    String(fight.fighter_b || '').trim();\n\n  if (\n    (!fighterA || !fighterB) &&\n    fight.matchup\n  ) {\n    const matchup =\n      String(fight.matchup).trim();\n\n    const parts =\n      matchup.split(/\\s+vs\\.?\\s+/i);\n\n    if (parts.length === 2) {\n      fighterA =\n        fighterA || parts[0].trim();\n\n      fighterB =\n        fighterB || parts[1].trim();\n    }\n  }\n\n  let winnerPick =\n    fight.winner_pick ?? null;\n\n  if (\n    winnerPick &&\n    typeof winnerPick === 'object'\n  ) {\n    winnerPick = {\n      ...winnerPick,\n\n      odds_mentioned:\n        winnerPick.odds_mentioned ??\n        winnerPick.odds ??\n        null,\n    };\n\n    delete winnerPick.odds;\n  }\n\n  const props =\n    Array.isArray(fight.props)\n      ? fight.props.map((rawProp) => {\n          const prop = {\n            ...rawProp,\n\n            odds_mentioned:\n              rawProp.odds_mentioned ??\n              rawProp.odds ??\n              null,\n\n            round_range:\n              rawProp.round_range ??\n              null,\n          };\n\n          delete prop.odds;\n\n          return prop;\n        })\n      : [];\n\n  return {\n    ...fight,\n\n    fighter_a:\n      fighterA,\n\n    fighter_b:\n      fighterB,\n\n    winner_pick:\n      winnerPick,\n\n    props,\n  };\n}\n\nconst fights =\n  rawFights.map(normalizeFight);\n\nfor (const fight of fights) {\n  const fightOrder =\n    Number(fight.fight_order);\n\n  if (\n    !Number.isInteger(fightOrder) ||\n    fightOrder < 1\n  ) {\n    validationErrors.push(\n      `Invalid fight_order: ${fight.fight_order}`\n    );\n\n    continue;\n  }\n\n  if (\n    Number.isInteger(Number(source.fight_count)) &&\n    fightOrder > Number(source.fight_count)\n  ) {\n    validationErrors.push(\n      `fight_order ${fightOrder} exceeds fight_count ${source.fight_count}`\n    );\n  }\n\n  if (\n    seenFightOrders.has(fightOrder)\n  ) {\n    validationErrors.push(\n      `Duplicate fight_order: ${fightOrder}`\n    );\n  }\n\n  seenFightOrders.add(\n    fightOrder\n  );\n\n  if (!fight.fighter_a) {\n    validationErrors.push(\n      `Fight ${fightOrder} is missing fighter_a`\n    );\n  }\n\n  if (!fight.fighter_b) {\n    validationErrors.push(\n      `Fight ${fightOrder} is missing fighter_b`\n    );\n  }\n\n  if (!Array.isArray(fight.props)) {\n    validationErrors.push(\n      `Fight ${fightOrder} does not contain a props array`\n    );\n  }\n\n  if (\n    fight.winner_pick !== null &&\n    fight.winner_pick !== undefined &&\n    typeof fight.winner_pick !== 'object'\n  ) {\n    validationErrors.push(\n      `Fight ${fightOrder} has an invalid winner_pick`\n    );\n  }\n}\n\nfights.sort((a, b) => {\n  return (\n    Number(a.fight_order ?? 999) -\n    Number(b.fight_order ?? 999)\n  );\n});\n\nconst winnerPickCount =\n  fights.filter((fight) => {\n    return Boolean(\n      fight.winner_pick &&\n      typeof fight.winner_pick === 'object' &&\n      String(\n        fight.winner_pick.picked_fighter || ''\n      ).trim()\n    );\n  }).length;\n\nif (winnerPickCount === 0) {\n  validationErrors.push(\n    'Extraction contained zero winner picks.'\n  );\n}\n\nif (\n  validationErrors.length > 0\n) {\n  throw new Error(\n    `Extraction validation failed: ${validationErrors.join(' | ')}`\n  );\n}\n\nreturn {\n  json: {\n    ...source,\n\n    output: {\n      fights,\n    },\n\n    fights,\n\n    extracted_fight_count:\n      fights.length,\n\n    extracted_winner_pick_count:\n      winnerPickCount,\n\n    validation_status:\n      'PASSED',\n\n    validation_errors:\n      [],\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3120,
+        528
+      ],
+      "id": "79c23e3e-0769-4355-9cbd-d013524b0caf",
+      "name": "Validate and Sort Extraction"
+    },
+    {
+      "parameters": {
+        "content": "## Template details\n\nGoogle Sheets Template URL: https://docs.google.com/spreadsheets/d/YOUR_FILEID\n\nGoogle Drive Folder URL:\nhttps://drive.google.com/drive/u/0/folders/YOUR_FOLDERID",
+        "height": 272,
+        "width": 656,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2816,
+        64
+      ],
+      "typeVersion": 1,
+      "id": "68bffda3-2616-41fa-a7b4-d8890350fd1a",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const source = $json;\n\n// Rows are keyed by the stable bout_id, so re-ordering the card never re-points an ID.\nconst boutIds =\n  $('Build Fight Card Context').first().json.fight_bout_ids || {};\n\nconst fights =\n  Array.isArray(source.fights)\n    ? source.fights\n    : Array.isArray(source.output?.fights)\n      ? source.output.fights\n      : [];\n\nconst extractedAt =\n  new Date().toISOString();\n\nconst promptVersion =\n  'ufc_extract_v5_rich_summaries_2026-10-15';\n\nconst modelName =\n  source.openrouter_model ||\n  'openai/gpt-6-luna-pro';\n\nconst reviewStatus =\n  'PENDING_REVIEW';\n\nconst extractionRetryUsed =\n  source.extraction_retry_used === true;\n\nconst extractionRetryModel =\n  source.extraction_retry_model ??\n  (\n    extractionRetryUsed\n      ? source.openrouter_model ?? null\n      : null\n  );\n\nconst originalExtractionModel =\n  source.original_extraction_model ??\n  null;\n\nfunction toKey(value) {\n  return String(value ?? '')\n    .trim()\n    .toLowerCase()\n    .replace(/\\s+/g, '-')\n    .replace(/[^a-z0-9._+-]+/g, '-')\n    .replace(/-+/g, '-')\n    .replace(/^-|-$/g, '');\n}\n\nconst pickRows = [];\nconst propRows = [];\nconst fightAnalysisRows = [];\n\n/*\nCreate one fight-level analysis row per discussed fight.\n*/\nfor (const fight of fights) {\n  const fightOrder =\n    Number(fight.fight_order);\n\n  const boutId =\n    boutIds[fightOrder];\n\n  if (!boutId) {\n    throw new Error(\n      `No bout_id on the Fight Card for fight_order ${fightOrder}`\n    );\n  }\n\n  fightAnalysisRows.push({\n    fight_analysis_id:\n      `${source.video_id}|fight|${boutId}`,\n\n    spreadsheet_id:\n      source.spreadsheet_id,\n\n    event_key:\n      source.event_key,\n\n    channel_name:\n      source.channel_name,\n\n    video_id:\n      source.video_id,\n\n    video_title:\n      source.video_title,\n\n    fight_order:\n      fightOrder,\n\n    bout_id:\n      boutId,\n\n    fighter_a:\n      fight.fighter_a,\n\n    fighter_b:\n      fight.fighter_b,\n\n    fighter_a_context:\n      fight.fighter_a_context ?? null,\n\n    fighter_b_context:\n      fight.fighter_b_context ?? null,\n\n    fight_outlook:\n      fight.fight_outlook ?? null,\n\n    extracted_at:\n      extractedAt,\n\n    model_name:\n      modelName,\n\n    prompt_version:\n      promptVersion,\n\n    review_status:\n      reviewStatus,\n  });\n\n  const winner =\n    fight.winner_pick;\n\n  if (\n    winner &&\n    typeof winner === 'object'\n  ) {\n    pickRows.push({\n      pick_id:\n        `${source.video_id}|pick|${boutId}`,\n\n      spreadsheet_id:\n        source.spreadsheet_id,\n\n      event_key:\n        source.event_key,\n\n      channel_name:\n        source.channel_name,\n\n      video_id:\n        source.video_id,\n\n      video_title:\n        source.video_title,\n\n      fight_order:\n        fightOrder,\n\n      bout_id:\n        boutId,\n\n      fighter_a:\n        fight.fighter_a,\n\n      fighter_b:\n        fight.fighter_b,\n\n      picked_fighter:\n        winner.picked_fighter,\n\n      confidence_label:\n        winner.confidence_label,\n\n      confidence_score:\n        winner.confidence_score,\n\n      confidence_basis:\n        winner.confidence_basis,\n\n      is_official_pick:\n        winner.is_official_pick,\n\n      odds_mentioned:\n        winner.odds_mentioned ?? null,\n\n      evidence_quote:\n        winner.evidence_quote,\n\n      reasoning_summary:\n        winner.reasoning_summary,\n\n      review_status:\n        reviewStatus,\n\n      extracted_at:\n        extractedAt,\n\n      model_name:\n        modelName,\n\n      prompt_version:\n        promptVersion,\n    });\n  }\n\n  const props =\n    Array.isArray(fight.props)\n      ? fight.props\n      : [];\n\n  for (const prop of props) {\n    let opponent = null;\n\n    if (\n      prop.fighter === fight.fighter_a\n    ) {\n      opponent =\n        fight.fighter_b;\n    } else if (\n      prop.fighter === fight.fighter_b\n    ) {\n      opponent =\n        fight.fighter_a;\n    }\n\n    const propId = [\n      source.video_id,\n      'prop',\n      boutId,\n      toKey(prop.market),\n      toKey(prop.selection),\n    ].join('|');\n\n    propRows.push({\n      prop_id:\n        propId,\n\n      spreadsheet_id:\n        source.spreadsheet_id,\n\n      event_key:\n        source.event_key,\n\n      channel_name:\n        source.channel_name,\n\n      video_id:\n        source.video_id,\n\n      video_title:\n        source.video_title,\n\n      fight_order:\n        fightOrder,\n\n      bout_id:\n        boutId,\n\n      fighter_a:\n        fight.fighter_a,\n\n      fighter_b:\n        fight.fighter_b,\n\n      fighter:\n        prop.fighter ?? null,\n\n      opponent,\n\n      market:\n        prop.market,\n\n      selection:\n        prop.selection,\n\n      method:\n        prop.method ?? null,\n\n      round:\n        prop.round ?? null,\n\n      round_range:\n        prop.round_range ?? null,\n\n      odds_mentioned:\n        prop.odds_mentioned ?? null,\n\n      stake_units:\n        prop.stake_units ?? null,\n\n      confidence_label:\n        prop.confidence_label,\n\n      confidence_score:\n        prop.confidence_score,\n\n      confidence_basis:\n        prop.confidence_basis,\n\n      recommendation_strength:\n        prop.recommendation_strength,\n\n      evidence_quote:\n        prop.evidence_quote,\n\n      reasoning_summary:\n        prop.reasoning_summary,\n\n      review_status:\n        reviewStatus,\n\n      extracted_at:\n        extractedAt,\n\n      model_name:\n        modelName,\n\n      prompt_version:\n        promptVersion,\n    });\n  }\n}\n\nconst extractionLogRow = {\n  extraction_id:\n    source.video_id,\n\n  spreadsheet_id:\n    source.spreadsheet_id,\n\n  video_id:\n    source.video_id,\n\n  channel_name:\n    source.channel_name,\n\n  video_title:\n    source.video_title,\n\n  transcript_part_count:\n    source.transcript_part_count,\n\n  analysis_status:\n    'COMPLETED',\n\n  model_name:\n    modelName,\n\n  provider:\n    source.openrouter_provider ?? null,\n\n  prompt_version:\n    promptVersion,\n\n  input_characters:\n    source.input_characters,\n\n  prompt_tokens:\n    source.openrouter_prompt_tokens ?? null,\n\n  completion_tokens:\n    source.openrouter_completion_tokens ?? null,\n\n  reasoning_tokens:\n    source.openrouter_reasoning_tokens ?? null,\n\n  total_tokens:\n    source.openrouter_total_tokens ?? null,\n\n  cost_usd:\n    source.openrouter_cost ?? null,\n\n  output_pick_count:\n    pickRows.length,\n\n  output_prop_count:\n    propRows.length,\n\n  output_fight_analysis_count:\n    fightAnalysisRows.length,\n\n  validation_status:\n    source.validation_status,\n\n  validation_error:\n    Array.isArray(source.validation_errors)\n      ? source.validation_errors.join(' | ')\n      : '',\n\n  extraction_retry_used:\n    extractionRetryUsed,\n\n  extraction_retry_model:\n    extractionRetryModel,\n\n  original_extraction_model:\n    originalExtractionModel,\n\n  extracted_at:\n    extractedAt,\n};\n\nreturn {\n  json: {\n    video_id:\n      source.video_id,\n\n    channel_name:\n      source.channel_name,\n\n    video_title:\n      source.video_title,\n\n    event_key:\n      source.event_key,\n\n    event_name:\n      source.event_name,\n\n    spreadsheet_id:\n      source.spreadsheet_id,\n\n    spreadsheet_url:\n      source.spreadsheet_url,\n\n    model_name:\n      modelName,\n\n    prompt_version:\n      promptVersion,\n\n    extraction_retry_used:\n      extractionRetryUsed,\n\n    extraction_retry_model:\n      extractionRetryModel,\n\n    original_extraction_model:\n      originalExtractionModel,\n\n    pick_rows:\n      pickRows,\n\n    prop_rows:\n      propRows,\n\n    fight_analysis_rows:\n      fightAnalysisRows,\n\n    extraction_log_row:\n      extractionLogRow,\n\n    pick_row_count:\n      pickRows.length,\n\n    prop_row_count:\n      propRows.length,\n\n    fight_analysis_row_count:\n      fightAnalysisRows.length,\n  },\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4496,
+        544
+      ],
+      "id": "bed186fe-3558-4f03-9d0e-109ff279f7c5",
+      "name": "Prepare Extraction Rows"
+    },
+    {
+      "parameters": {
+        "jsCode": "const source = $input.first().json;\n\nconst rows = Array.isArray(source.pick_rows)\n  ? source.pick_rows\n  : [];\n\nif (rows.length === 0) {\n  return [\n    {\n      json: {\n        has_pick_rows: false,\n        video_id: source.video_id,\n        event_key: source.event_key,\n        spreadsheet_id: source.spreadsheet_id,\n        pick_row_count: 0\n      },\n      pairedItem: {\n        item: 0\n      }\n    }\n  ];\n}\n\nreturn rows.map((row) => ({\n  json: {\n    ...row,\n    has_pick_rows: true\n  },\n  pairedItem: {\n    item: 0\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4720,
+        -32
+      ],
+      "id": "b97b9ce2-50b8-406b-9a80-feef32fed19d",
+      "name": "Prepare Pick Rows"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.spreadsheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Picks",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "pick_id"
+          ],
+          "schema": [
+            {
+              "id": "pick_id",
+              "displayName": "pick_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "channel_name",
+              "displayName": "channel_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "video_id",
+              "displayName": "video_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "video_title",
+              "displayName": "video_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fight_order",
+              "displayName": "fight_order",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fighter_a",
+              "displayName": "fighter_a",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fighter_b",
+              "displayName": "fighter_b",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "picked_fighter",
+              "displayName": "picked_fighter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "confidence_label",
+              "displayName": "confidence_label",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "confidence_score",
+              "displayName": "confidence_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "confidence_basis",
+              "displayName": "confidence_basis",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "is_official_pick",
+              "displayName": "is_official_pick",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "odds_mentioned",
+              "displayName": "odds_mentioned",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "evidence_quote",
+              "displayName": "evidence_quote",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reasoning_summary",
+              "displayName": "reasoning_summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "review_status",
+              "displayName": "review_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "extracted_at",
+              "displayName": "extracted_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "model_name",
+              "displayName": "model_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "prompt_version",
+              "displayName": "prompt_version",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "RAW",
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        5168,
+        -128
+      ],
+      "id": "4d4ba3fe-a090-4569-a1e5-06c1ce7aa554",
+      "name": "Upsert Picks",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const source = $input.first().json;\n\nconst rows = Array.isArray(source.prop_rows)\n  ? source.prop_rows\n  : [];\n\n// Always return at least one item.\n// Otherwise a video with zero props silently ends this branch.\nif (rows.length === 0) {\n  return [\n    {\n      json: {\n        has_prop_rows: false,\n        video_id: source.video_id,\n        event_key: source.event_key,\n        spreadsheet_id: source.spreadsheet_id,\n        prop_row_count: 0\n      },\n      pairedItem: {\n        item: 0\n      }\n    }\n  ];\n}\n\nreturn rows.map((row) => ({\n  json: {\n    ...row,\n    has_prop_rows: true\n  },\n  pairedItem: {\n    item: 0\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4720,
+        352
+      ],
+      "id": "8221609b-9fd7-4abe-9d16-cef7f038e3e1",
+      "name": "Prepare Prop Rows"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.spreadsheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Props",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "prop_id"
+          ],
+          "schema": [
+            {
+              "id": "prop_id",
+              "displayName": "prop_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "channel_name",
+              "displayName": "channel_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "video_id",
+              "displayName": "video_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "video_title",
+              "displayName": "video_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fight_order",
+              "displayName": "fight_order",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fighter_a",
+              "displayName": "fighter_a",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fighter_b",
+              "displayName": "fighter_b",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fighter",
+              "displayName": "fighter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "opponent",
+              "displayName": "opponent",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "market",
+              "displayName": "market",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "selection",
+              "displayName": "selection",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "method",
+              "displayName": "method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "round",
+              "displayName": "round",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "round_range",
+              "displayName": "round_range",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "odds_mentioned",
+              "displayName": "odds_mentioned",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "stake_units",
+              "displayName": "stake_units",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "confidence_label",
+              "displayName": "confidence_label",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "confidence_score",
+              "displayName": "confidence_score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "confidence_basis",
+              "displayName": "confidence_basis",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "recommendation_strength",
+              "displayName": "recommendation_strength",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "evidence_quote",
+              "displayName": "evidence_quote",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reasoning_summary",
+              "displayName": "reasoning_summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "review_status",
+              "displayName": "review_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "extracted_at",
+              "displayName": "extracted_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "model_name",
+              "displayName": "model_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "prompt_version",
+              "displayName": "prompt_version",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "RAW",
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        5168,
+        256
+      ],
+      "id": "b8c874c3-a1dc-4bc1-aafe-033da643e63c",
+      "name": "Upsert Props",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const source = $json;\nconst row = source.extraction_log_row;\n\nif (!row || typeof row !== 'object') {\n  throw new Error(\n    `Missing extraction_log_row for video ${source.video_id || 'unknown'}`\n  );\n}\n\nreturn {\n  json: row\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4688,
+        944
+      ],
+      "id": "76c70937-6049-4130-8f2c-cdc6eb1f80d7",
+      "name": "Prepare Extraction Log"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.spreadsheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Extraction Log",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "extraction_id"
+          ],
+          "schema": [
+            {
+              "id": "extraction_id",
+              "displayName": "extraction_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "video_id",
+              "displayName": "video_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "channel_name",
+              "displayName": "channel_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "video_title",
+              "displayName": "video_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "transcript_part_count",
+              "displayName": "transcript_part_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "analysis_status",
+              "displayName": "analysis_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "model_name",
+              "displayName": "model_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "provider",
+              "displayName": "provider",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "prompt_version",
+              "displayName": "prompt_version",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "input_characters",
+              "displayName": "input_characters",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "prompt_tokens",
+              "displayName": "prompt_tokens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "completion_tokens",
+              "displayName": "completion_tokens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reasoning_tokens",
+              "displayName": "reasoning_tokens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "total_tokens",
+              "displayName": "total_tokens",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "cost_usd",
+              "displayName": "cost_usd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "output_pick_count",
+              "displayName": "output_pick_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "output_prop_count",
+              "displayName": "output_prop_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "output_parlay_count",
+              "displayName": "output_parlay_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "output_parlay_leg_count",
+              "displayName": "output_parlay_leg_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "validation_status",
+              "displayName": "validation_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "validation_error",
+              "displayName": "validation_error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "extracted_at",
+              "displayName": "extracted_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "RAW",
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        5152,
+        944
+      ],
+      "id": "2751bfc6-d7ed-4463-8fc8-47198863524c",
+      "name": "Upsert Extraction Log",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const source = $('Prepare Extraction Rows').first().json;\nconst expectedRows = Number(source.pick_row_count || 0);\nconst inputItems = $input.all();\n\nif (expectedRows === 0) {\n  return [\n    {\n      json: {\n        video_id: source.video_id,\n        branch: 'picks',\n        status: 'SKIPPED',\n        expected_rows: 0,\n        processed_items: 0\n      }\n    }\n  ];\n}\n\nconst processedItems = inputItems.length;\n\nif (processedItems !== expectedRows) {\n  throw new Error(\n    `Pick write count mismatch: expected ${expectedRows}, ` +\n    `processed ${processedItems}`\n  );\n}\n\nreturn [\n  {\n    json: {\n      video_id: source.video_id,\n      branch: 'picks',\n      status: 'COMPLETED',\n      expected_rows: expectedRows,\n      processed_items: processedItems\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5392,
+        -32
+      ],
+      "id": "b988c060-ef4f-4db2-aca9-fc3a0b7c2437",
+      "name": "Pick Branch Complete"
+    },
+    {
+      "parameters": {
+        "jsCode": "const source = $('Prepare Extraction Rows').first().json;\nconst expectedRows = Number(source.prop_row_count || 0);\nconst inputItems = $input.all();\n\nif (expectedRows === 0) {\n  return [\n    {\n      json: {\n        video_id: source.video_id,\n        branch: 'props',\n        status: 'SKIPPED',\n        expected_rows: 0,\n        processed_items: 0\n      }\n    }\n  ];\n}\n\nconst processedItems = inputItems.length;\n\nif (processedItems !== expectedRows) {\n  throw new Error(\n    `Prop write count mismatch: expected ${expectedRows}, ` +\n    `processed ${processedItems}`\n  );\n}\n\nreturn [\n  {\n    json: {\n      video_id: source.video_id,\n      branch: 'props',\n      status: 'COMPLETED',\n      expected_rows: expectedRows,\n      processed_items: processedItems\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5392,
+        352
+      ],
+      "id": "5994e704-e24b-4cb7-9fc1-0ebe56dfb549",
+      "name": "Prop Branch Complete"
+    },
+    {
+      "parameters": {
+        "jsCode": "const source = $('Prepare Extraction Rows').first().json;\nconst processedItems = $input.all().length;\n\nif (processedItems !== 1) {\n  throw new Error(\n    `Extraction Log write count mismatch: expected 1, ` +\n    `processed ${processedItems}`\n  );\n}\n\nreturn [\n  {\n    json: {\n      video_id: source.video_id,\n      branch: 'extraction_log',\n      status: 'COMPLETED',\n      expected_rows: 1,\n      processed_items: processedItems,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5376,
+        944
+      ],
+      "id": "e1848dc0-4062-43ce-962e-c7b206676d03",
+      "name": "Log Branch Complete"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst source =\n  $('Prepare Extraction Rows').first().json;\n\nconst expectedBranches = [\n  'picks',\n  'props',\n  'extraction_log',\n];\n\nconst received =\n  items.map((item) => ({\n    branch:\n      String(item.json?.branch || ''),\n\n    status:\n      String(item.json?.status || ''),\n\n    expected_rows:\n      Number(item.json?.expected_rows || 0),\n\n    processed_items:\n      Number(item.json?.processed_items || 0),\n  }));\n\nconst errors = [];\n\nfor (\n  const expectedBranch\n  of expectedBranches\n) {\n  const matches =\n    received.filter(\n      (result) =>\n        result.branch === expectedBranch\n    );\n\n  if (matches.length === 0) {\n    errors.push(\n      `Missing completion signal for branch: ${expectedBranch}`\n    );\n\n    continue;\n  }\n\n  if (matches.length > 1) {\n    errors.push(\n      `Duplicate completion signals for branch: ${expectedBranch}`\n    );\n\n    continue;\n  }\n\n  const result =\n    matches[0];\n\n  if (\n    ![\n      'COMPLETED',\n      'SKIPPED',\n    ].includes(result.status)\n  ) {\n    errors.push(\n      `Invalid status for ${expectedBranch}: ${result.status || 'missing'}`\n    );\n  }\n\n  if (\n    result.status === 'COMPLETED' &&\n    result.processed_items !==\n      result.expected_rows\n  ) {\n    errors.push(\n      `${expectedBranch} count mismatch: expected ` +\n      `${result.expected_rows}, processed ` +\n      `${result.processed_items}`\n    );\n  }\n\n  if (\n    result.status === 'SKIPPED' &&\n    result.expected_rows !== 0\n  ) {\n    errors.push(\n      `${expectedBranch} was skipped despite expecting ` +\n      `${result.expected_rows} rows`\n    );\n  }\n}\n\nif (items.length !== 3) {\n  errors.push(\n    `Expected 3 branch completion items, received ${items.length}`\n  );\n}\n\nif (errors.length > 0) {\n  throw new Error(\n    `Spreadsheet write verification failed: ${errors.join(' | ')}`\n  );\n}\n\nreturn [\n  {\n    json: {\n      video_id:\n        source.video_id,\n\n      event_key:\n        source.event_key,\n\n      spreadsheet_id:\n        source.spreadsheet_id,\n\n      model_name:\n        source.model_name,\n\n      prompt_version:\n        source.prompt_version,\n\n      write_status:\n        'COMPLETED',\n\n      completed_branch_count:\n        3,\n\n      pick_rows_written:\n        Number(\n          source.pick_row_count || 0\n        ),\n\n      prop_rows_written:\n        Number(\n          source.prop_row_count || 0\n        ),\n\n      branch_results:\n        received,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6064,
+        448
+      ],
+      "id": "0efb4c55-1760-4ed0-8b7c-49bd0fb20aec",
+      "name": "Verify All Writes"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        5616,
+        160
+      ],
+      "id": "e087099d-03e2-40e3-8db7-f9ac712f09de",
+      "name": "Merge Picks and Props"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        5840,
+        448
+      ],
+      "id": "3d361441-9a3e-46c8-ae25-0857e2695574",
+      "name": "Wait For All Writes"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "cAQonN6NYOY3fqxl",
+          "mode": "list",
+          "cachedResultName": "ufc_videos",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/cAQonN6NYOY3fqxl"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "video_id",
+              "keyValue": "={{$json.video_id}}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "analysis_status": "COMPLETED",
+            "analysis_model": "={{ $json.model_name }}",
+            "analysis_prompt_version": "={{ $json.prompt_version }}",
+            "analysed_at": "={{ $now.toISO() }}",
+            "analysis_error": "={{null}}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "video_id",
+              "displayName": "video_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "channel_name",
+              "displayName": "channel_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "video_title",
+              "displayName": "video_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "published_at",
+              "displayName": "published_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "attempt_count",
+              "displayName": "attempt_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "last_attempt_at",
+              "displayName": "last_attempt_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "last_http_status",
+              "displayName": "last_http_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "last_error",
+              "displayName": "last_error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "placeholder_appended",
+              "displayName": "placeholder_appended",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "transcript_appended",
+              "displayName": "transcript_appended",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "transcript_parts",
+              "displayName": "transcript_parts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "completed_at",
+              "displayName": "completed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "analysis_status",
+              "displayName": "analysis_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "analysis_attempt_count",
+              "displayName": "analysis_attempt_count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "analysis_model",
+              "displayName": "analysis_model",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "analysis_prompt_version",
+              "displayName": "analysis_prompt_version",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "analysed_at",
+              "displayName": "analysed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "analysis_error",
+              "displayName": "analysis_error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        6288,
+        448
+      ],
+      "id": "cfdb399f-b38d-4168-a237-ff763c918b02",
+      "name": "Record Analysis Complete"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const prepared =\n  $('Prepare Extraction Rows').first().json;\n\nconst validated =\n  $('Validate and Sort Extraction').first().json;\n\nconst picks = Array.isArray(prepared.pick_rows)\n  ? prepared.pick_rows\n  : [];\n\nconst props = Array.isArray(prepared.prop_rows)\n  ? prepared.prop_rows\n  : [];\n\nconst videoId =\n  prepared.video_id ||\n  validated.video_id ||\n  '';\n\nconst channelName =\n  prepared.channel_name ||\n  validated.channel_name ||\n  'Unknown picker';\n\nconst videoTitle =\n  prepared.video_title ||\n  validated.video_title ||\n  '';\n\nconst eventName =\n  prepared.event_name ||\n  validated.event_name ||\n  prepared.event_key ||\n  validated.event_key ||\n  '';\n\nconst eventKey =\n  prepared.event_key ||\n  validated.event_key ||\n  '';\n\nconst spreadsheetId =\n  prepared.spreadsheet_id ||\n  validated.spreadsheet_id ||\n  '';\n\nconst spreadsheetUrl =\n  prepared.spreadsheet_url ||\n  validated.spreadsheet_url ||\n  (\n    spreadsheetId\n      ? `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`\n      : ''\n  );\n\nconst extractionRetryUsed =\n  prepared.extraction_retry_used === true;\n\nconst extractionRetryModel =\n  prepared.extraction_retry_model ||\n  null;\n\nconst originalExtractionModel =\n  prepared.original_extraction_model ||\n  null;\n\n/*\nTelegram HTML escaping.\n*/\nfunction escapeHtml(value) {\n  return String(value ?? '')\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;');\n}\n\n/*\nKeep reasoning short enough for Telegram.\n*/\nfunction conciseReason(\n  value,\n  maxLength = 190\n) {\n  const text = String(value ?? '')\n    .replace(/\\s+/g, ' ')\n    .trim();\n\n  if (!text) {\n    return '';\n  }\n\n  const sentenceMatch =\n    text.match(/^.*?[.!?](?:\\s|$)/);\n\n  const firstSentence =\n    sentenceMatch\n      ? sentenceMatch[0].trim()\n      : text;\n\n  if (\n    firstSentence.length <= maxLength\n  ) {\n    return firstSentence;\n  }\n\n  return (\n    `${firstSentence\n      .slice(0, maxLength - 1)\n      .trim()}…`\n  );\n}\n\n/*\nDescribe predicted method of victory.\n*/\nfunction describeWinningMethod(prop) {\n  if (!prop) {\n    return 'to win';\n  }\n\n  const roundText =\n    prop.round\n      ? ` in R${prop.round}`\n      : prop.round_range\n        ? ` in ${prop.round_range}`\n        : '';\n\n  switch (prop.market) {\n    case 'method_and_round':\n    case 'method_of_victory': {\n      if (\n        prop.method === 'KO_TKO'\n      ) {\n        return `by KO/TKO${roundText}`;\n      }\n\n      if (\n        prop.method === 'submission'\n      ) {\n        return `by submission${roundText}`;\n      }\n\n      if (\n        prop.method === 'decision'\n      ) {\n        return 'by decision';\n      }\n\n      return prop.selection\n        ? String(prop.selection)\n        : 'to win';\n    }\n\n    case 'inside_distance':\n      return (\n        `inside the distance${roundText}`\n      );\n\n    case 'winning_round':\n      return prop.round\n        ? `to win in R${prop.round}`\n        : prop.round_range\n          ? `to win in ${prop.round_range}`\n          : 'to win';\n\n    default:\n      return 'to win';\n  }\n}\n\n/*\nFind the most useful method prop for the winner.\n*/\nfunction findWinningMethodProp(pick) {\n  const matchingProps =\n    props.filter((prop) => {\n      return (\n        Number(prop.fight_order) ===\n          Number(pick.fight_order) &&\n        prop.fighter ===\n          pick.picked_fighter\n      );\n    });\n\n  const marketPriority = [\n    'method_and_round',\n    'method_of_victory',\n    'inside_distance',\n    'winning_round',\n  ];\n\n  for (\n    const market\n    of marketPriority\n  ) {\n    const match =\n      matchingProps.find(\n        (prop) =>\n          prop.market === market\n      );\n\n    if (match) {\n      return match;\n    }\n  }\n\n  return null;\n}\n\n/*\nOfficial fight-card order.\n*/\nconst orderedPicks =\n  [...picks].sort((a, b) => {\n    return (\n      Number(a.fight_order || 999) -\n      Number(b.fight_order || 999)\n    );\n  });\n\nconst fightSections =\n  orderedPicks.flatMap((pick) => {\n    const opponent =\n      pick.picked_fighter ===\n        pick.fighter_a\n        ? pick.fighter_b\n        : pick.fighter_a;\n\n    const methodProp =\n      findWinningMethodProp(pick);\n\n    const methodDescription =\n      describeWinningMethod(\n        methodProp\n      );\n\n    const confidenceLabel =\n      String(\n        pick.confidence_label ||\n        'unknown'\n      );\n\n    const confidenceScore =\n      Number(\n        pick.confidence_score || 0\n      );\n\n    const reasoning =\n      conciseReason(\n        pick.reasoning_summary\n      );\n\n    const predictionLine =\n      `<b>${Number(\n        pick.fight_order\n      )}. ` +\n      `${escapeHtml(\n        pick.picked_fighter\n      )} ` +\n      `${escapeHtml(\n        methodDescription\n      )} ` +\n      `over ${escapeHtml(\n        opponent || ''\n      )}</b>` +\n      ` — ${escapeHtml(\n        confidenceLabel\n      )} ` +\n      `(${confidenceScore}/10)`;\n\n    const lines = [\n      predictionLine,\n    ];\n\n    if (reasoning) {\n      lines.push(\n        `↳ ${escapeHtml(reasoning)}`\n      );\n    }\n\n    return lines;\n  });\n\n/*\nActual betting recommendations.\n*/\nconst recommendedProps =\n  props\n    .filter((prop) =>\n      [\n        'lean',\n        'recommended_bet',\n        'best_bet',\n      ].includes(\n        prop.recommendation_strength\n      )\n    )\n    .sort((a, b) => {\n      return (\n        Number(\n          a.fight_order || 999\n        ) -\n        Number(\n          b.fight_order || 999\n        )\n      );\n    });\n\nconst propLines =\n  recommendedProps.map((prop) => {\n    const oddsText =\n      prop.odds_mentioned\n        ? ` at ${escapeHtml(\n            prop.odds_mentioned\n          )}`\n        : '';\n\n    const strengthText =\n      String(\n        prop.recommendation_strength ||\n        ''\n      ).replace(/_/g, ' ');\n\n    return (\n      `• Fight ${Number(\n        prop.fight_order\n      )}: ` +\n      `${escapeHtml(\n        prop.selection || ''\n      )}` +\n      `${oddsText}` +\n      ` — ${escapeHtml(\n        strengthText\n      )}`\n    );\n  });\n\nconst lines = [\n  `✅ <b>Picker video processed</b>`,\n  ``,\n  `<b>Picker:</b> ${escapeHtml(\n    channelName\n  )}`,\n];\n\nif (videoTitle) {\n  lines.push(\n    `<b>Video:</b> ${escapeHtml(\n      videoTitle\n    )}`\n  );\n}\n\nif (eventName) {\n  lines.push(\n    `<b>Event:</b> ${escapeHtml(\n      eventName\n    )}`\n  );\n}\n\nlines.push(\n  `<b>Results:</b> ` +\n    `${picks.length} picks, ` +\n    `${props.length} props`\n);\n\n/*\nModel and cost of the analysis. When the retry safeguard fired, the cost is\nthe sum of both model calls.\n*/\nconst logRow =\n  prepared.extraction_log_row || {};\n\nconst finalModel =\n  prepared.model_name ||\n  logRow.model_name ||\n  'unknown';\n\nlet totalCostUsd =\n  Number.isFinite(Number(logRow.cost_usd)) &&\n  logRow.cost_usd !== null\n    ? Number(logRow.cost_usd)\n    : null;\n\nif (extractionRetryUsed) {\n  const firstCostUsd =\n    Number(validated.openrouter_cost);\n\n  if (\n    totalCostUsd !== null &&\n    Number.isFinite(firstCostUsd)\n  ) {\n    totalCostUsd += firstCostUsd;\n  }\n}\n\nfunction formatCost(usd) {\n  if (usd === null) {\n    return 'n/a';\n  }\n\n  return usd >= 1\n    ? `$${usd.toFixed(2)}`\n    : `${(usd * 100).toFixed(2)}¢`;\n}\n\nfunction formatTokens(count) {\n  const number = Number(count);\n\n  if (!Number.isFinite(number)) {\n    return '?';\n  }\n\n  return number >= 1000\n    ? `${(number / 1000).toFixed(1)}k`\n    : String(number);\n}\n\nconst modelText =\n  extractionRetryUsed &&\n  originalExtractionModel &&\n  extractionRetryModel\n    ? `${originalExtractionModel} + ${extractionRetryModel}`\n    : finalModel;\n\nlines.push(\n  `<b>Model:</b> ${escapeHtml(modelText)}`,\n  `<b>Cost:</b> ${formatCost(totalCostUsd)} ` +\n    `(${formatTokens(logRow.prompt_tokens)} in / ` +\n    `${formatTokens(logRow.completion_tokens)} out)`\n);\n\n/*\nShow retry warning only when the automatic retry safeguard fired.\n*/\nif (extractionRetryUsed) {\n  lines.push(\n    ``,\n    `⚠️ <b>Automatic extraction retry used</b>`\n  );\n\n  if (\n    originalExtractionModel &&\n    extractionRetryModel\n  ) {\n    lines.push(\n      `${escapeHtml(\n        originalExtractionModel\n      )} → ${escapeHtml(\n        extractionRetryModel\n      )}`\n    );\n  } else if (\n    extractionRetryModel\n  ) {\n    lines.push(\n      `Retry model: ${escapeHtml(\n        extractionRetryModel\n      )}`\n    );\n  }\n}\n\nlines.push(\n  ``,\n  `<b>Fight-card picks</b>`,\n  ...fightSections\n);\n\nif (\n  propLines.length > 0\n) {\n  lines.push(\n    ``,\n    `<b>Betting leans and recommendations</b>`,\n    ...propLines\n  );\n}\n\nif (spreadsheetUrl) {\n  lines.push(\n    ``,\n    `<a href=\"${escapeHtml(\n      spreadsheetUrl\n    )}\">Open event spreadsheet</a>`\n  );\n}\n\n/*\nTelegram has a ~4096-character limit.\n*/\nlet telegramMessage =\n  lines.join('\\n');\n\nif (\n  telegramMessage.length > 3900\n) {\n  telegramMessage =\n    `${telegramMessage\n      .slice(0, 3780)\n      .trim()}\\n\\n` +\n    `<i>Message shortened. Open the spreadsheet for the full extraction.</i>`;\n\n  if (spreadsheetUrl) {\n    telegramMessage +=\n      `\\n<a href=\"${escapeHtml(\n        spreadsheetUrl\n      )}\">Open event spreadsheet</a>`;\n  }\n}\n\nreturn {\n  json: {\n    video_id:\n      videoId,\n\n    event_key:\n      eventKey,\n\n    spreadsheet_id:\n      spreadsheetId,\n\n    extraction_retry_used:\n      extractionRetryUsed,\n\n    extraction_retry_model:\n      extractionRetryModel,\n\n    telegram_message:\n      telegramMessage,\n  },\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6512,
+        448
+      ],
+      "id": "8c5abb14-5f1f-4acb-bac3-21a9a80e770b",
+      "name": "Build Telegram Pick Summary"
+    },
+    {
+      "parameters": {
+        "chatId": "0",
+        "text": "={{ $json.telegram_message }}",
+        "additionalFields": {
+          "disable_web_page_preview": true,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        6784,
+        864
+      ],
+      "id": "2d1d8e6c-69be-4319-8a91-fc0c20b05ad4",
+      "name": "Send a text message",
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 3000,
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  json: {\n    video_id: $json.video_id,\n    event_key: $json.event_key,\n    spreadsheet_id: $json.spreadsheet_id,\n    branch_name: 'props',\n    branch_status: 'SKIPPED',\n    row_count: 0\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5168,
+        448
+      ],
+      "id": "27332208-7e47-4273-b265-c05fcb03abc7",
+      "name": "Skip Props"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "900d1f51-3efb-4746-b579-d58d1c93d84c",
+              "leftValue": "={{ $json.has_prop_rows }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4944,
+        352
+      ],
+      "id": "52c672c0-3c1d-4a8e-b856-0c743206610a",
+      "name": "Prop Rows Exist?"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "900d1f51-3efb-4746-b579-d58d1c93d84c",
+              "leftValue": "={{ $json.has_pick_rows }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4944,
+        -32
+      ],
+      "id": "7ad032bf-3683-441b-935d-08d00562fc03",
+      "name": "Prop Rows Exist?1"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  json: {\n    video_id: $json.video_id,\n    event_key: $json.event_key,\n    spreadsheet_id: $json.spreadsheet_id,\n    branch: 'picks',\n    status: 'SKIPPED',\n    expected_rows: 0,\n    processed_items: 0\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5168,
+        64
+      ],
+      "id": "bc3de1f9-0f07-4561-993e-b628009b1dd6",
+      "name": "Skip Picks"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        512
+      ],
+      "id": "833ca772-2f82-4f16-9455-a811c5e63e0d",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const source = $json;\n\nconst fights = Array.isArray(source.fights)\n  ? source.fights\n  : Array.isArray(source.output?.fights)\n    ? source.output.fights\n    : [];\n\nconst officialFightCount = Number(\n  source.fight_count || 0\n);\n\nconst extractedFightCount =\n  fights.length;\n\nconst winnerPickCount =\n  fights.filter((fight) => {\n    return Boolean(\n      fight?.winner_pick &&\n      typeof fight.winner_pick === 'object' &&\n      String(\n        fight.winner_pick.picked_fighter || ''\n      ).trim()\n    );\n  }).length;\n\n/*\nAnomaly rule.\n\nRetry only when BOTH are true:\n\n1. Fewer than 3 winner picks were extracted.\n2. Those picks cover less than 30% of the official card.\n\nThis catches pathological results such as 1/12 without treating\nordinary partial-coverage videos as failures.\n*/\nconst coverageRatio =\n  officialFightCount > 0\n    ? winnerPickCount / officialFightCount\n    : 1;\n\nconst isBingoFormat = /\\bbingo\\b/i.test(String(source.video_title || ''));\n\nconst suspiciouslyLowCoverage =\n  !isBingoFormat &&\n  officialFightCount >= 5 &&\n  winnerPickCount < 3 &&\n  coverageRatio < 0.30;\n\nreturn {\n  json: {\n    ...source,\n\n    extraction_coverage: {\n      official_fight_count:\n        officialFightCount,\n\n      extracted_fight_count:\n        extractedFightCount,\n\n      winner_pick_count:\n        winnerPickCount,\n\n      winner_pick_coverage_ratio:\n        coverageRatio,\n\n      suspiciously_low:\n        suspiciouslyLowCoverage\n    },\n\n    retry_needed:\n      suspiciouslyLowCoverage,\n\n    retry_reason:\n      suspiciouslyLowCoverage\n        ? (\n            `Suspiciously low extraction coverage: ` +\n            `${winnerPickCount} winner picks from ` +\n            `${officialFightCount} official fights`\n          )\n        : null\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3344,
+        528
+      ],
+      "id": "58696a9f-bad4-4364-b50d-7a197aeadfc0",
+      "name": "Assess Extraction Coverage"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "cc0073ed-5ea4-40a5-af42-b5f1dec21ccf",
+              "leftValue": "={{ $json.retry_needed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3568,
+        528
+      ],
+      "id": "64e0c60e-ceff-42d6-afbd-d2d10655290a",
+      "name": "Retry Needed?"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const source = $json;\n\n/*\nReuse the exact prompt, official card, transcript and JSON schema\nalready created by Build OpenRouter Request.\n\nOnly change the model and add a short retry instruction.\n*/\nconst original =\n  $('Build OpenRouter Request').item.json\n    .openrouter_payload;\n\nif (\n  !original ||\n  typeof original !== 'object'\n) {\n  throw new Error(\n    'Could not retrieve the original OpenRouter payload.'\n  );\n}\n\nconst payload =\n  JSON.parse(JSON.stringify(original));\n\n/*\nUse a different cheap model for the retry.\n\nModel diversity is useful here because the first model has already\nproduced a suspiciously incomplete extraction.\n*/\npayload.model =\n  'deepseek/deepseek-v4.1-flash-1017';\n\n/*\nDo not carry a models fallback array if one happens to exist.\n*/\ndelete payload.models;\n\n// A retry starts directly on DeepSeek, with dynamic price filtering.\npayload.provider = {\n  max_price: {\n    completion: 0.66\n  },\n  require_parameters: true,\n  allow_fallbacks: true\n};\n\n/*\nAdd explicit context explaining why this is a retry.\n\nThe original transcript and official fight card remain untouched.\n*/\npayload.messages.push({\n  role: 'user',\n  content:\n    `RETRY INSTRUCTION:\\n\\n` +\n    `The previous extraction produced suspiciously low coverage: ` +\n    `${source.extraction_coverage?.winner_pick_count ?? 0} winner picks ` +\n    `from ${source.extraction_coverage?.official_fight_count ?? 'unknown'} ` +\n    `official fights.\\n\\n` +\n    `Re-read the COMPLETE transcript carefully from beginning to end. ` +\n    `Do not assume the previous extraction was complete. ` +\n    `Extract every fight that the speaker actually discusses and every ` +\n    `clear final winner pick and prop. ` +\n    `Do not invent picks for fights the speaker does not discuss.`\n});\n\nreturn {\n  json: {\n    ...source,\n\n    retry_attempt:\n      1,\n\n    original_extraction_model:\n      source.openrouter_model ?? null,\n\n    retry_openrouter_payload:\n      payload\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3728,
+        240
+      ],
+      "id": "0ea36fbc-25f2-4c9b-a5de-eafe5e6b31fc",
+      "name": "Build Retry OpenRouter Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "X-OpenRouter-Metadata",
+              "value": "enabled"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.retry_openrouter_payload }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 240000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        3936,
+        240
+      ],
+      "id": "f6d63786-27d9-41b2-bc77-b1e918865ee4",
+      "name": "Call Retry OpenRouter Extraction",
+      "credentials": {
+        "openRouterApi": {
+          "name": "openRouterApi credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputItems = $input.all();\n\nif (inputItems.length !== 1) {\n  throw new Error(\n    `Parse Retry OpenRouter Extraction expected exactly 1 input item, received ${inputItems.length}`\n  );\n}\n\nconst response =\n  inputItems[0].json;\n\nconst source =\n  $('Build Retry OpenRouter Request').item.json;\n\nif (response?.error) {\n  throw new Error(\n    `OpenRouter retry error: ${JSON.stringify(response.error).slice(0, 3000)}`\n  );\n}\n\nconst choice =\n  response?.choices?.[0];\n\nif (!choice) {\n  throw new Error(\n    `OpenRouter retry returned no choices. ` +\n    `Response: ${JSON.stringify(response).slice(0, 3000)}`\n  );\n}\n\nconst finishReason =\n  String(choice.finish_reason || '');\n\nconst nativeFinishReason =\n  String(choice.native_finish_reason || '');\n\nconst reasoningTokens =\n  response?.usage?.completion_tokens_details?.reasoning_tokens ??\n  response?.usage?.reasoning_tokens ??\n  null;\n\nif (finishReason !== 'stop') {\n  throw new Error(\n    `Retry extraction did not finish normally. ` +\n    `finish_reason=${finishReason || 'missing'}, ` +\n    `native_finish_reason=${nativeFinishReason || 'missing'}, ` +\n    `completion_tokens=${response?.usage?.completion_tokens ?? 'unknown'}, ` +\n    `reasoning_tokens=${reasoningTokens ?? 'unknown'}`\n  );\n}\n\nconst content =\n  choice?.message?.content;\n\nif (\n  content == null ||\n  String(content).trim() === ''\n) {\n  throw new Error(\n    'OpenRouter retry returned empty content.'\n  );\n}\n\nlet extracted;\n\nif (\n  typeof content === 'object' &&\n  content !== null\n) {\n  extracted = content;\n} else {\n  const cleaned =\n    String(content)\n      .trim()\n      .replace(/^```json\\s*/i, '')\n      .replace(/^```\\s*/i, '')\n      .replace(/\\s*```$/i, '');\n\n  try {\n    extracted =\n      JSON.parse(cleaned);\n  } catch (error) {\n    throw new Error(\n      `Could not parse retry JSON: ${error.message}. ` +\n      `Response begins: ${cleaned.slice(0, 2000)}`\n    );\n  }\n}\n\nif (\n  !extracted ||\n  typeof extracted !== 'object' ||\n  Array.isArray(extracted)\n) {\n  throw new Error(\n    'Parsed retry extraction is not a JSON object'\n  );\n}\n\nif (!Array.isArray(extracted.fights)) {\n  throw new Error(\n    'Parsed retry extraction does not contain a fights array'\n  );\n}\n\nconst fights =\n  extracted.fights.map(\n    (fight, index) => {\n      if (\n        !fight ||\n        typeof fight !== 'object' ||\n        Array.isArray(fight)\n      ) {\n        throw new Error(\n          `Retry fight at array index ${index} is not a valid object`\n        );\n      }\n\n      const normalizedFight = {\n        ...fight\n      };\n\n      if (\n        normalizedFight.props === undefined ||\n        normalizedFight.props === null\n      ) {\n        normalizedFight.props = [];\n      }\n\n      if (\n        !Array.isArray(normalizedFight.props)\n      ) {\n        throw new Error(\n          `Retry fight ${\n            normalizedFight.fight_order ?? index + 1\n          } contains an invalid props value`\n        );\n      }\n\n      if (\n        normalizedFight.winner_pick === undefined\n      ) {\n        normalizedFight.winner_pick = null;\n      }\n\n      return normalizedFight;\n    }\n  );\n\nreturn [\n  {\n    json: {\n      ...source,\n\n      output: {\n        fights\n      },\n\n      fights,\n\n      openrouter_model:\n        response.model ?? null,\n\n      openrouter_provider:\n        response.provider ?? null,\n\n      openrouter_finish_reason:\n        finishReason,\n\n      openrouter_native_finish_reason:\n        nativeFinishReason || null,\n\n      openrouter_prompt_tokens:\n        response?.usage?.prompt_tokens ?? null,\n\n      openrouter_completion_tokens:\n        response?.usage?.completion_tokens ?? null,\n\n      openrouter_reasoning_tokens:\n        reasoningTokens,\n\n      openrouter_total_tokens:\n        response?.usage?.total_tokens ?? null,\n\n      openrouter_cost:\n        response?.usage?.cost ?? null,\n\n      openrouter_metadata:\n        response?.openrouter_metadata ?? null,\n\n      extraction_retry_used:\n        true,\n\n      extraction_retry_model:\n        response.model ?? null\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4144,
+        240
+      ],
+      "id": "45cd443c-c305-4403-bdce-d9e4071cc474",
+      "name": "Parse Retry OpenRouter Extraction"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const source = $json;\n\nconst extracted =\n  source.output || source;\n\nconst rawFights =\n  Array.isArray(extracted.fights)\n    ? extracted.fights\n    : [];\n\nconst validationErrors = [];\nconst seenFightOrders = new Set();\n\nfunction normalizeFight(rawFight) {\n  const fight = {\n    ...rawFight,\n  };\n\n  let fighterA =\n    String(fight.fighter_a || '').trim();\n\n  let fighterB =\n    String(fight.fighter_b || '').trim();\n\n  if (\n    (!fighterA || !fighterB) &&\n    fight.matchup\n  ) {\n    const matchup =\n      String(fight.matchup).trim();\n\n    const parts =\n      matchup.split(/\\s+vs\\.?\\s+/i);\n\n    if (parts.length === 2) {\n      fighterA =\n        fighterA || parts[0].trim();\n\n      fighterB =\n        fighterB || parts[1].trim();\n    }\n  }\n\n  let winnerPick =\n    fight.winner_pick ?? null;\n\n  if (\n    winnerPick &&\n    typeof winnerPick === 'object'\n  ) {\n    winnerPick = {\n      ...winnerPick,\n\n      odds_mentioned:\n        winnerPick.odds_mentioned ??\n        winnerPick.odds ??\n        null,\n    };\n\n    delete winnerPick.odds;\n  }\n\n  const props =\n    Array.isArray(fight.props)\n      ? fight.props.map((rawProp) => {\n          const prop = {\n            ...rawProp,\n\n            odds_mentioned:\n              rawProp.odds_mentioned ??\n              rawProp.odds ??\n              null,\n\n            round_range:\n              rawProp.round_range ??\n              null,\n          };\n\n          delete prop.odds;\n\n          return prop;\n        })\n      : [];\n\n  return {\n    ...fight,\n\n    fighter_a:\n      fighterA,\n\n    fighter_b:\n      fighterB,\n\n    winner_pick:\n      winnerPick,\n\n    props,\n  };\n}\n\nconst fights =\n  rawFights.map(normalizeFight);\n\nfor (const fight of fights) {\n  const fightOrder =\n    Number(fight.fight_order);\n\n  if (\n    !Number.isInteger(fightOrder) ||\n    fightOrder < 1\n  ) {\n    validationErrors.push(\n      `Invalid fight_order: ${fight.fight_order}`\n    );\n\n    continue;\n  }\n\n  if (\n    Number.isInteger(Number(source.fight_count)) &&\n    fightOrder > Number(source.fight_count)\n  ) {\n    validationErrors.push(\n      `fight_order ${fightOrder} exceeds fight_count ${source.fight_count}`\n    );\n  }\n\n  if (\n    seenFightOrders.has(fightOrder)\n  ) {\n    validationErrors.push(\n      `Duplicate fight_order: ${fightOrder}`\n    );\n  }\n\n  seenFightOrders.add(\n    fightOrder\n  );\n\n  if (!fight.fighter_a) {\n    validationErrors.push(\n      `Fight ${fightOrder} is missing fighter_a`\n    );\n  }\n\n  if (!fight.fighter_b) {\n    validationErrors.push(\n      `Fight ${fightOrder} is missing fighter_b`\n    );\n  }\n\n  if (!Array.isArray(fight.props)) {\n    validationErrors.push(\n      `Fight ${fightOrder} does not contain a props array`\n    );\n  }\n\n  if (\n    fight.winner_pick !== null &&\n    fight.winner_pick !== undefined &&\n    typeof fight.winner_pick !== 'object'\n  ) {\n    validationErrors.push(\n      `Fight ${fightOrder} has an invalid winner_pick`\n    );\n  }\n}\n\nfights.sort((a, b) => {\n  return (\n    Number(a.fight_order ?? 999) -\n    Number(b.fight_order ?? 999)\n  );\n});\n\nconst winnerPickCount =\n  fights.filter((fight) => {\n    return Boolean(\n      fight.winner_pick &&\n      typeof fight.winner_pick === 'object' &&\n      String(\n        fight.winner_pick.picked_fighter || ''\n      ).trim()\n    );\n  }).length;\n\nif (winnerPickCount === 0) {\n  validationErrors.push(\n    'Extraction contained zero winner picks.'\n  );\n}\n\nif (\n  validationErrors.length > 0\n) {\n  throw new Error(\n    `Extraction validation failed: ${validationErrors.join(' | ')}`\n  );\n}\n\nreturn {\n  json: {\n    ...source,\n\n    output: {\n      fights,\n    },\n\n    fights,\n\n    extracted_fight_count:\n      fights.length,\n\n    extracted_winner_pick_count:\n      winnerPickCount,\n\n    validation_status:\n      'PASSED',\n\n    validation_errors:\n      [],\n  },\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4336,
+        240
+      ],
+      "id": "d8c639d5-1167-48ce-ae7c-23b5f9927f88",
+      "name": "Validate Retry Extraction"
+    },
+    {
+      "parameters": {
+        "jsCode": "const source = $json;\n\nconst rows =\n  Array.isArray(source.fight_analysis_rows)\n    ? source.fight_analysis_rows\n    : [];\n\nif (rows.length === 0) {\n  return [\n    {\n      json: {\n        has_fight_analysis_rows: false,\n        video_id: source.video_id,\n        event_key: source.event_key,\n        spreadsheet_id: source.spreadsheet_id,\n        fight_analysis_row_count: 0,\n      },\n    },\n  ];\n}\n\nreturn rows.map((row) => ({\n  json: {\n    ...row,\n    has_fight_analysis_rows: true,\n  },\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4704,
+        656
+      ],
+      "id": "6ac350df-2403-4f7d-844d-d9f3e839ed25",
+      "name": "Prepare Fight Analysis Rows"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "8d0f6d32-e1c9-48f3-ac8f-b2c213a2d001",
+              "leftValue": "={{ $json.has_fight_analysis_rows }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4944,
+        656
+      ],
+      "id": "fba25523-fdee-42de-b0ac-56abb70f4e14",
+      "name": "Fight Analysis Rows Exist?"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $json.spreadsheet_id }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Fight Analysis",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [
+            "fight_analysis_id"
+          ],
+          "schema": [
+            {
+              "id": "fight_analysis_id",
+              "displayName": "fight_analysis_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "channel_name",
+              "displayName": "channel_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "video_id",
+              "displayName": "video_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "video_title",
+              "displayName": "video_title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fight_order",
+              "displayName": "fight_order",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fighter_a",
+              "displayName": "fighter_a",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fighter_b",
+              "displayName": "fighter_b",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fighter_a_context",
+              "displayName": "fighter_a_context",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fighter_b_context",
+              "displayName": "fighter_b_context",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fight_outlook",
+              "displayName": "fight_outlook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "review_status",
+              "displayName": "review_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "extracted_at",
+              "displayName": "extracted_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "model_name",
+              "displayName": "model_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "prompt_version",
+              "displayName": "prompt_version",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "RAW",
+          "handlingExtraData": "ignoreIt"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        5152,
+        624
+      ],
+      "id": "53e6e73d-9362-4bc5-9ac3-78ae9eafb4d6",
+      "name": "Upsert Fight Analysis",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "93843323-e5fc-4fc3-aab8-f8a356555f42",
+      "name": "Check UFC Spreadsheet",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        760,
+        850
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "GQs7zaGeF1vZBRaj",
+          "cachedResultName": "UFC | svc.check_event_spreadsheet"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "440e53df-0067-4616-a91d-a8b2066ba8c3",
+      "name": "Get UFC Events For Matching",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "WTTpdZSDVOxOB3Ex",
+          "cachedResultName": "ufc_events"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      }
+    },
+    {
+      "id": "9982f86d-13d3-42fe-8770-9acc0a0594f1",
+      "name": "Record Analysis Start",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Tb9mpsswwq6uJvr6",
+          "cachedResultName": "ufc_pipeline_runs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "run_key",
+              "condition": "eq",
+              "keyValue": "={{ String($execution.id) }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "run_key": "={{ String($execution.id) }}",
+            "workflow_id": "BvLnPFMwQ2vhPkgv",
+            "workflow_name": "3. Analyse Picker Video Transcripts",
+            "event_key": "={{ $json.event_key }}",
+            "state": "running",
+            "summary": "Analysis started",
+            "execution_url": "={{ 'https://N8N_INSTANCE.example/workflow/BvLnPFMwQ2vhPkgv/executions/' + $execution.id }}",
+            "started_at": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "run_key",
+              "displayName": "run_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "execution_url",
+              "displayName": "execution_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "started_at",
+              "displayName": "started_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "3a732c0b-1599-44a8-83c9-03b22a1608ea",
+      "name": "Restore Analysis Event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return [{json:$('One Active Event Only').first().json}];"
+      }
+    },
+    {
+      "id": "b3a83166-cf9f-4b28-96dd-95cd05247ec1",
+      "name": "Analysis Work Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ Boolean($json.video_id) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "ce279ab0-8a76-46e6-b7e5-99077f281fd6",
+      "name": "Record Analysis Idle",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Tb9mpsswwq6uJvr6",
+          "cachedResultName": "ufc_pipeline_runs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "run_key",
+              "condition": "eq",
+              "keyValue": "={{ String($execution.id) }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "run_key": "={{ String($execution.id) }}",
+            "workflow_id": "BvLnPFMwQ2vhPkgv",
+            "workflow_name": "3. Analyse Picker Video Transcripts",
+            "event_key": "={{ $('One Active Event Only').first().json.event_key }}",
+            "state": "idle",
+            "summary": "No eligible videos awaiting analysis",
+            "execution_url": "={{ 'https://N8N_INSTANCE.example/workflow/BvLnPFMwQ2vhPkgv/executions/' + $execution.id }}",
+            "finished_at": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "run_key",
+              "displayName": "run_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "execution_url",
+              "displayName": "execution_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "finished_at",
+              "displayName": "finished_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "2abb42fd-4569-447d-b256-7105d77ea0f5",
+      "name": "Record Analysis Result",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Tb9mpsswwq6uJvr6",
+          "cachedResultName": "ufc_pipeline_runs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "run_key",
+              "condition": "eq",
+              "keyValue": "={{ String($execution.id) }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "run_key": "={{ String($execution.id) }}",
+            "workflow_id": "BvLnPFMwQ2vhPkgv",
+            "workflow_name": "3. Analyse Picker Video Transcripts",
+            "event_key": "={{ $('One Active Event Only').first().json.event_key }}",
+            "state": "success",
+            "summary": "={{ $input.all().length + ' video analyses completed' }}",
+            "execution_url": "={{ 'https://N8N_INSTANCE.example/workflow/BvLnPFMwQ2vhPkgv/executions/' + $execution.id }}",
+            "finished_at": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "run_key",
+              "displayName": "run_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "execution_url",
+              "displayName": "execution_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "finished_at",
+              "displayName": "finished_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "8d93fac6-a4f5-4c4f-87f9-f5f86ef5a2fa",
+      "name": "Ensure UFC Fight Card",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        560,
+        1000
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "LuALxCWYzByUY2Iq",
+          "cachedResultName": "UFC | svc.ensure_event_spreadsheet"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "e746ef5b-28aa-4692-8606-f68d4197b7e4",
+      "name": "Fight Card Ready?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        660,
+        1000
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ ['READY','PRESERVED'].includes($json.fight_card_status) && Number($json.fight_card_count) > 0 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "fec0dd15-85a0-456b-98cf-af0ba342d73c",
+      "name": "Record Analysis Card Pending",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        760,
+        1150
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Tb9mpsswwq6uJvr6",
+          "cachedResultName": "ufc_pipeline_runs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "run_key",
+              "condition": "eq",
+              "keyValue": "={{ String($execution.id) }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "run_key": "={{ String($execution.id) }}",
+            "workflow_id": "BvLnPFMwQ2vhPkgv",
+            "workflow_name": "3. Analyse Picker Video Transcripts",
+            "event_key": "={{ $('One Active Event Only').first().json.event_key }}",
+            "state": "idle",
+            "summary": "={{ 'Fight card not ready (' + ($json.fight_card_status || 'unknown') + '); analysis skipped' }}",
+            "execution_url": "={{ 'https://N8N_INSTANCE.example/workflow/BvLnPFMwQ2vhPkgv/executions/' + $execution.id }}",
+            "finished_at": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "run_key",
+              "displayName": "run_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "execution_url",
+              "displayName": "execution_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "finished_at",
+              "displayName": "finished_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "abad1e77-02b6-4f11-a775-677b474c6e7a",
+      "name": "Sync Bout IDs",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        660,
+        850
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "ya1uS9XFsrlhq6e3",
+          "cachedResultName": "UFC | svc.sync_bout_ids"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "1acedefe-a1b2-458f-84cb-acc64584ab55",
+      "name": "Detect Card Changes",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        610,
+        700
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "UDRrGRyeFPL9Lk3S",
+          "cachedResultName": "UFC | svc.detect_card_changes"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "0217679a-945a-47a3-a1af-b9c8a436199d",
+      "name": "Continue Without Card Check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        560
+      ],
+      "parameters": {
+        "jsCode": "// Change detection is advisory: if it fails, carry on with the event exactly as it was.\nreturn [{json:$('Fight Card Ready?').first().json}];"
+      }
+    },
+    {
+      "id": "3084e47c-bd7b-42f6-8a37-0746eb01c08e",
+      "name": "Apply Card Changes",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        610,
+        900
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "jWFGMw2faC2zLseh",
+          "cachedResultName": "UFC | svc.apply_card_changes"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "ea66931b-77f9-4d2c-887a-f845ff3fdf35",
+      "name": "Continue Without Card Apply",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        1050
+      ],
+      "parameters": {
+        "jsCode": "// Applying card changes failed (an alert has been sent); carry on with the event as it was.\nreturn [{json:$('Fight Card Ready?').first().json}];"
+      }
+    }
+  ],
+  "nodeGroups": [
+    {
+      "id": "18dba1f5-af28-441b-983a-47f72fcce8fa",
+      "name": "Prepare analysis inputs",
+      "nodeNames": [
+        "Get Active UFC Event",
+        "One Active Event Only",
+        "Check UFC Spreadsheet",
+        "Get Captured Videos",
+        "Keep Videos Needing Analysis",
+        "Read Transcript Rows",
+        "Build Complete Transcripts",
+        "Match Videos to Transcripts",
+        "Max Analysis Videos",
+        "Attach Active Event",
+        "Read Fight Card",
+        "Build Fight Card Context",
+        "Attach Fight Card",
+        "Get UFC Events For Matching",
+        "Record Analysis Start",
+        "Restore Analysis Event",
+        "Analysis Work Found?",
+        "Record Analysis Idle",
+        "Ensure UFC Fight Card",
+        "Fight Card Ready?",
+        "Record Analysis Card Pending",
+        "Sync Bout IDs",
+        "Detect Card Changes",
+        "Continue Without Card Check",
+        "Apply Card Changes",
+        "Continue Without Card Apply"
+      ],
+      "description": "Validate the spreadsheet and event match, select work and record idle runs."
+    },
+    {
+      "id": "ac3bb6e8-b407-424c-8316-fa2cf64c0338",
+      "name": "Extract and save each video",
+      "nodeNames": [
+        "Loop Over Videos",
+        "Mark Analysis Processing",
+        "Build OpenRouter Request",
+        "Call OpenRouter Extraction",
+        "Parse OpenRouter Extraction",
+        "Validate and Sort Extraction",
+        "Prepare Extraction Rows",
+        "Prepare Pick Rows",
+        "Upsert Picks",
+        "Prepare Prop Rows",
+        "Upsert Props",
+        "Prepare Extraction Log",
+        "Upsert Extraction Log",
+        "Pick Branch Complete",
+        "Prop Branch Complete",
+        "Log Branch Complete",
+        "Verify All Writes",
+        "Merge Picks and Props",
+        "Wait For All Writes",
+        "Record Analysis Complete",
+        "Build Telegram Pick Summary",
+        "Send a text message",
+        "Skip Props",
+        "Prop Rows Exist?",
+        "Prop Rows Exist?1",
+        "Skip Picks",
+        "Assess Extraction Coverage",
+        "Retry Needed?",
+        "Build Retry OpenRouter Request",
+        "Call Retry OpenRouter Extraction",
+        "Parse Retry OpenRouter Extraction",
+        "Validate Retry Extraction",
+        "Prepare Fight Analysis Rows",
+        "Fight Analysis Rows Exist?",
+        "Upsert Fight Analysis",
+        "Record Analysis Result"
+      ],
+      "description": "Analyse each selected video, persist its outputs and record the completed run."
+    }
+  ]
+}

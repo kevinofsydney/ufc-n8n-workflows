@@ -1,0 +1,127 @@
+{
+  "id": "pHQCLT93NxqScBgQ",
+  "name": "UFC | svc.read_execution",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki",
+    "timezone": "Australia/Sydney",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [],
+  "description": "Read-only: returns a compact summary of one n8n execution (error, failing node, trimmed samples per node) so AI diagnosers never load whole web pages or large data.",
+  "connections": {
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Read Execution From n8n",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Execution From n8n": {
+      "main": [
+        [
+          {
+            "node": "Summarise Execution",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "ec74ccf2-02f2-4254-bacc-fb40598d3159",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "workflow_id",
+              "type": "string"
+            },
+            {
+              "name": "execution_id",
+              "type": "string"
+            },
+            {
+              "name": "node_names",
+              "type": "string"
+            },
+            {
+              "name": "max_chars",
+              "type": "number"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "f830df9a-0709-4803-a5ce-c221a880dc07",
+      "name": "Read Execution From n8n",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://N8N_INSTANCE.example/mcp-server/http",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json, text/event-stream"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name: 'get_workflow_execution', arguments: Object.assign({ workflowId: String($json.workflow_id), executionId: String($json.execution_id), includeData: true, truncateData: 2 }, $json.node_names ? { nodeNames: String($json.node_names).split(',').map(s => s.trim()).filter(Boolean) } : {}) } }) }}",
+        "options": {
+          "timeout": 60000,
+          "response": {
+            "response": {
+              "responseFormat": "text"
+            }
+          }
+        }
+      },
+      "credentials": {
+        "httpBearerAuth": {
+          "name": "httpBearerAuth credential"
+        }
+      }
+    },
+    {
+      "id": "3848537a-95c2-4882-afd2-1794bd425135",
+      "name": "Summarise Execution",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Turns an n8n execution into a compact summary an AI can read: the error, the failing node, and for each\n// node its item count and a trimmed sample. Long strings (whole web pages) are cut to a preview with their\n// length, lists to their first few entries, so one execution never floods the model's context.\nconst req=$('When Called').first().json;\nconst MAX_CHARS=Math.min(Math.max(Number(req.max_chars)||12000,2000),30000);\nconst STR=Number(req.max_string)||400,LIST=5,DEPTH=5;\nconst raw=String($input.first().json.data??$input.first().json.body??'');\nconst line=raw.split('\\n').find(l=>l.startsWith('data: '));\nif(!line)throw new Error('The n8n MCP server returned no data.');\nconst rpc=JSON.parse(line.slice(6));\nif(rpc.error)throw new Error('n8n MCP error: '+JSON.stringify(rpc.error).slice(0,300));\nconst textOut=(rpc.result?.content||[]).map(c=>c.text||'').join('');\nif(rpc.result?.isError)return [{json:{error:textOut.slice(0,1000)}}];\nconst e=JSON.parse(textOut);\nconst trim=(v,d=0)=>{\n if(typeof v==='string')return v.length>STR?v.slice(0,STR)+'… ['+v.length+' chars]':v;\n if(Array.isArray(v))return d>=DEPTH?'[list of '+v.length+']':[...v.slice(0,LIST).map(x=>trim(x,d+1)),...(v.length>LIST?['… '+(v.length-LIST)+' more']:[])];\n if(v&&typeof v==='object'){if(d>=DEPTH)return '{object}';const o={};for(const [k,x] of Object.entries(v))o[k]=trim(x,d+1);return o;}\n return v;\n};\nconst result=e.data?.resultData||{};\nconst err=result.error||{};\nconst nodes={};\nfor(const [name,runs] of Object.entries(result.runData||{})){\n const r=runs[runs.length-1]||{};\n const main=r.data?.main||[];\n nodes[name]={runs:runs.length,status:r.executionStatus||(r.error?'error':'success'),error:r.error?trim({message:r.error.message,description:r.error.description}):undefined,\n  outputs:main.map(o=>(o||[]).length),first_item:main[0]?.[0]?.json!==undefined?trim(main[0][0].json):undefined};\n}\nlet summary={execution:trim(e.execution||{}),error:err.message?trim({message:err.message,description:err.description,node:err.node?.name}):null,\n last_node:result.lastNodeExecuted||null,nodes};\nlet out=JSON.stringify(summary);\n// Still too long: keep the error and the nodes nearest the failure, drop samples from the rest.\nif(out.length>MAX_CHARS){const names=Object.keys(nodes);const keep=new Set(names.slice(-4).concat(result.lastNodeExecuted||[]));\n for(const n of names)if(!keep.has(n))delete nodes[n].first_item;out=JSON.stringify(summary);}\nif(out.length>MAX_CHARS)out=out.slice(0,MAX_CHARS)+'… [summary cut at '+MAX_CHARS+' chars]';\nreturn [{json:{summary:out}}];\n"
+      }
+    }
+  ],
+  "nodeGroups": []
+}

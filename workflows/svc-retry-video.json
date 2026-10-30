@@ -1,0 +1,508 @@
+{
+  "id": "G1EMMFVSzpGE4q3Q",
+  "name": "UFC | svc.retry_video",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki",
+    "timezone": "Australia/Sydney",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [],
+  "description": "Validates an owner-requested retry for one unfinished active-event video, records the request without resetting attempts, and dispatches capture or analysis.",
+  "connections": {
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Parse Retry Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Retry Request": {
+      "main": [
+        [
+          {
+            "node": "Retry Request Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retry Request Valid?": {
+      "main": [
+        [
+          {
+            "node": "Read Known UFC Events",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Retry Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Known UFC Events": {
+      "main": [
+        [
+          {
+            "node": "Read Requested UFC Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Requested UFC Video": {
+      "main": [
+        [
+          {
+            "node": "Validate Video Retry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Video Retry": {
+      "main": [
+        [
+          {
+            "node": "Retry Accepted?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retry Accepted?": {
+      "main": [
+        [
+          {
+            "node": "Save Retry Request",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Retry Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Retry Request": {
+      "main": [
+        [
+          {
+            "node": "Prepare Retry Dispatch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Retry Dispatch": {
+      "main": [
+        [
+          {
+            "node": "Send Retry Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Retry Reply": {
+      "main": [
+        [
+          {
+            "node": "Dispatch Accepted Retry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dispatch Accepted Retry": {
+      "main": [
+        [
+          {
+            "node": "Run Requested Video Worker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "363393e8-8915-4832-bd72-49025dbbd504",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    },
+    {
+      "id": "77b034cd-69c4-4b55-a787-a3cab5fe8c47",
+      "name": "Parse Retry Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        272,
+        272
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst request=$input.first().json;\nconst chat_id=Number(request.chat_id);\nif(chat_id!==0) return [];\nconst usage='Use /retry VIDEO_ID or /retry capture VIDEO_ID or /retry analyse VIDEO_ID. A YouTube watch URL also works. Only an unfinished video for the active UFC event can be retried. Analysis uses OpenRouter credits.';\nconst parts=String(request.args||'').trim().split(/\\s+/).filter(Boolean);\nlet requested_stage=['capture','analyse','analyze'].includes((parts[0]||'').toLowerCase())?parts.shift().toLowerCase():'auto';\nif(requested_stage==='analyze')requested_stage='analyse';\nlet id=parts.length===1?parts[0]:'';\nif(/^https?:\\/\\//i.test(id)){\n const short=id.match(/^https?:\\/\\/(?:www\\.)?youtu\\.be\\/([A-Za-z0-9_-]{11})(?:[/?#]|$)/i);\n const watch=id.match(/^https?:\\/\\/(?:www\\.|m\\.)?youtube\\.com\\/watch\\?([^#]*)/i);\n id=short?short[1]:watch?(watch[1].split('&').find(part=>part.startsWith('v='))||'').slice(2):'';\n}\nconst valid=/^[A-Za-z0-9_-]{11}$/.test(id);\nreturn [{json:{chat_id,video_id:id,requested_stage,request_valid:valid,text:valid?'':usage}}];"
+      }
+    },
+    {
+      "id": "2a534074-667b-41b0-8ce2-14ea8671850c",
+      "name": "Retry Request Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        496,
+        272
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.request_valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "ceb37d11-7e67-4ca3-b369-f0ce658b7cd9",
+      "name": "Read Known UFC Events",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        720,
+        208
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "WTTpdZSDVOxOB3Ex",
+          "cachedResultName": "ufc_events"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "252d1072-cd61-43f2-ab6a-74878058ca0a",
+      "name": "Read Requested UFC Video",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        944,
+        208
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "cAQonN6NYOY3fqxl",
+          "cachedResultName": "ufc_videos"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "video_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Parse Retry Request').first().json.video_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "7a652c6b-9b44-4f70-8954-58405b7c3756",
+      "name": "Validate Video Retry",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1168,
+        208
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "function ufcText(value) {\n return String(value ?? '').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\\s+/g,' ');\n}\nfunction ufcHas(text, phrase) { return phrase && (' '+text+' ').includes(' '+phrase+' '); }\nfunction ufcEventSignals(event, title) {\n const name=ufcText(event.event_name);\n const split=String(event.event_name || '').split(':');\n const prefix=ufcText(split[0]);\n const number=(prefix.match(/\\bufc\\s+(\\d{2,4})\\b/) || [])[1];\n const pair=String(split.slice(1).join(':') || '').split(/\\s+v(?:s)?\\.?\\s+/i);\n const surname=value=>ufcText(value).split(' ').filter(word=>!['jr','sr','ii','iii','iv'].includes(word)).slice(-1)[0] || '';\n const a=surname(pair[0]), b=surname(pair[1]);\n const matchup=pair.length===2 && a.length>=3 && b.length>=3 && ufcHas(title,a) && ufcHas(title,b);\n const numbered=Boolean(number && new RegExp('\\\\bufc\\\\s+'+number+'\\\\b').test(title));\n const venue=prefix.replace(/\\bufc\\b/g,' ').replace(/\\bfight\\s+night\\b/g,' ').replace(/\\b\\d+\\b/g,' ').trim().replace(/\\s+/g,' ');\n const location=venue.length>=3 && ufcHas(title,venue);\n return {event, score: matchup || numbered ? 10 : location ? 4 : 0, reason: matchup ? 'main-event surnames' : numbered ? 'UFC event number' : location ? 'event location' : ''};\n}\nfunction classifyUfcVideo(title, active, events) {\n const text=ufcText(title);\n const pool=[...new Map([...(events||[]),active].filter(event=>event?.event_key&&event.event_name).map(event=>[event.event_key,event])).values()];\n const matches=pool.map(event=>ufcEventSignals(event,text)).filter(match=>match.score>0);\n const strong=matches.filter(match=>match.score===10);\n const candidates=strong.length ? strong : matches;\n if(candidates.length!==1) return {event_match_status:candidates.length>1?'AMBIGUOUS':'UNCONFIRMED',event_match_reason:candidates.length>1?'Title identifies more than one known UFC event':'Title does not clearly identify a known UFC event',matched_event_key:'',event_match_version:'ufc-event-match-v2'};\n const match=candidates[0];\n return {event_match_status:match.event.event_key===active.event_key?'MATCHED':'OTHER_EVENT',event_match_reason:'Matched '+match.event.event_name+' by '+match.reason,matched_event_key:match.event.event_key,event_match_version:'ufc-event-match-v2'};\n}\nconst request=$('Parse Retry Request').first().json;\nconst fail=text=>[{json:{accepted:false,chat_id:request.chat_id,text}}];\nconst events=$('Read Known UFC Events').all().map(item=>item.json).filter(event=>event.event_key);\nconst active=events.filter(event=>event.active===true||event.active==='true');\nif(active.length!==1)return fail('Retry unavailable: expected exactly one active UFC event.');\nconst rows=$input.all().map(item=>item.json).filter(row=>row.video_id===request.video_id&&row.event_key===active[0].event_key);\nif(rows.length!==1)return fail('That video is not uniquely recorded for the active UFC event. Use /status for its video IDs.');\nconst row=rows[0];\nconst match=classifyUfcVideo(row.video_title,active[0],events);\nif(match.event_match_status!=='MATCHED')return fail('Retry blocked: '+match.event_match_reason+'.');\nif(Date.now()-Date.parse(row.retry_requested_at||0)<5*60*1000)return fail('A retry for this video was requested less than five minutes ago. Please allow it to finish.');\nconst captured=row.transcript_appended===true||row.transcript_appended==='true';\nconst stage=request.requested_stage==='auto'?(captured?'analyse':'capture'):request.requested_stage;\nif(stage==='capture'&&captured)return fail('This transcript is already captured. Use /retry analyse '+row.video_id+' if analysis is unfinished.');\nif(stage==='analyse'&&!captured)return fail('Capture the transcript first: /retry capture '+row.video_id);\nif(stage==='analyse'&&String(row.analysis_status).toUpperCase()==='COMPLETED')return fail('This video is already analysed. A retry will not run it again.');\nif(stage==='analyse'&&String(row.analysis_status).toUpperCase()==='PROCESSING'&&Date.now()-Date.parse(row.last_attempt_at||row.updatedAt)<60*60*1000)return fail('This video is currently processing. Wait for completion or for the one-hour interruption timeout.');\nreturn [{json:{...row,...match,accepted:true,chat_id:request.chat_id,retry_stage:stage,manual_retry:true,target_video_id:row.video_id,status:stage==='capture'?'RETRY_REQUESTED':row.status,analysis_status:stage==='analyse'?'RETRY_REQUESTED':row.analysis_status||null,dispatch_workflow_id:stage==='capture'?'y20ZZYzBVS6y8kC0':'BvLnPFMwQ2vhPkgv',text:'Retry queued for '+row.channel_name+' — '+row.video_title+' ('+stage+(stage==='analyse'?', uses OpenRouter credits':'')+'). Only this video will be processed.'}}];"
+      }
+    },
+    {
+      "id": "d996e2c3-20f1-43fe-8928-1f7e6282b935",
+      "name": "Retry Accepted?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1392,
+        208
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.accepted }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "14814f56-41d7-4f4e-8189-b8f540e042b1",
+      "name": "Save Retry Request",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1616,
+        128
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "cAQonN6NYOY3fqxl",
+          "cachedResultName": "ufc_videos"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "video_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.video_id }}"
+            },
+            {
+              "keyName": "event_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.event_key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "={{ $json.status }}",
+            "analysis_status": "={{ $json.analysis_status }}",
+            "retry_requested_at": "={{ $now.toISO() }}",
+            "retry_stage": "={{ $json.retry_stage }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "analysis_status",
+              "displayName": "analysis_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "retry_requested_at",
+              "displayName": "retry_requested_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "retry_stage",
+              "displayName": "retry_stage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "6e7ea595-b7a2-4a87-a2b4-0c325cbc110e",
+      "name": "Prepare Retry Dispatch",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1840,
+        128
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const request=$('Validate Video Retry').first().json;\nconst saved=$input.all().map(item=>item.json).filter(row=>row.video_id===request.target_video_id&&row.event_key===request.event_key);\nif(saved.length!==1)throw new Error('Could not reserve the requested UFC video retry.');\nreturn [{json:{...request,target_video_row:saved[0]}}];"
+      }
+    },
+    {
+      "id": "979e3f28-cbfe-42ff-a6f6-c170074fe64b",
+      "name": "Send Retry Reply",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2064,
+        272
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ String($json.text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "disable_web_page_preview": true,
+          "parse_mode": "HTML"
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "dfcd4ce6-35f4-42af-8985-98c89a0d05f5",
+      "name": "Dispatch Accepted Retry",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2288,
+        272
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "let request=null;try {request=$('Prepare Retry Dispatch').first().json;}catch{}\nreturn request?.accepted?[{json:request}]:[];"
+      }
+    },
+    {
+      "id": "3e7c44ee-af2e-49e0-b0c1-13d14bdc48a4",
+      "name": "Run Requested Video Worker",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        2512,
+        272
+      ],
+      "parameters": {
+        "mode": "once",
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.dispatch_workflow_id }}"
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      }
+    }
+  ],
+  "nodeGroups": [
+    {
+      "id": "68632a33-7984-4936-9ced-e404e400931a",
+      "name": "Validate and dispatch one video",
+      "nodeNames": [
+        "Parse Retry Request",
+        "Retry Request Valid?",
+        "Read Known UFC Events",
+        "Read Requested UFC Video",
+        "Validate Video Retry",
+        "Retry Accepted?",
+        "Save Retry Request",
+        "Prepare Retry Dispatch",
+        "Send Retry Reply",
+        "Dispatch Accepted Retry",
+        "Run Requested Video Worker"
+      ],
+      "description": "Validate owner, event and retry eligibility, reserve one retry, then dispatch its worker."
+    }
+  ]
+}

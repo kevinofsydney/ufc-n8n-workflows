@@ -1,0 +1,611 @@
+{
+  "id": "fZB3SuyzKNXurQyI",
+  "name": "UFC | svc.record_issue",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "tags": [],
+  "description": "Records a hand-reported issue into ufc_incidents as source=owner, deduplicating an already-open issue by bumping its occurrence count.",
+  "connections": {
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Read All Incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read All Incidents": {
+      "main": [
+        [
+          {
+            "node": "Prepare Issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Or Repeat?": {
+      "main": [
+        [
+          {
+            "node": "Bump Occurrence",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert Issue",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bump Occurrence": {
+      "main": [
+        [
+          {
+            "node": "Build Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Confirmation": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Issue": {
+      "main": [
+        [
+          {
+            "node": "Build Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Confirmation?": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Confirmation": {
+      "main": [
+        [
+          {
+            "node": "Return Done",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Issue": {
+      "main": [
+        [
+          {
+            "node": "Writes Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Writes Enabled?": {
+      "main": [
+        [
+          {
+            "node": "New Or Repeat?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Build Confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "3d0c47f4-3558-47b8-959b-10866f2f8cbe",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        96
+      ],
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "note",
+              "type": "string"
+            },
+            {
+              "name": "severity",
+              "type": "string"
+            },
+            {
+              "name": "workflow_name",
+              "type": "string"
+            },
+            {
+              "name": "workflow_id",
+              "type": "string"
+            },
+            {
+              "name": "category",
+              "type": "string"
+            },
+            {
+              "name": "dry_run",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ff5bf1d4-9590-4dcf-ab79-00e585649288",
+      "name": "Read All Incidents",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        96
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "cf63c399-dae1-4fe4-a924-e2f5709fd0d2",
+      "name": "Prepare Issue",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        96
+      ],
+      "parameters": {
+        "jsCode": "const req=$('When Called').first().json;\nconst clean=function(value,max){return String(value===undefined||value===null?'':value).trim().slice(0,max);};\nconst note=clean(req.note,900);\nif(note.length<4)throw new Error('Describe the issue in a few words, for example: /issue Props tab missing bout_id column');\nconst normalise=function(text){return text.toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();};\nlet hash=2166136261;\nconst seed=normalise(note);\nfor(let i=0;i<seed.length;i++){hash^=seed.charCodeAt(i);hash=Math.imul(hash,16777619)>>>0;}\nconst baseKey='owner|'+hash.toString(16);\nconst rows=$('Read All Incidents').all().map(function(item){return item.json;}).filter(function(row){return row && row.incident_key;});\nconst existing=rows.filter(function(row){return row.incident_key.indexOf(baseKey)===0;});\nconst open=existing.filter(function(row){return row.status!=='resolved';})[0];\nconst severityRaw=clean(req.severity,20).toLowerCase();\nconst severity=['blocking','degraded','cosmetic'].indexOf(severityRaw)>=0?severityRaw:'degraded';\nconst now=new Date().toISOString();\nconst nl=String.fromCharCode(10);\nif(open){\n const count=Number(open.occurrences||1)+1;\n return [{json:{action:'update',incident_key:open.incident_key,incident_id:open.id,new_occurrences:count,severity:severity,note:note,now:now,telegram_message:'<b>Issue noted again</b> #'+open.id+nl+'Occurrences: '+count+nl+note.slice(0,300)}}];\n}\nconst key=existing.length?baseKey+'-'+Date.now().toString(36):baseKey;\nreturn [{json:{action:'insert',incident_key:key,new_occurrences:1,severity:severity,note:note,workflow_name:clean(req.workflow_name,200),workflow_id:clean(req.workflow_id,80),category:clean(req.category,80)||'owner-report',now:now,telegram_message:'<b>Issue recorded</b>'+nl+'Severity: '+severity+nl+note.slice(0,300)+nl+'<i>Close it with /fixed &lt;id&gt; once solved.</i>'}}];"
+      }
+    },
+    {
+      "id": "c09e5f3c-a7b1-45d8-add3-0649d0feafdf",
+      "name": "New Or Repeat?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        96
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.action }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "update"
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "3fc9492c-6ccc-4467-b454-d746b9898d5d",
+      "name": "Bump Occurrence",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "incident_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.incident_key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "last_message": "={{ $json.note }}",
+            "owner_note": "={{ $json.note }}",
+            "severity": "={{ $json.severity }}",
+            "last_seen_at": "={{ $json.now }}",
+            "occurrences": "={{ $json.new_occurrences }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "owner_note",
+              "displayName": "owner_note",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "severity",
+              "displayName": "severity",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "last_seen_at",
+              "displayName": "last_seen_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "occurrences",
+              "displayName": "occurrences",
+              "type": "number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            }
+          ]
+        },
+        "options": {
+          "dryRun": "={{ $(\"When Called\").first().json.dry_run === true }}"
+        }
+      }
+    },
+    {
+      "id": "71182ace-a13e-4c93-96ff-e862fee69ad4",
+      "name": "Build Confirmation",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        96
+      ],
+      "parameters": {
+        "jsCode": "const p=$('Prepare Issue').first().json;\nreturn [{json:{telegram_message:p.telegram_message,dry_run:$('When Called').first().json.dry_run===true,action:p.action,incident_key:p.incident_key}}];"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "097abd75-6031-4a09-99ee-06d9c35ab9f0",
+      "name": "Insert Issue",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        192
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "insert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "incident_key": "={{ $json.incident_key }}",
+            "source": "owner",
+            "workflow_id": "={{ $json.workflow_id }}",
+            "workflow_name": "={{ $json.workflow_name }}",
+            "category": "={{ $json.category }}",
+            "signature": "={{ $json.note }}",
+            "last_message": "={{ $json.note }}",
+            "owner_note": "={{ $json.note }}",
+            "severity": "={{ $json.severity }}",
+            "status": "open",
+            "occurrences": 1,
+            "first_seen_at": "={{ $json.now }}",
+            "last_seen_at": "={{ $json.now }}",
+            "retry_count": 0
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "incident_key",
+              "displayName": "incident_key",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "signature",
+              "displayName": "signature",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "owner_note",
+              "displayName": "owner_note",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "severity",
+              "displayName": "severity",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "occurrences",
+              "displayName": "occurrences",
+              "type": "number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "first_seen_at",
+              "displayName": "first_seen_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "last_seen_at",
+              "displayName": "last_seen_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "retry_count",
+              "displayName": "retry_count",
+              "type": "number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            }
+          ]
+        },
+        "options": {
+          "dryRun": "={{ $(\"When Called\").first().json.dry_run === true }}"
+        }
+      }
+    },
+    {
+      "id": "1fd8640f-da07-4f4f-a4f2-d261037d1472",
+      "name": "Send Confirmation?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1344,
+        96
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.dry_run !== true }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              },
+              "rightValue": true
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "1515695c-4811-4958-ac5e-dd1885dcde3a",
+      "name": "Send Confirmation",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1568,
+        32
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "0",
+        "text": "={{ $json.telegram_message }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "e6df7086-1869-4b5a-98f5-483d1061632c",
+      "name": "Return Done",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        96
+      ],
+      "parameters": {
+        "jsCode": "const p=$('Prepare Issue').first().json;\nreturn [{json:{recorded:true,action:p.action,incident_key:p.incident_key}}];"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "2533de8c-9740-4127-ae55-7b0bb5f8a7bf",
+      "name": "Writes Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "combinator": "and",
+          "conditions": [
+            {
+              "leftValue": "={{ $('When Called').first().json.dry_run !== true }}",
+              "operator": {
+                "operation": "equals",
+                "type": "boolean"
+              },
+              "rightValue": true
+            }
+          ],
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          }
+        }
+      }
+    }
+  ],
+  "nodeGroups": []
+}

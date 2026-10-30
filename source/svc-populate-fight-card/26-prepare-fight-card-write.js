@@ -1,0 +1,1 @@
+return [{json:{rows:[['fight_order','fighter_a','fighter_b','fighter_a_aliases','fighter_b_aliases','bout_type','scheduled_rounds','weight_class'],...$('Build Fight Card Matrix').first().json.matrix]}}];

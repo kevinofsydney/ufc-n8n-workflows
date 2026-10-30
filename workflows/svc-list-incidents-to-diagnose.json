@@ -1,0 +1,295 @@
+{
+  "id": "neIv7kEoopd67GLj",
+  "name": "UFC | svc.list_incidents_to_diagnose",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki",
+    "timezone": "Australia/Sydney",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [],
+  "description": "Returns up to 3 open, alerted incidents that need a diagnosis and claims them for the caller (agent or workflow), so two diagnosers never take the same one.",
+  "connections": {
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Read Incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Incidents": {
+      "main": [
+        [
+          {
+            "node": "Select Incidents To Diagnose",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Incidents To Diagnose": {
+      "main": [
+        [
+          {
+            "node": "Split Claims",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Claims": {
+      "main": [
+        [
+          {
+            "node": "Any Claims?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Any Claims?": {
+      "main": [
+        [
+          {
+            "node": "Claim Incident",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claim Incident": {
+      "main": [
+        [
+          {
+            "node": "Return Incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "ebbdda09-8335-4e29-b9d1-f8dd5233bc0d",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "workflowInputs",
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "claimer",
+              "type": "string"
+            },
+            {
+              "name": "incident_key",
+              "type": "string"
+            },
+            {
+              "name": "older_than_minutes",
+              "type": "number"
+            },
+            {
+              "name": "dry_run",
+              "type": "boolean"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "c7124957-8138-4e50-98d4-91d9c6dc2116",
+      "name": "Read Incidents",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "65938659-9a5b-4882-be28-55eec9e3880f",
+      "name": "Select Incidents To Diagnose",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Picks incidents that need a diagnosis and claims them, so the n8n Agent and the workflow diagnoser\n// never work on the same one. Needs a diagnosis: open, alerted at least once, not a temporary error\n// still being retried, and not diagnosed since it (re)opened. A claim older than an hour is stale.\nconst MAX_ATTEMPTS=2,CLAIM_MINUTES=60,LIMIT=3;\nconst req=$('When Called').first().json;\nconst claimer=String(req.claimer||'').trim();\nif(!['agent','workflow','manual'].includes(claimer))throw new Error('claimer must be agent, workflow or manual.');\nconst olderThan=Number(req.older_than_minutes||0);\nconst onlyKey=String(req.incident_key||'').trim();\nconst now=Date.now(),nowIso=new Date(now).toISOString();\nconst minutes=t=>t?(now-Date.parse(t))/60000:Infinity;\nconst rows=$('Read Incidents').all().map(i=>i.json).filter(r=>r&&r.incident_key);\nconst candidates=rows.filter(r=>{\n if(onlyKey)return r.incident_key===onlyKey;\n if(r.incident_key.startsWith('test|'))return false;\n if(r.status!=='open'||!r.last_alerted_at)return false;\n if(minutes(r.last_alerted_at)<olderThan)return false;\n if(Number(r.diagnosis_attempts||0)>=MAX_ATTEMPTS&&!(r.diagnosed_at&&Date.parse(r.diagnosed_at)<Date.parse(r.first_seen_at)))return false;\n if(r.diagnosis_status==='in_progress'&&minutes(r.diagnosed_at)<CLAIM_MINUTES)return false;\n if(r.diagnosis_status==='done'&&r.diagnosed_at&&Date.parse(r.diagnosed_at)>=Date.parse(r.first_seen_at))return false;\n return true;\n}).sort((a,b)=>Date.parse(b.last_alerted_at||0)-Date.parse(a.last_alerted_at||0)).slice(0,LIMIT);\n// A reopened incident starts a fresh attempt count.\nconst claims=candidates.map(r=>({incident_key:r.incident_key,diagnosis_status:'in_progress',diagnosis_by:claimer,diagnosed_at:nowIso,\n diagnosis_attempts:(r.diagnosed_at&&Date.parse(r.diagnosed_at)<Date.parse(r.first_seen_at)?0:Number(r.diagnosis_attempts||0))+1}));\nconst incidents=candidates.map(r=>({incident_key:r.incident_key,source:r.source,workflow_id:r.workflow_id,workflow_name:r.workflow_name,node_name:r.node_name,\n category:r.category,message:r.last_message,occurrences:r.occurrences,first_seen_at:r.first_seen_at,last_seen_at:r.last_seen_at,\n last_execution_id:r.last_execution_id,last_execution_url:r.last_execution_url,retry_count:r.retry_count,previous_diagnosis:r.diagnosis_summary||null}));\nreturn [{json:{count:incidents.length,incidents,claims,dry_run:req.dry_run===true}}];\n"
+      }
+    },
+    {
+      "id": "fdf63e6d-2afa-439c-882a-be59cebc1683",
+      "name": "Split Claims",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const c=$('Select Incidents To Diagnose').first().json.claims;\nreturn c.length?c.map(x=>({json:x})):[{json:{incident_key:null}}];"
+      }
+    },
+    {
+      "id": "a119abde-af23-4629-85d7-f97224338cea",
+      "name": "Any Claims?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ !!$json.incident_key }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "f2244ee1-fc7e-40c4-89b1-23b79df3a3a7",
+      "name": "Claim Incident",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "incident_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.incident_key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "diagnosis_status": "={{ $json.diagnosis_status }}",
+            "diagnosis_by": "={{ $json.diagnosis_by }}",
+            "diagnosed_at": "={{ $json.diagnosed_at }}",
+            "diagnosis_attempts": "={{ $json.diagnosis_attempts }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "diagnosis_status",
+              "displayName": "diagnosis_status",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "diagnosis_by",
+              "displayName": "diagnosis_by",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "diagnosed_at",
+              "displayName": "diagnosed_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "diagnosis_attempts",
+              "displayName": "diagnosis_attempts",
+              "type": "number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            }
+          ]
+        },
+        "options": {
+          "dryRun": "={{ $('Select Incidents To Diagnose').first().json.dry_run === true }}"
+        }
+      }
+    },
+    {
+      "id": "8546f6fd-cb9c-4b15-971b-a9a075b17c85",
+      "name": "Return Incidents",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1344,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const s=$('Select Incidents To Diagnose').first().json;\nreturn [{json:{count:s.count,incidents:s.incidents}}];"
+      },
+      "executeOnce": true
+    }
+  ],
+  "nodeGroups": []
+}

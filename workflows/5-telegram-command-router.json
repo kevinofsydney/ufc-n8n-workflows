@@ -1,0 +1,1466 @@
+{
+  "id": "MabSJBF0Vt6sMICp",
+  "name": "UFC | 5. Telegram Command Router",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki"
+  },
+  "tags": [],
+  "description": "Routes owner Telegram commands to UFC workflows, including /addvideo URL for single-video transcript extraction and analysis.",
+  "connections": {
+    "Telegram Message": {
+      "main": [
+        [
+          {
+            "node": "Parse Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Command": {
+      "main": [
+        [
+          {
+            "node": "Run Consensus",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get UFC Events For Matching",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Acknowledge Capture",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Acknowledge Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Acknowledge Grade",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Run Grading",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Run Leaderboard",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Run Credits",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Run Video Retry",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Run Resolve Incident",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Run Record Issue",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Run List Issues",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Run Add Video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Run Video Browser",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Run Video Browser",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Menu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Active Event": {
+      "main": [
+        [
+          {
+            "node": "Get Event Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Status Message": {
+      "main": [
+        [
+          {
+            "node": "Send Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acknowledge Capture": {
+      "main": [
+        [
+          {
+            "node": "Run Capture",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Acknowledge Analysis": {
+      "main": [
+        [
+          {
+            "node": "Run Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Command": {
+      "main": [
+        [
+          {
+            "node": "Is Owner?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Owner?": {
+      "main": [
+        [
+          {
+            "node": "Route Command",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Has Button Press?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Button Press?": {
+      "main": [
+        [
+          {
+            "node": "Answer Button Press",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get UFC Events For Matching": {
+      "main": [
+        [
+          {
+            "node": "Get Active Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Event Videos": {
+      "main": [
+        [
+          {
+            "node": "Get Recent UFC Runs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Recent UFC Runs": {
+      "main": [
+        [
+          {
+            "node": "Get UFC Fight Card Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get UFC Fight Card Status": {
+      "main": [
+        [
+          {
+            "node": "Build Status Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "d5fc0883-e56b-42be-98b2-fef56503a99f",
+      "name": "Telegram Message",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        384
+      ],
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {
+          "chatIds": "0"
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "10611c4d-9c9f-440a-992d-ef2cc44f6897",
+      "name": "Parse Command",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        384
+      ],
+      "parameters": {
+        "mode": "manual",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cmd-command",
+              "name": "command",
+              "value": "={{ ($json.message?.text ?? ($json.callback_query?.data ? '/' + $json.callback_query.data : '')).trim().toLowerCase().split(/\\s+/)[0].replace(/^\\//, '').replace(/@.*$/, '') }}",
+              "type": "string"
+            },
+            {
+              "id": "cmd-chat",
+              "name": "chat_id",
+              "value": "={{ $json.message?.chat?.id ?? $json.callback_query?.message?.chat?.id }}",
+              "type": "number"
+            },
+            {
+              "id": "cmd-args",
+              "name": "args",
+              "value": "={{ ($json.message?.text ?? ($json.callback_query?.data ? '/' + $json.callback_query.data : '')).trim().replace(/^\\S+\\s*/, '') }}",
+              "type": "string"
+            },
+            {
+              "id": "cmd-callback",
+              "name": "callback_id",
+              "value": "={{ $json.callback_query?.id ?? '' }}",
+              "type": "string"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "a43748b3-4f86-4792-8331-7d6ccb830fca",
+      "name": "Route Command",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        336
+      ],
+      "parameters": {
+        "mode": "rules",
+        "rules": {
+          "values": [
+            {
+              "renameOutput": true,
+              "outputKey": "consensus",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "consensus"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "status",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "status"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "capture",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "capture"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "analyse",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "analyse"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "grade",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "grade"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "leaderboard",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "leaderboard"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "credits",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "credits"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "retry",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "rightValue": "retry",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "fixed",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "fixed"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "issue",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "issue"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "issues",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "issues"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "addvideo",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "addvideo"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "videos",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "videos"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "video",
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.command }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "video"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "menu"
+        }
+      }
+    },
+    {
+      "id": "e0f59a92-c1a0-4701-90a9-fff7c02a77f0",
+      "name": "Run Consensus",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        672,
+        0
+      ],
+      "parameters": {
+        "mode": "once",
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "VkgPostfkMxFPWj6"
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "7ce19f7b-efd5-4cf7-a0c1-e0c26f93624a",
+      "name": "Get Active Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        192
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "WTTpdZSDVOxOB3Ex",
+          "cachedResultName": "ufc_events"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "active",
+              "condition": "isTrue"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "c95b8645-072a-4da6-80d5-c5a0da4555ca",
+      "name": "Get Event Videos",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        896,
+        192
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "cAQonN6NYOY3fqxl",
+          "cachedResultName": "ufc_videos"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.event_key || '__no_active_ufc_event__' }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "alwaysOutputData": true,
+      "executeOnce": true
+    },
+    {
+      "id": "17deddba-9721-4bba-bc95-12ad036c20a9",
+      "name": "Build Status Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        192
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "function ufcText(value) {\n return String(value ?? '').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\\s+/g,' ');\n}\nfunction ufcHas(text, phrase) { return phrase && (' '+text+' ').includes(' '+phrase+' '); }\nfunction ufcEventSignals(event, title) {\n const name=ufcText(event.event_name);\n const split=String(event.event_name || '').split(':');\n const prefix=ufcText(split[0]);\n const number=(prefix.match(/\\bufc\\s+(\\d{2,4})\\b/) || [])[1];\n const pair=String(split.slice(1).join(':') || '').split(/\\s+v(?:s)?\\.?\\s+/i);\n const surname=value=>ufcText(value).split(' ').filter(word=>!['jr','sr','ii','iii','iv'].includes(word)).slice(-1)[0] || '';\n const a=surname(pair[0]), b=surname(pair[1]);\n const matchup=pair.length===2 && a.length>=3 && b.length>=3 && ufcHas(title,a) && ufcHas(title,b);\n const numbered=Boolean(number && new RegExp('\\\\bufc\\\\s+'+number+'\\\\b').test(title));\n const venue=prefix.replace(/\\bufc\\b/g,' ').replace(/\\bfight\\s+night\\b/g,' ').replace(/\\b\\d+\\b/g,' ').trim().replace(/\\s+/g,' ');\n const location=venue.length>=3 && ufcHas(title,venue);\n return {event, score: matchup || numbered ? 10 : location ? 4 : 0, reason: matchup ? 'main-event surnames' : numbered ? 'UFC event number' : location ? 'event location' : ''};\n}\nfunction classifyUfcVideo(title, active, events) {\n const text=ufcText(title);\n const pool=[...new Map([...(events||[]),active].filter(event=>event?.event_key&&event.event_name).map(event=>[event.event_key,event])).values()];\n const matches=pool.map(event=>ufcEventSignals(event,text)).filter(match=>match.score>0);\n const strong=matches.filter(match=>match.score===10);\n const candidates=strong.length ? strong : matches;\n if(candidates.length!==1) return {event_match_status:candidates.length>1?'AMBIGUOUS':'UNCONFIRMED',event_match_reason:candidates.length>1?'Title identifies more than one known UFC event':'Title does not clearly identify a known UFC event',matched_event_key:'',event_match_version:'ufc-event-match-v2'};\n const match=candidates[0];\n return {event_match_status:match.event.event_key===active.event_key?'MATCHED':'OTHER_EVENT',event_match_reason:'Matched '+match.event.event_name+' by '+match.reason,matched_event_key:match.event.event_key,event_match_version:'ufc-event-match-v2'};\n}\nconst chatId=$('Parse Command').first().json.chat_id;\nconst activeRows=$('Get Active Event').all().map(item=>item.json).filter(event=>event.event_key && (event.active===true || event.active==='true'));\nconst esc=value=>String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');\nif(activeRows.length!==1) return [{json:{chat_id:chatId,text:'UFC status: expected one active event; found '+activeRows.length+'. Check ufc_events before capturing or analysing.'}}];\nconst event=activeRows[0], events=$('Get UFC Events For Matching').all().map(item=>item.json);\nconst rows=$('Get Event Videos').all().map(item=>item.json).filter(row=>row.video_id);\nconst classified=rows.map(row=>({...row,...classifyUfcVideo(row.video_title,event,events)}));\nconst onEvent=classified.filter(row=>row.event_match_status==='MATCHED'), excluded=classified.filter(row=>row.event_match_status!=='MATCHED');\nconst captured=row=>row.transcript_appended===true||row.transcript_appended==='true';\nconst done=onEvent.filter(row=>captured(row)&&row.analysis_status==='COMPLETED');\nconst waiting=onEvent.filter(row=>captured(row)&&row.analysis_status!=='COMPLETED');\nconst needsCapture=onEvent.filter(row=>!captured(row));\nconst date=value=>{const time=new Date(value);return Number.isFinite(time.getTime())?time.toLocaleString('en-AU',{timeZone:'Australia/Sydney',day:'numeric',month:'short',hour:'numeric',minute:'2-digit'}):'not recorded';};\nconst lines=['<b>UFC pipeline status</b>','<b>'+esc(event.event_name)+'</b>','Main card: '+esc(date(event.event_datetime_local))+' (Sydney)','',onEvent.length+' event videos · '+done.length+' analysed · '+waiting.length+' awaiting analysis · '+needsCapture.length+' awaiting transcript'];\nif(event.spreadsheet_url) lines.push('<a href=\"'+esc(event.spreadsheet_url)+'\">Open event spreadsheet</a>');\n\nconst cardStates=$('Get UFC Fight Card Status').all().map(i=>i.json).filter(s=>s.event_key===event.event_key&&s.spreadsheet_id===event.spreadsheet_id);\nconst cardState=cardStates[0];\nif(cardState?.status==='READY'){let count=0;try{count=JSON.parse(cardState.source_card_json||'[]').length;}catch{}lines.push('Fight Card: '+count+' bouts · automatically populated and verified');}\nelse if(cardState?.status==='PRESERVED'){let count=0;try{count=JSON.parse(cardState.source_card_json||'[]').length;}catch{}lines.push('Fight Card: '+count+' bouts · existing card preserved');}\nelse if(cardState?.status==='WRITING')lines.push('⚠ Fight Card initialization needs review; analysis is blocked.');\nelse lines.push('Fight Card: no automatic initialization recorded; existing cards are validated before analysis.');\nconst runs=$('Get Recent UFC Runs').all().map(item=>item.json).filter(row=>row.run_key);\nlines.push('','<b>Latest runs</b>');\nfor(const [id,label] of [['y20ZZYzBVS6y8kC0','Capture'],['BvLnPFMwQ2vhPkgv','Analysis']]){\n const row=runs.find(run=>run.workflow_id===id && (!run.event_key || run.event_key===event.event_key));\n if(!row){lines.push(label+': no run recorded yet');continue;}\n const stalled=row.state==='running' && Date.now()-Date.parse(row.started_at)>60*60*1000;\n const state=stalled?'possibly interrupted':row.state;\n const summary=String(row.summary||'').slice(0,130);\n const link=row.execution_url?'<a href=\"'+esc(row.execution_url)+'\">'+esc(label)+'</a>':label;\n lines.push(link+': '+esc(state)+' · '+esc(date(row.finished_at||row.started_at))+(summary?' — '+esc(summary):''));\n}\nconst tasks=[...waiting.map(row=>({...row,retry_stage:'analyse'})),...needsCapture.map(row=>({...row,retry_stage:'capture'}))];\nif(tasks.length){\n lines.push('','<b>Needs attention ('+tasks.length+')</b>');\n for(const row of tasks.slice(0,5)){\n  const state=row.retry_stage==='capture'?row.status:row.analysis_status||'WAITING';\n  const attempts=row.retry_stage==='capture'?row.attempt_count:row.analysis_attempt_count;\n  lines.push('• '+esc(row.channel_name)+' — '+esc(String(row.video_title).slice(0,85))+' ['+esc(state)+', attempts '+Number(attempts||0)+']');\n  if(state==='PROCESSING'&&Date.now()-Date.parse(row.last_attempt_at||row.updatedAt)<60*60*1000)lines.push('  Already processing; retry after it finishes.');\n  else lines.push('  <code>/retry '+row.retry_stage+' '+esc(row.video_id)+'</code>');\n  const error=row.retry_stage==='capture'?row.last_error:row.analysis_error;\n  if(error)lines.push('  '+esc(String(error).slice(0,100)));\n }\n if(tasks.length>5)lines.push('… '+(tasks.length-5)+' more videos in the event table.');\n}else lines.push('','No event videos currently need attention.');\nif(excluded.length)lines.push('',excluded.length+' stored rows excluded: their titles identify another event or are unclear.');\nconst errors=runs.filter(row=>row.state==='error').slice(0,2);\nif(errors.length){lines.push('','<b>Recent failures</b>');for(const row of errors)lines.push('• '+esc(row.workflow_name)+' · '+esc(date(row.finished_at))+' — '+esc(String(row.summary||'').slice(0,110)));}\nlines.push('','<code>/retry VIDEO_ID</code> picks the missing stage. Analysis uses credits.');\nlet text=lines.join('\\n');\nif(text.length>3900)text=lines.slice(0,15).join('\\n')+'\\n\\nUse the event spreadsheet for the remaining details.';\nreturn [{json:{chat_id:chatId,text}}];"
+      }
+    },
+    {
+      "id": "7209f7a5-8dd1-4b03-8c3d-13f3a8e6a0c6",
+      "name": "Send Reply",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1344,
+        464
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "18af4c82-40c7-4819-96d4-6cc4971eec2a",
+      "name": "Acknowledge Capture",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        384
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $('Parse Command').first().json.chat_id }}",
+        "text": "Capture started. You will get the usual transcript summary when it finishes.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "089159f3-e18c-4232-acbd-f37fa64b8c59",
+      "name": "Run Capture",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        896,
+        384
+      ],
+      "parameters": {
+        "mode": "once",
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "y20ZZYzBVS6y8kC0"
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      }
+    },
+    {
+      "id": "50956b7e-3a9e-423a-85d7-4a994a068f76",
+      "name": "Acknowledge Analysis",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        576
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $('Parse Command').first().json.chat_id }}",
+        "text": "Analysis started. Each video is sent to you as it finishes. This uses OpenRouter credits (about 1 cent per video).",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "f6793e08-f7b4-4f98-8937-7dd8aafd6c99",
+      "name": "Run Analysis",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        896,
+        576
+      ],
+      "parameters": {
+        "mode": "once",
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "BvLnPFMwQ2vhPkgv"
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      }
+    },
+    {
+      "id": "5912df72-07b0-4759-8ac7-1ee478754091",
+      "name": "Acknowledge Grade",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        1040
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $('Parse Command').first().json.chat_id }}",
+        "text": "Grading started. The scorecard will follow in a moment.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "aec4044f-f274-4dc1-b0a1-2646579ce4d4",
+      "name": "Run Grading",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        1100,
+        1040
+      ],
+      "parameters": {
+        "mode": "once",
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "PulwhLsIZhfvCGxl"
+        },
+        "options": {
+          "waitForSubWorkflow": false
+        }
+      }
+    },
+    {
+      "id": "05d6f3e3-4112-4e67-868a-fca12abe8b0d",
+      "name": "Run Leaderboard",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        880,
+        1240
+      ],
+      "parameters": {
+        "mode": "once",
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "YeYpgLGiYlzCTopn"
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "40fda871-cb02-45ca-81de-3cd485e7b959",
+      "name": "Is Owner?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        336,
+        384
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.chat_id }}",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              },
+              "rightValue": 0
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "e26ae7d0-7d80-41b7-8339-1d7c0d8d0409",
+      "name": "Has Button Press?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        448,
+        144
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.callback_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "2b6844d9-55d1-4c63-b754-bfb446e8350a",
+      "name": "Answer Button Press",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        672,
+        96
+      ],
+      "parameters": {
+        "resource": "callback",
+        "operation": "answerQuery",
+        "queryId": "={{ $json.callback_id }}",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "0808a6d8-b057-4f34-bbd5-92ca7c673843",
+      "name": "Send Menu",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        720
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $('Parse Command').first().json.chat_id }}",
+        "text": "<b>UFC picks bot</b>\nTap a button, or type the command.\n\n/consensus - weighted consensus with a short explanation per bout (add 'plain' for a simple vote)\n/status - pipeline status for the active event\n/videos - browse captured videos and reopen saved summaries\n/video VIDEO_ID - reopen one saved video summary\n/leaderboard - all-time picker accuracy\n/grade [event] - score a finished card\n/capture - fetch new transcripts\n/analyse - analyse transcripts (uses credits)\n/addvideo URL - add one YouTube video, capture and analyse it (uses credits)\n/retry VIDEO_ID - retry one unfinished video (or /retry capture ID / /retry analyse ID)\n/credits - OpenRouter credit\n/issues - open issues, plus what was fixed in the last 7 days\n/issue TEXT - record an issue to fix later\n/fixed ID [note] - close an issue (add the version if you know it)\n/menu - show this menu",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📊 Weighted consensus",
+                    "additionalFields": {
+                      "callback_data": "consensus"
+                    }
+                  },
+                  {
+                    "text": "🗳️ Plain vote",
+                    "additionalFields": {
+                      "callback_data": "consensus plain"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🎬 Videos",
+                    "additionalFields": {
+                      "callback_data": "videos"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📋 Status",
+                    "additionalFields": {
+                      "callback_data": "status"
+                    }
+                  },
+                  {
+                    "text": "🏆 Leaderboard",
+                    "additionalFields": {
+                      "callback_data": "leaderboard"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "✅ Grade latest card",
+                    "additionalFields": {
+                      "callback_data": "grade"
+                    }
+                  },
+                  {
+                    "text": "💳 OpenRouter credit",
+                    "additionalFields": {
+                      "callback_data": "credits"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "⬇️ Capture now",
+                    "additionalFields": {
+                      "callback_data": "capture"
+                    }
+                  },
+                  {
+                    "text": "🤖 Analyse now (credits)",
+                    "additionalFields": {
+                      "callback_data": "analyse"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🔁 Retry a video",
+                    "additionalFields": {
+                      "callback_data": "retry"
+                    }
+                  },
+                  {
+                    "text": "🩺 Issues",
+                    "additionalFields": {
+                      "callback_data": "issues"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "49cc9bf1-1fc1-4be4-9ff1-f772b2e83377",
+      "name": "Run Credits",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        880,
+        1440
+      ],
+      "parameters": {
+        "mode": "once",
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "f2CKNtQUpZ5Rm80Z"
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "fa2d57b6-011f-4bfa-a15c-f95719e4b5a8",
+      "name": "Get UFC Events For Matching",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "WTTpdZSDVOxOB3Ex",
+          "cachedResultName": "ufc_events"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      }
+    },
+    {
+      "id": "516a4505-a7d5-4bd8-9738-2cb051614997",
+      "name": "Get Recent UFC Runs",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Tb9mpsswwq6uJvr6",
+          "cachedResultName": "ufc_pipeline_runs"
+        },
+        "matchType": "allConditions",
+        "returnAll": false,
+        "limit": 30,
+        "orderBy": true,
+        "orderByColumn": "updatedAt",
+        "orderByDirection": "DESC"
+      }
+    },
+    {
+      "id": "936da0a2-6341-4b7e-ac5c-37be1c912d2f",
+      "name": "Run Video Retry",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "mode": "once",
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "G1EMMFVSzpGE4q3Q",
+          "cachedResultName": "UFC | svc.retry_video"
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "705d9538-6980-4cf8-a0e5-08040cf09c8c",
+      "name": "Get UFC Fight Card Status",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1400,
+        500
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "oCOZ7hzgZ2htYL9F",
+          "cachedResultName": "ufc_fight_card_state"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_key",
+              "condition": "eq",
+              "keyValue": "={{ $('Get Active Event').first().json.event_key }}"
+            },
+            {
+              "keyName": "spreadsheet_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Get Active Event').first().json.spreadsheet_id }}"
+            }
+          ]
+        },
+        "returnAll": true
+      }
+    },
+    {
+      "id": "2a9cad6f-4c88-45b9-aef1-09808c4c34b9",
+      "name": "Run Resolve Incident",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        880,
+        1640
+      ],
+      "parameters": {
+        "mode": "once",
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "XN5zvwsajUldmPgN"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "incident": "={{ ($json.args || '').trim().split(/\\s+/)[0] }}",
+            "resolution": "={{ ($json.args || '').trim().replace(/^\\S+\\s*/, '') }}"
+          }
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "58c8f9c8-420a-47b5-8ae9-89f2b6418c16",
+      "name": "Run Record Issue",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        880,
+        1840
+      ],
+      "parameters": {
+        "mode": "once",
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "fZB3SuyzKNXurQyI"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "note": "={{ $json.args }}"
+          }
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "88dec482-f3e6-41c6-b0fc-1434d33ea8d9",
+      "name": "Run List Issues",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        880,
+        2040
+      ],
+      "parameters": {
+        "mode": "once",
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "SkWzi2pqLtbW4HNN"
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "9880fc6d-cfee-4f63-a46b-b2a86c8b33af",
+      "name": "Run Add Video",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        880,
+        2240
+      ],
+      "parameters": {
+        "source": "database",
+        "mode": "once",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "JcNXgWql9K4RrHm9"
+        },
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "d63f3e08-f8b3-4677-8182-34e35de7c633",
+      "name": "Run Video Browser",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        880,
+        2440
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "IodUUBrjWAVd0cHi"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    }
+  ],
+  "nodeGroups": [
+    {
+      "id": "cbc4ce4e-2594-4c8c-b979-fbe851204854",
+      "name": "Read owner commands",
+      "nodeNames": [
+        "Parse Command",
+        "Is Owner?"
+      ],
+      "description": "Parse commands and accept only the owner's chat."
+    },
+    {
+      "id": "7f4204f8-2098-44d2-9212-cb3d3e07902a",
+      "name": "Answer button presses",
+      "nodeNames": [
+        "Has Button Press?",
+        "Answer Button Press"
+      ],
+      "description": "Acknowledge Telegram button presses promptly."
+    },
+    {
+      "id": "32bcbc1f-e3ca-4a73-a221-a73793340416",
+      "name": "Handle UFC commands",
+      "nodeNames": [
+        "Route Command",
+        "Run Consensus",
+        "Get Active Event",
+        "Get Event Videos",
+        "Build Status Message",
+        "Send Reply",
+        "Acknowledge Capture",
+        "Run Capture",
+        "Acknowledge Analysis",
+        "Run Analysis",
+        "Acknowledge Grade",
+        "Run Grading",
+        "Run Leaderboard",
+        "Send Menu",
+        "Run Credits",
+        "Get UFC Events For Matching",
+        "Get Recent UFC Runs",
+        "Run Video Retry",
+        "Get UFC Fight Card Status",
+        "Run Resolve Incident",
+        "Run Record Issue",
+        "Run List Issues",
+        "Run Add Video",
+        "Run Video Browser"
+      ],
+      "description": "Routes owner requests to event status, picks, video processing, account balance and issue tracking."
+    }
+  ]
+}

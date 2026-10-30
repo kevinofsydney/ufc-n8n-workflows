@@ -1,0 +1,937 @@
+{
+  "id": "PulwhLsIZhfvCGxl",
+  "name": "UFC | 7. Grade Picks",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki"
+  },
+  "tags": [],
+  "description": "After each UFC card finishes, fetches the official results from ESPN, grades every picker's winner picks and gradable props, stores the grades in data tables, and sends a scorecard to Telegram. Runs every 2 hours and on demand via /grade.",
+  "connections": {
+    "Every 2 Hours": {
+      "main": [
+        [
+          {
+            "node": "Get Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Events": {
+      "main": [
+        [
+          {
+            "node": "Pick Event To Grade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Grade On Demand": {
+      "main": [
+        [
+          {
+            "node": "Get Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pick Event To Grade": {
+      "main": [
+        [
+          {
+            "node": "Nothing To Grade?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nothing To Grade?": {
+      "main": [
+        [
+          {
+            "node": "Send Grading Note",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Find ESPN Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find ESPN Event": {
+      "main": [
+        [
+          {
+            "node": "Match ESPN Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Match ESPN Event": {
+      "main": [
+        [
+          {
+            "node": "Can Grade?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Can Grade?": {
+      "main": [
+        [
+          {
+            "node": "Send Grading Note",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Fight Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Fight Status": {
+      "main": [
+        [
+          {
+            "node": "Build Fight Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Fight Results": {
+      "main": [
+        [
+          {
+            "node": "Save Fight Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Fight Results": {
+      "main": [
+        [
+          {
+            "node": "Read Picks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Picks": {
+      "main": [
+        [
+          {
+            "node": "Read Props",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Props": {
+      "main": [
+        [
+          {
+            "node": "Grade Picks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Grade Picks": {
+      "main": [
+        [
+          {
+            "node": "Has Pick Rows?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Pick Rows?": {
+      "main": [
+        [
+          {
+            "node": "Save Pick Grades",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Grade Props",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Pick Grades": {
+      "main": [
+        [
+          {
+            "node": "Grade Props",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Grade Props": {
+      "main": [
+        [
+          {
+            "node": "Has Prop Rows?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Prop Rows?": {
+      "main": [
+        [
+          {
+            "node": "Save Prop Grades",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Event Graded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Prop Grades": {
+      "main": [
+        [
+          {
+            "node": "Mark Event Graded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Event Graded": {
+      "main": [
+        [
+          {
+            "node": "Build Scorecard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Scorecard": {
+      "main": [
+        [
+          {
+            "node": "Should Notify?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Notify?": {
+      "main": [
+        [
+          {
+            "node": "Send Scorecard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "bd508cc1-411d-47f9-a34f-3d0ee9d5e741",
+      "name": "Every 2 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "65c01dc5-d07d-404c-9fb1-b01998c9dc4a",
+      "name": "Get Events",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        96
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "WTTpdZSDVOxOB3Ex",
+          "cachedResultName": "ufc_events"
+        },
+        "returnAll": true
+      }
+    },
+    {
+      "id": "790ca9c7-7a9b-41c3-8343-330350249306",
+      "name": "Grade On Demand",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        192
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    },
+    {
+      "id": "d7425432-130c-43e2-bc02-088e658e7f01",
+      "name": "Pick Event To Grade",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        96
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Choose the event to grade.\n// - Scheduled run: the most recent finished event that has not been graded yet.\n// - On demand (/grade [text]): the most recent finished event, or the one matching the text.\n\nconst OWNER_CHAT_ID = 0;\nconst ENDED_AFTER_HOURS = 4;\nconst BACKFILL_DAYS = 180;\nconst NOTIFY_WITHIN_DAYS = 3;\n\nconst nowMs = Date.now();\n\nlet trigger = {};\n\ntry {\n  trigger = $('Grade On Demand').first().json || {};\n} catch {\n  // Scheduled run: the on-demand trigger did not fire.\n}\n\nconst forced = Object.keys(trigger).length > 0;\nconst chatId = trigger.chat_id || OWNER_CHAT_ID;\n\nconst normalise = (value) =>\n  String(value ?? '')\n    .normalize('NFD')\n    .replace(/[̀-ͯ]/g, '')\n    .toLowerCase()\n    .replace(/[^a-z0-9]+/g, ' ')\n    .trim();\n\nconst needle = normalise(trigger.args);\n\nconst candidates = $input\n  .all()\n  .map((item) => item.json)\n  .filter((row) => row.event_key && row.spreadsheet_id && row.event_datetime_local)\n  .map((row) => ({ row, startMs: Date.parse(row.event_datetime_local) }))\n  .filter((entry) => Number.isFinite(entry.startMs))\n  .filter((entry) => nowMs - entry.startMs >= ENDED_AFTER_HOURS * 3600 * 1000);\n\nlet pool;\n\nif (forced) {\n  pool = needle\n    ? candidates.filter((entry) =>\n        normalise(`${entry.row.event_key} ${entry.row.event_name}`).includes(needle)\n      )\n    : candidates;\n} else {\n  pool = candidates.filter(\n    (entry) =>\n      !entry.row.graded_at &&\n      nowMs - entry.startMs <= BACKFILL_DAYS * 24 * 3600 * 1000\n  );\n}\n\npool.sort((a, b) => b.startMs - a.startMs);\n\nif (pool.length === 0) {\n  return forced\n    ? [\n        {\n          json: {\n            abort: true,\n            chat_id: chatId,\n            message: needle\n              ? `No finished event matched \"${trigger.args}\".`\n              : 'No finished event to grade yet.',\n          },\n        },\n      ]\n    : [];\n}\n\nconst chosen = pool[0];\n\nreturn [\n  {\n    json: {\n      ...chosen.row,\n      abort: false,\n      forced,\n      chat_id: chatId,\n      notify: forced || nowMs - chosen.startMs <= NOTIFY_WITHIN_DAYS * 24 * 3600 * 1000,\n    },\n  },\n];"
+      },
+      "executeOnce": false
+    },
+    {
+      "id": "ed30124e-b851-4468-81c2-a063246aaede",
+      "name": "Nothing To Grade?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        96
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.abort }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "6227d433-8de1-4e53-890b-7a89798575b6",
+      "name": "Send Grading Note",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1568,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ $json.message }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "13075b6c-5041-49a0-9571-ed8070b0cbae",
+      "name": "Find ESPN Event",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        896,
+        176
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "=https://site.api.espn.com/apis/site/v2/sports/mma/ufc/scoreboard?dates={{ DateTime.fromISO($json.event_datetime_local).minus({ days: 1 }).toFormat('yyyyLLdd') }}-{{ DateTime.fromISO($json.event_datetime_local).plus({ days: 1 }).toFormat('yyyyLLdd') }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "dc994e27-2a72-4799-a81a-5f2554d7ef17",
+      "name": "Match ESPN Event",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        176
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Find the event on ESPN's scoreboard and list its finished fights.\n\nconst evt = $('Pick Event To Grade').first().json;\nconst nowMs = Date.now();\nconst startMs = Date.parse(evt.event_datetime_local);\n\nconst scoreboard = $input.first().json || {};\nconst espnEvents = Array.isArray(scoreboard.events) ? scoreboard.events : [];\n\nconst abort = (message) =>\n  evt.forced ? [{ json: { abort: true, chat_id: evt.chat_id, message } }] : [];\n\nfunction normaliseText(value) {\n  return String(value ?? '')\n    .normalize('NFD')\n    .replace(/[̀-ͯ]/g, '')\n    .toLowerCase();\n}\n\nfunction buildEventKeywords(eventName) {\n  const [head, ...rest] = normaliseText(eventName).split(':');\n  const keywords = new Set();\n\n  head\n    .replace(/\\bufc\\b/g, ' ')\n    .replace(/\\bfight night\\b/g, ' ')\n    .split(/[^a-z0-9]+/)\n    .filter((word) => word.length >= 3)\n    .forEach((word) => keywords.add(word));\n\n  rest\n    .join(':')\n    .split(/[^a-z0-9'-]+/)\n    .filter((word) => word.length >= 4 && word !== 'vs')\n    .forEach((word) => keywords.add(word));\n\n  return [...keywords];\n}\n\nfunction escapeRegExp(value) {\n  return value.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');\n}\n\nconst keywords = buildEventKeywords(evt.event_name);\n\nlet best = null;\nlet bestScore = 0;\n\nfor (const espnEvent of espnEvents) {\n  const name = normaliseText(espnEvent.name);\n  const score = keywords.filter((keyword) =>\n    new RegExp(`\\\\b${escapeRegExp(keyword)}\\\\b`).test(name)\n  ).length;\n\n  if (score > bestScore) {\n    best = espnEvent;\n    bestScore = score;\n  }\n}\n\nif (!best) {\n  return abort(`Could not find ${evt.event_name} on ESPN.`);\n}\n\nconst competitions = Array.isArray(best.competitions) ? best.competitions : [];\nconst finished = competitions.filter((comp) => comp.status?.type?.completed === true);\n\nif (finished.length === 0) {\n  return abort(`${evt.event_name} has no finished fights on ESPN yet.`);\n}\n\nif (finished.length < competitions.length && nowMs - startMs < 24 * 3600 * 1000) {\n  return abort(\n    `${evt.event_name}: ${finished.length} of ${competitions.length} fights are final. Try again later.`\n  );\n}\n\nreturn finished.map((comp) => ({\n  json: {\n    event_key: evt.event_key,\n    espn_event_id: best.id,\n    espn_competition_id: comp.id,\n    weight_class: comp.type?.abbreviation || comp.type?.text || '',\n    scheduled_rounds: comp.format?.regulation?.periods ?? null,\n    competitors: (comp.competitors || [])\n      .map((competitor) => ({\n        name: competitor.athlete?.displayName || '',\n        winner: competitor.winner === true,\n        order: Number(competitor.order),\n      }))\n      .sort((a, b) => a.order - b.order),\n  },\n}));"
+      }
+    },
+    {
+      "id": "f46e7826-fe47-4d8c-a604-fbed2c439029",
+      "name": "Can Grade?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1344,
+        176
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.abort }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "76498691-86bc-43c0-8b9c-74160b720b4f",
+      "name": "Get Fight Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1568,
+        224
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "=https://sports.core.api.espn.com/v2/sports/mma/leagues/ufc/events/{{ $json.espn_event_id }}/competitions/{{ $json.espn_competition_id }}/status",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "id": "81dba62d-183f-498e-95f1-f1f14e76ef62",
+      "name": "Build Fight Results",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        224
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Combine each fight's scoreboard entry with its ESPN result.\n\nconst comps = $('Match ESPN Event').all().map((item) => item.json);\nconst statuses = $input.all().map((item) => item.json);\nconst recordedAt = new Date().toISOString();\n\nfunction mapMethod(name) {\n  const value = String(name ?? '').toLowerCase();\n\n  if (value === 'kotko' || value === 'ko' || value === 'tko') return 'KO_TKO';\n  if (value.startsWith('submission')) return 'SUBMISSION';\n  if (value.startsWith('decision')) return 'DECISION';\n  if (value === 'draw') return 'DRAW';\n  if (value === 'dq') return 'DQ';\n  if (value === 'nc' || value.includes('no-contest') || value.includes('no contest')) {\n    return 'NO_CONTEST';\n  }\n\n  return 'OTHER';\n}\n\nconst rows = [];\n\nstatuses.forEach((status, index) => {\n  const comp = comps[index];\n\n  if (!comp || status?.type?.name !== 'STATUS_FINAL') return;\n\n  const method = mapMethod(status.result?.name);\n  const winnerName = comp.competitors.find((competitor) => competitor.winner)?.name ?? null;\n\n  let winner = winnerName;\n\n  if (method === 'DRAW') winner = 'DRAW';\n  if (method === 'NO_CONTEST') winner = 'NO_CONTEST';\n\n  const period = Number(status.period) || 0;\n  const [minutes, seconds] = String(status.displayClock || '0:00')\n    .split(':')\n    .map((part) => Number(part) || 0);\n  const clockSeconds = minutes * 60 + seconds;\n\n  rows.push({\n    json: {\n      event_key: comp.event_key,\n      espn_event_id: comp.espn_event_id,\n      espn_competition_id: comp.espn_competition_id,\n      fighter_a: comp.competitors[0]?.name ?? '',\n      fighter_b: comp.competitors[1]?.name ?? '',\n      winner,\n      method,\n      method_detail: status.result?.description || status.result?.displayName || '',\n      round: period,\n      clock: status.displayClock || '',\n      elapsed_rounds: Math.round(((period - 1) + clockSeconds / 300) * 100) / 100,\n      elapsed_minutes: Math.round(((period - 1) * 5 + clockSeconds / 60) * 100) / 100,\n      scheduled_rounds: comp.scheduled_rounds,\n      weight_class: comp.weight_class,\n      recorded_at: recordedAt,\n    },\n  });\n});\n\nreturn rows;"
+      }
+    },
+    {
+      "id": "7b5222a7-5919-42ff-aede-58ca7173af52",
+      "name": "Save Fight Results",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2016,
+        224
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "N1yxE7DS3wzwTwK6",
+          "cachedResultName": "ufc_fight_results"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "espn_competition_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.espn_competition_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "event_key": "={{ $json.event_key }}",
+            "espn_event_id": "={{ $json.espn_event_id }}",
+            "espn_competition_id": "={{ $json.espn_competition_id }}",
+            "fighter_a": "={{ $json.fighter_a }}",
+            "fighter_b": "={{ $json.fighter_b }}",
+            "winner": "={{ $json.winner }}",
+            "method": "={{ $json.method }}",
+            "method_detail": "={{ $json.method_detail }}",
+            "round": "={{ $json.round }}",
+            "clock": "={{ $json.clock }}",
+            "elapsed_rounds": "={{ $json.elapsed_rounds }}",
+            "elapsed_minutes": "={{ $json.elapsed_minutes }}",
+            "scheduled_rounds": "={{ $json.scheduled_rounds }}",
+            "weight_class": "={{ $json.weight_class }}",
+            "recorded_at": "={{ $json.recorded_at }}"
+          },
+          "matchingColumns": []
+        }
+      }
+    },
+    {
+      "id": "9dc43da5-4848-48b2-ace4-7c6a7bb8f6f9",
+      "name": "Read Picks",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2240,
+        224
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $(\"Pick Event To Grade\").first().json.spreadsheet_id }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Picks"
+        }
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "39e6e7e8-4473-4d3c-98ae-bf483c73882b",
+      "name": "Read Props",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2464,
+        224
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $(\"Pick Event To Grade\").first().json.spreadsheet_id }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Props"
+        }
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "84f484e1-4039-469e-9fe5-8fc1299040b6",
+      "name": "Grade Picks",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2688,
+        224
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Grade each picker's winner picks against the fight results.\n\nconst evt = $('Pick Event To Grade').first().json;\nconst results = $('Build Fight Results').all().map((item) => item.json);\nconst gradedAt = new Date().toISOString();\n\nconst normaliseText = (value) =>\n  String(value ?? '')\n    .normalize('NFD')\n    .replace(/[̀-ͯ]/g, '')\n    .toLowerCase();\n\nfunction nameTokens(value) {\n  return normaliseText(value)\n    .replace(/[^a-z0-9\\s-]/g, ' ')\n    .replace(/-/g, ' ')\n    .split(/\\s+/)\n    .filter((token) => token.length >= 2 && !['jr', 'sr', 'ii', 'iii', 'iv'].includes(token));\n}\n\nfunction namesMatch(a, b) {\n  const tokensA = nameTokens(a);\n  const tokensB = nameTokens(b);\n\n  if (tokensA.length === 0 || tokensB.length === 0) return false;\n  if (tokensA[tokensA.length - 1] === tokensB[tokensB.length - 1]) return true;\n\n  const shared = tokensA.filter((token) => tokensB.includes(token));\n\n  return shared.length >= 2 || (shared.length >= 1 && (tokensA.length === 1 || tokensB.length === 1));\n}\n\nfunction findResult(fighterA, fighterB) {\n  return results.find(\n    (result) =>\n      (namesMatch(fighterA, result.fighter_a) && namesMatch(fighterB, result.fighter_b)) ||\n      (namesMatch(fighterA, result.fighter_b) && namesMatch(fighterB, result.fighter_a))\n  );\n}\n\n// One pick per picker per fight (latest extraction wins).\nconst latestByKey = new Map();\n\nfor (const item of $('Read Picks').all().filter((i) => !String(i.json.review_status || '').startsWith('VOID'))) {\n  const row = item.json;\n\n  if (!row.pick_id || !row.picked_fighter || !row.channel_name) continue;\n  if (row.event_key && row.event_key !== evt.event_key) continue;\n  if (String(row.is_official_pick).toLowerCase() === 'false') continue;\n\n  const key = `${row.channel_name}|${row.fight_order}`;\n  const existing = latestByKey.get(key);\n\n  if (!existing || String(row.extracted_at || '') > String(existing.extracted_at || '')) {\n    latestByKey.set(key, row);\n  }\n}\n\nconst output = [];\n\nfor (const pick of latestByKey.values()) {\n  const result = findResult(pick.fighter_a, pick.fighter_b);\n\n  let grade = 'UNMATCHED';\n\n  if (result) {\n    if (!result.winner || result.winner === 'DRAW' || result.winner === 'NO_CONTEST') {\n      grade = 'VOID';\n    } else {\n      grade = namesMatch(pick.picked_fighter, result.winner) ? 'CORRECT' : 'INCORRECT';\n    }\n  }\n\n  output.push({\n    json: {\n      pick_id: pick.pick_id,\n      event_key: evt.event_key,\n      channel_name: pick.channel_name,\n      video_id: pick.video_id,\n      fight_order: Number(pick.fight_order),\n      fighter_a: pick.fighter_a,\n      fighter_b: pick.fighter_b,\n      picked_fighter: pick.picked_fighter,\n      confidence_score: Number.isFinite(Number(pick.confidence_score))\n        ? Number(pick.confidence_score)\n        : null,\n      result: grade,\n      winner: result?.winner ?? '',\n      graded_at: gradedAt,\n    },\n  });\n}\n\nreturn output.length > 0 ? output : [{ json: { row_type: 'none' } }];"
+      }
+    },
+    {
+      "id": "12c4a0f2-22c3-4b9b-8fc2-af2a4ca63232",
+      "name": "Has Pick Rows?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2912,
+        224
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.row_type }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              },
+              "rightValue": "none"
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "51d06a4d-464a-47b9-b7e2-b939e8afaaf2",
+      "name": "Save Pick Grades",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3136,
+        144
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "r3YKyjLCAU8EiANs",
+          "cachedResultName": "ufc_pick_grades"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "pick_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.pick_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "pick_id": "={{ $json.pick_id }}",
+            "event_key": "={{ $json.event_key }}",
+            "channel_name": "={{ $json.channel_name }}",
+            "video_id": "={{ $json.video_id }}",
+            "fight_order": "={{ $json.fight_order }}",
+            "fighter_a": "={{ $json.fighter_a }}",
+            "fighter_b": "={{ $json.fighter_b }}",
+            "picked_fighter": "={{ $json.picked_fighter }}",
+            "confidence_score": "={{ $json.confidence_score }}",
+            "result": "={{ $json.result }}",
+            "winner": "={{ $json.winner }}",
+            "graded_at": "={{ $json.graded_at }}"
+          },
+          "matchingColumns": []
+        }
+      }
+    },
+    {
+      "id": "94af9e41-b410-47c3-b743-dd5ad10a6d72",
+      "name": "Grade Props",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3360,
+        224
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Grade the gradable props: method, method + round, inside the distance,\n// over/under rounds and fight duration. Everything else is left UNGRADED.\n\nconst evt = $('Pick Event To Grade').first().json;\nconst results = $('Build Fight Results').all().map((item) => item.json);\nconst gradedAt = new Date().toISOString();\n\nconst normaliseText = (value) =>\n  String(value ?? '')\n    .normalize('NFD')\n    .replace(/[̀-ͯ]/g, '')\n    .toLowerCase();\n\nfunction nameTokens(value) {\n  return normaliseText(value)\n    .replace(/[^a-z0-9\\s-]/g, ' ')\n    .replace(/-/g, ' ')\n    .split(/\\s+/)\n    .filter((token) => token.length >= 2 && !['jr', 'sr', 'ii', 'iii', 'iv'].includes(token));\n}\n\nfunction namesMatch(a, b) {\n  const tokensA = nameTokens(a);\n  const tokensB = nameTokens(b);\n\n  if (tokensA.length === 0 || tokensB.length === 0) return false;\n  if (tokensA[tokensA.length - 1] === tokensB[tokensB.length - 1]) return true;\n\n  const shared = tokensA.filter((token) => tokensB.includes(token));\n\n  return shared.length >= 2 || (shared.length >= 1 && (tokensA.length === 1 || tokensB.length === 1));\n}\n\nfunction findResult(fighterA, fighterB) {\n  return results.find(\n    (result) =>\n      (namesMatch(fighterA, result.fighter_a) && namesMatch(fighterB, result.fighter_b)) ||\n      (namesMatch(fighterA, result.fighter_b) && namesMatch(fighterB, result.fighter_a))\n  );\n}\n\nconst methodMap = {\n  ko_tko: 'KO_TKO',\n  submission: 'SUBMISSION',\n  decision: 'DECISION',\n};\n\nfunction gradeProp(row, result) {\n  const winnerKnown =\n    result.winner && result.winner !== 'DRAW' && result.winner !== 'NO_CONTEST';\n\n  if (!winnerKnown) return 'VOID';\n\n  const market = String(row.market || '');\n  const selection = String(row.selection || '');\n  const fighterWon = row.fighter ? namesMatch(row.fighter, result.winner) : null;\n\n  if (market === 'method_of_victory' || market === 'method_and_round') {\n    const method = methodMap[String(row.method || '').toLowerCase()];\n\n    if (!row.fighter || !method) return 'UNGRADED';\n\n    let correct = fighterWon && result.method === method;\n\n    if (market === 'method_and_round') {\n      const round = Number(row.round);\n      const range = String(row.round_range || '').match(/R?(\\d)\\s*-\\s*R?(\\d)/i);\n\n      if (Number.isFinite(round) && row.round !== null && row.round !== '') {\n        correct = correct && result.round === round;\n      } else if (range) {\n        correct = correct && result.round >= Number(range[1]) && result.round <= Number(range[2]);\n      }\n    }\n\n    return correct ? 'CORRECT' : 'INCORRECT';\n  }\n\n  if (market === 'inside_distance') {\n    if (!row.fighter) return 'UNGRADED';\n\n    return fighterWon && (result.method === 'KO_TKO' || result.method === 'SUBMISSION')\n      ? 'CORRECT'\n      : 'INCORRECT';\n  }\n\n  if (market === 'over_under_rounds') {\n    const match = selection.match(/(over|under)\\s*([\\d.]+)\\s*round/i);\n\n    if (!match) return 'UNGRADED';\n\n    const line = Number(match[2]);\n    const isOver = match[1].toLowerCase() === 'over';\n\n    return (isOver ? result.elapsed_rounds > line : result.elapsed_rounds < line)\n      ? 'CORRECT'\n      : 'INCORRECT';\n  }\n\n  if (market === 'fight_duration') {\n    const match = selection.match(/(over|under)\\s*([\\d.]+)\\s*min/i);\n\n    if (!match) return 'UNGRADED';\n\n    const line = Number(match[2]);\n    const isOver = match[1].toLowerCase() === 'over';\n\n    return (isOver ? result.elapsed_minutes > line : result.elapsed_minutes < line)\n      ? 'CORRECT'\n      : 'INCORRECT';\n  }\n\n  return 'UNGRADED';\n}\n\nconst seen = new Set();\nconst output = [];\n\nfor (const item of $('Read Props').all().filter((i) => !String(i.json.review_status || '').startsWith('VOID'))) {\n  const row = item.json;\n\n  if (!row.prop_id || !row.channel_name || seen.has(row.prop_id)) continue;\n  if (row.event_key && row.event_key !== evt.event_key) continue;\n\n  seen.add(row.prop_id);\n\n  const result = findResult(row.fighter_a, row.fighter_b);\n  const grade = result ? gradeProp(row, result) : 'UNMATCHED';\n\n  output.push({\n    json: {\n      prop_id: row.prop_id,\n      event_key: evt.event_key,\n      channel_name: row.channel_name,\n      video_id: row.video_id,\n      fight_order: Number(row.fight_order),\n      market: row.market,\n      selection: row.selection,\n      recommendation_strength: row.recommendation_strength || '',\n      result: grade,\n      graded_at: gradedAt,\n    },\n  });\n}\n\nreturn output.length > 0 ? output : [{ json: { row_type: 'none' } }];"
+      }
+    },
+    {
+      "id": "ec804bb7-ffe8-411a-b19a-7265fe2e1ad3",
+      "name": "Has Prop Rows?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        3584,
+        224
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.row_type }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              },
+              "rightValue": "none"
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "4b41bab2-c0c6-4501-a8ba-8cb3170adb3a",
+      "name": "Save Prop Grades",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        3808,
+        144
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1qPnxl4is7YBJW0X",
+          "cachedResultName": "ufc_prop_grades"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "prop_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.prop_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "prop_id": "={{ $json.prop_id }}",
+            "event_key": "={{ $json.event_key }}",
+            "channel_name": "={{ $json.channel_name }}",
+            "video_id": "={{ $json.video_id }}",
+            "fight_order": "={{ $json.fight_order }}",
+            "market": "={{ $json.market }}",
+            "selection": "={{ $json.selection }}",
+            "recommendation_strength": "={{ $json.recommendation_strength }}",
+            "result": "={{ $json.result }}",
+            "graded_at": "={{ $json.graded_at }}"
+          },
+          "matchingColumns": []
+        }
+      }
+    },
+    {
+      "id": "3da0953a-8080-4fa6-a264-2d57cd3064de",
+      "name": "Mark Event Graded",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        4032,
+        224
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "WTTpdZSDVOxOB3Ex",
+          "cachedResultName": "ufc_events"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_key",
+              "condition": "eq",
+              "keyValue": "={{ $(\"Pick Event To Grade\").first().json.event_key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "graded_at": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": []
+        }
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "a11beaf0-9f31-4a69-afb3-7a99a2fb1fe4",
+      "name": "Build Scorecard",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4256,
+        224
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Build the post-event scorecard message.\n\nconst evt = $('Pick Event To Grade').first().json;\nconst results = $('Build Fight Results').all().map((item) => item.json);\nconst pickGrades = $('Grade Picks').all().map((item) => item.json).filter((row) => row.pick_id);\nconst propGrades = $('Grade Props').all().map((item) => item.json).filter((row) => row.prop_id);\n\nconst escapeHtml = (value) =>\n  String(value ?? '')\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;');\n\nconst percent = (correct, total) => (total > 0 ? Math.round((correct / total) * 100) : 0);\n\nconst pickers = new Map();\n\nconst statsFor = (name) => {\n  if (!pickers.has(name)) {\n    pickers.set(name, { name, pickCorrect: 0, pickTotal: 0, propCorrect: 0, propTotal: 0 });\n  }\n\n  return pickers.get(name);\n};\n\nfor (const grade of pickGrades) {\n  if (grade.result !== 'CORRECT' && grade.result !== 'INCORRECT') continue;\n\n  const stats = statsFor(grade.channel_name);\n  stats.pickTotal += 1;\n  if (grade.result === 'CORRECT') stats.pickCorrect += 1;\n}\n\nfor (const grade of propGrades) {\n  if (grade.result !== 'CORRECT' && grade.result !== 'INCORRECT') continue;\n\n  const stats = statsFor(grade.channel_name);\n  stats.propTotal += 1;\n  if (grade.result === 'CORRECT') stats.propCorrect += 1;\n}\n\nconst ranked = [...pickers.values()].sort((a, b) => {\n  const accuracyDiff = percent(b.pickCorrect, b.pickTotal) - percent(a.pickCorrect, a.pickTotal);\n\n  return accuracyDiff !== 0 ? accuracyDiff : b.pickTotal - a.pickTotal;\n});\n\nconst lines = [\n  '<b>Event results and pick scores</b>',\n  `<b>${escapeHtml(evt.event_name)}</b>`,\n  `${results.length} fights graded`,\n  '',\n];\n\nif (ranked.length === 0) {\n  lines.push('No picks were available to grade for this event.');\n} else {\n  ranked.forEach((stats, index) => {\n    const props =\n      stats.propTotal > 0\n        ? ` · props ${stats.propCorrect}/${stats.propTotal} (${percent(stats.propCorrect, stats.propTotal)}%)`\n        : '';\n\n    lines.push(\n      `${index + 1}. ${escapeHtml(stats.name)} — ${stats.pickCorrect}/${stats.pickTotal} ` +\n      `picks (${percent(stats.pickCorrect, stats.pickTotal)}%)${props}`\n    );\n  });\n}\n\n// Fights where nobody (or almost nobody) picked the winner.\nconst byFight = new Map();\n\nfor (const grade of pickGrades) {\n  if (grade.result !== 'CORRECT' && grade.result !== 'INCORRECT') continue;\n\n  const entry = byFight.get(grade.fight_order) || { correct: 0, total: 0, winner: grade.winner, a: grade.fighter_a, b: grade.fighter_b };\n  entry.total += 1;\n  if (grade.result === 'CORRECT') entry.correct += 1;\n  byFight.set(grade.fight_order, entry);\n}\n\nconst missed = [...byFight.values()]\n  .filter((entry) => entry.total >= 3 && entry.correct / entry.total <= 0.34)\n  .sort((a, b) => a.correct / a.total - b.correct / b.total)\n  .slice(0, 3);\n\nif (missed.length > 0) {\n  lines.push('', '<b>Fights the pickers missed</b>');\n\n  for (const entry of missed) {\n    lines.push(\n      `• ${escapeHtml(entry.winner)} won (${entry.correct}/${entry.total} picked it)`\n    );\n  }\n}\n\nconst bets = propGrades.filter(\n  (grade) =>\n    (grade.recommendation_strength === 'best_bet' ||\n      grade.recommendation_strength === 'recommended_bet') &&\n    (grade.result === 'CORRECT' || grade.result === 'INCORRECT')\n);\n\nif (bets.length > 0) {\n  lines.push('', '<b>Recommended bets</b>');\n\n  for (const bet of bets.slice(0, 8)) {\n    lines.push(\n      `${bet.result === 'CORRECT' ? '✅' : '❌'} ${escapeHtml(bet.selection)} ` +\n      `(${escapeHtml(bet.channel_name)})`\n    );\n  }\n}\n\nreturn [{ json: { chat_id: evt.chat_id, notify: evt.notify, text: lines.join('\\n') } }];"
+      }
+    },
+    {
+      "id": "c0b2dc76-a163-413f-9af6-6b81bd11f529",
+      "name": "Should Notify?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        4480,
+        224
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.notify }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "32fcf176-36bf-4ad7-8782-870d9571a922",
+      "name": "Send Scorecard",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        4704,
+        224
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    }
+  ],
+  "nodeGroups": []
+}

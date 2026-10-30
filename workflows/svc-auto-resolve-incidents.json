@@ -1,0 +1,242 @@
+{
+  "id": "gfR9qKH6xCTJXzcg",
+  "name": "UFC | svc.auto_resolve_incidents",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true
+  },
+  "tags": [],
+  "description": "Every 30 minutes, closes error-sourced ufc_incidents rows with no recurrence in 12 hours and sends the owner a short summary. Never closes owner-reported or test incidents.",
+  "connections": {
+    "Every 30 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Read All Incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read All Incidents": {
+      "main": [
+        [
+          {
+            "node": "Select Stale Incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Stale Incidents": {
+      "main": [
+        [
+          {
+            "node": "Close Stale Incident",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Close Stale Incident": {
+      "main": [
+        [
+          {
+            "node": "Build Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Summary": {
+      "main": [
+        [
+          {
+            "node": "Send Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "5115a887-3898-4e78-9f8d-79f918cb4b91",
+      "name": "Every 30 Minutes",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "680b4316-2168-4c15-8c85-24dd0fc7e1ce",
+      "name": "Read All Incidents",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "0ac7e189-af10-491b-8023-e4ef9894f651",
+      "name": "Select Stale Incidents",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const QUIET_HOURS=12;\nconst rows=$('Read All Incidents').all().map(function(item){return item.json;}).filter(function(row){return row && row.incident_key;});\nconst cutoff=Date.now()-QUIET_HOURS*60*60*1000;\nconst stale=rows.filter(function(row){\n if(row.status==='resolved')return false;\n if(row.source==='owner')return false;\n if(String(row.incident_key).indexOf('test|')===0)return false;\n const seen=Date.parse(row.last_seen_at||row.first_seen_at||'');\n return Number.isFinite(seen) && seen<cutoff;\n});\nif(!stale.length)return [];\nconst now=new Date().toISOString();\nreturn stale.map(function(row){\n return {json:{incident_key:row.incident_key,incident_id:row.id,workflow_name:row.workflow_name||row.node_name||row.source||'pipeline',last_message:row.last_message||'',resolved_at:now,resolution:'Auto-closed: no recurrence in '+QUIET_HOURS+' hours.'}};\n});"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "23c4e493-aec2-48ce-97e2-3fea1a6548e6",
+      "name": "Close Stale Incident",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "incident_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.incident_key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "status": "resolved",
+            "resolved_at": "={{ $json.resolved_at }}",
+            "resolution": "={{ $json.resolution }}",
+            "resolved_by": "sweep"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "status",
+              "displayName": "status",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "resolved_at",
+              "displayName": "resolved_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "resolution",
+              "displayName": "resolution",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "resolved_by",
+              "displayName": "resolved_by",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "08f93360-6765-4a2b-ad4b-0521b49e4684",
+      "name": "Build Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const items=$('Select Stale Incidents').all().map(function(item){return item.json;});\nconst nl=String.fromCharCode(10);\nconst esc=function(value){return String(value===undefined||value===null?'':value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};\nconst lines=['<b>Auto-closed '+items.length+' incident'+(items.length===1?'':'s')+'</b>','No recurrence in 12 hours.'];\nitems.slice(0,8).forEach(function(row){lines.push('#'+row.incident_id+' '+esc(row.workflow_name)+' — '+esc(row.last_message).slice(0,110));});\nif(items.length>8)lines.push('… '+(items.length-8)+' more.');\nreturn [{json:{count:items.length,text:lines.join(nl)}}];"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "974b13b1-10cb-4ea8-94b6-7b2ad92836cc",
+      "name": "Send Summary",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "0",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    }
+  ],
+  "nodeGroups": []
+}

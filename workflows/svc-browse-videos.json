@@ -1,0 +1,2186 @@
+{
+  "id": "IodUUBrjWAVd0cHi",
+  "name": "UFC | svc.browse_videos",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "timezone": "Australia/Sydney",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [],
+  "description": "Browse captured videos for the active UFC event and reopen saved picks and reasoning in Telegram without running capture or AI analysis.",
+  "connections": {
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Normalize Video Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Video Request": {
+      "main": [
+        [
+          {
+            "node": "Read Active Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Test Manually": {
+      "main": [
+        [
+          {
+            "node": "Manual Test Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Test Request": {
+      "main": [
+        [
+          {
+            "node": "Normalize Video Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Active Event": {
+      "main": [
+        [
+          {
+            "node": "Read Event Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Event Videos": {
+      "main": [
+        [
+          {
+            "node": "Choose Video View",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Choose Video View": {
+      "main": [
+        [
+          {
+            "node": "Read Saved Summary?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Saved Summary?": {
+      "main": [
+        [
+          {
+            "node": "Read Saved Picks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Video Browser Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Saved Picks": {
+      "main": [
+        [
+          {
+            "node": "Read Saved Props",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video Browser Result": {
+      "main": [
+        [
+          {
+            "node": "Notify Owner?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Saved Props": {
+      "main": [
+        [
+          {
+            "node": "Build Saved Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Saved Summary": {
+      "main": [
+        [
+          {
+            "node": "Video Browser Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notify Owner?": {
+      "main": [
+        [
+          {
+            "node": "Choose Keyboard Size",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Choose Keyboard Size": {
+      "main": [
+        [
+          {
+            "node": "Send Video Browser",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Video Browser 2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Video Browser 3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Video Browser 4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Video Browser 5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Video Browser 6",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Video Browser 7",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Video Browser 8",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Video Browser 9",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Video Browser 10",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Video Browser 11",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Video Browser 12",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "1944d20d-53a5-45f1-a9dc-6fe3e9f5c792",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    },
+    {
+      "id": "f9d79221-ca38-4813-82e4-909e66c1574b",
+      "name": "Normalize Video Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        690,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const input=$input.first().json;\nif(Number(input.chat_id)!==0)return [];\nconst command=String(input.command||'videos').toLowerCase();\nconst parts=String(input.args||'').trim().split(/\\s+/).filter(Boolean);\nconst positive=v=>/^[1-9]\\d{0,5}$/.test(String(v||''))?Number(v):null;\nlet valid=true,video_id='',page=1,list_page=1;\nif(command==='video'){\n video_id=parts[0]||'';\n valid=/^[A-Za-z0-9_-]{11}$/.test(video_id)&&parts.length<=3;\n page=parts[1]?positive(parts[1]):1;\n list_page=parts[2]?positive(parts[2]):1;\n valid=valid&&Boolean(page)&&Boolean(list_page);\n}else{\n valid=command==='videos'&&parts.length<=1;\n page=parts[0]?positive(parts[0]):1;\n valid=valid&&Boolean(page);\n}\nreturn [{json:{chat_id:0,command,video_id,page:page||1,list_page:list_page||1,valid,dry_run:input.dry_run===true}}];"
+      }
+    },
+    {
+      "id": "f55c5e07-2459-449c-8c28-0bb47144eeaf",
+      "name": "Test Manually",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        230,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "870f1b9f-ae2f-4e3c-8cb9-ef3e437172ac",
+      "name": "Manual Test Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "return [{json:{chat_id:0,command:'videos',args:'',dry_run:true}}];"
+      }
+    },
+    {
+      "id": "e25a17ef-31f5-4a2b-b2b1-c6ef60fcd9e2",
+      "name": "Read Active Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        920,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "WTTpdZSDVOxOB3Ex",
+          "cachedResultName": "ufc_events"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "active",
+              "condition": "isTrue"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "a4269f31-0cf5-4d0d-b111-04fe4f5cc6b4",
+      "name": "Read Event Videos",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1150,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "cAQonN6NYOY3fqxl",
+          "cachedResultName": "ufc_videos"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_key",
+              "condition": "eq",
+              "keyValue": "={{ $('Read Active Event').first().json.event_key || '__no_active_event__' }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "e2c2a567-1389-4f75-9531-cd091b0299a4",
+      "name": "Choose Video View",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1380,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const request=$('Normalize Video Request').first().json;\nconst esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');\nconst short=(v,n)=>{const s=String(v??'').replace(/\\s+/g,' ').trim();return s.length>n?s.slice(0,n-1)+'…':s;};\nconst button=(text,data)=>({text,additionalFields:{callback_data:data}});\nconst keyboard=buttons=>buttons.map(b=>({row:{buttons:Array.isArray(b)?b:[b]}}));\nconst answer=(text,buttons=[button('🎬 Videos','videos')],extra={})=>[{json:{...request,should_read_summary:false,text,keyboard_rows:keyboard(buttons),...extra}}];\nif(!request.valid)return answer('Use /videos to browse captured videos, /videos 2 for another page, or /video VIDEO_ID to reopen a saved summary.');\nconst events=$('Read Active Event').all().map(i=>i.json).filter(e=>e.event_key&&(e.active===true||e.active==='true'));\nif(events.length!==1)return answer('Videos are unavailable: expected exactly one active UFC event.',[button('Main menu','menu')]);\nconst event=events[0];\nconst allRows=$input.all().map(i=>i.json).filter(r=>r.video_id&&r.event_key===event.event_key);\nconst dateValue=r=>Date.parse(r.completed_at||r.published_at||r.createdAt)||0;\nconst latest=new Map();\nfor(const row of allRows){const old=latest.get(row.video_id);if(!old||Date.parse(row.updatedAt||0)>Date.parse(old.updatedAt||0))latest.set(row.video_id,row);}\nconst rows=[...latest.values()].filter(r=>r.transcript_appended===true||r.transcript_appended==='true').sort((a,b)=>dateValue(b)-dateValue(a)||String(a.video_id).localeCompare(String(b.video_id)));\nconst status=row=>row.analysis_status==='COMPLETED'?'✅ Analysed':row.analysis_status==='PROCESSING'?'⏳ Analysing':row.analysis_status==='FAILED'?'⚠️ Analysis failed':row.analysis_status==='CARD_CHANGED'?'♻️ Analysis needs updating':'📄 Captured · awaiting analysis';\nif(request.command==='video'){\n const row=rows.find(r=>r.video_id===request.video_id);\n if(!row)return answer('That video is not in the captured list for the active event. Tap Videos to refresh the list.',[button('🎬 Videos','videos')]);\n const selected={...request,event_name:event.event_name,event_key:event.event_key,spreadsheet_id:event.spreadsheet_id,spreadsheet_url:event.spreadsheet_url,selected_video:row};\n if(row.analysis_status==='COMPLETED'&&event.spreadsheet_id)return [{json:{...selected,should_read_summary:true}}];\n const lines=['<b>'+esc(short(row.channel_name,100))+'</b>',esc(short(row.video_title,180)),'',esc(status(row))];\n if(row.analysis_status==='COMPLETED')lines.push('The event spreadsheet is unavailable, so the saved summary cannot be loaded.');\n else lines.push('The transcript is captured. A saved summary will be available after analysis completes.');\n if(row.analysis_error)lines.push('',esc(short(row.analysis_error,240)));\n return answer(lines.join('\\n'),[button('🎬 Back to videos','videos '+request.list_page),{text:'▶️ Watch video',additionalFields:{url:'https://www.youtube.com/watch?v='+row.video_id}}],selected);\n}\nif(!rows.length)return answer('<b>Captured videos</b>\\n'+esc(short(event.event_name,180))+'\\n\\nNo videos have been captured for this event yet.',[button('Refresh','videos'),button('Main menu','menu')]);\nconst size=8,pages=Math.ceil(rows.length/size),page=Math.min(request.page,pages),start=(page-1)*size,visible=rows.slice(start,start+size);\nconst done=rows.filter(r=>r.analysis_status==='COMPLETED').length;\nconst lines=['<b>Captured videos</b>',esc(short(event.event_name,180)),rows.length+' captured · '+done+' analysed','Page '+page+' of '+pages,'','Tap a video button to reopen its saved summary.'];\nconst controls=[];\nfor(const [i,row] of visible.entries()){\n const number=start+i+1;\n lines.push('','<b>'+number+'. '+esc(short(row.channel_name,80))+'</b> — '+esc(status(row)),esc(short(row.video_title,140)));\n controls.push(button(number+'. '+short(row.channel_name||'Video',32)+(row.analysis_status==='COMPLETED'?' · Summary':' · Status'),'video '+row.video_id+' 1 '+page));\n}\nconst nav=[];\nif(page>1)nav.push(button('← Previous','videos '+(page-1)));\nif(page<pages)nav.push(button('Next →','videos '+(page+1)));\nif(nav.length)controls.push(nav);\ncontrols.push([button('Refresh','videos '+page),button('Main menu','menu')]);\nreturn answer(lines.join('\\n'),controls,{list_page:page,event_key:event.event_key,video_count:rows.length,analysed_count:done});"
+      }
+    },
+    {
+      "id": "0e167be7-192e-4575-815f-85b87037dba5",
+      "name": "Read Saved Summary?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1610,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.should_read_summary === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "2f2d858a-7368-4e66-aedc-5de9852fa995",
+      "name": "Read Saved Picks",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1840,
+        0
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Choose Video View').first().json.spreadsheet_id }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Picks"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "video_id",
+              "lookupValue": "={{ $('Choose Video View').first().json.selected_video.video_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "bd37daa8-61bb-4f1b-b299-a6c7001c4130",
+      "name": "Video Browser Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2530,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const source=$input.first().json;\nconst esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');\nconst buttons=(source.keyboard_rows||[]).flatMap(r=>r.row?.buttons||[]);\nconst callbackButtons=buttons.filter(b=>b.additionalFields?.callback_data);\nconst links=buttons.filter(b=>b.additionalFields?.url&&/^https:\\/\\//.test(b.additionalFields.url));\nlet text=source.text;\nif(links.length)text+='\\n\\n'+links.map(b=>'<a href=\"'+esc(b.additionalFields.url)+'\">'+esc(b.text)+'</a>').join(' · ');\nif(!callbackButtons.length)callbackButtons.push({text:'Main menu',additionalFields:{callback_data:'menu'}});\nconst keyboard_rows=callbackButtons.slice(0,12).map(button=>({row:{buttons:[button]}}));\nreturn [{json:{...source,text,keyboard_rows,keyboard_count:keyboard_rows.length}}];"
+      }
+    },
+    {
+      "id": "9d4345fc-7a06-4f6a-87d4-304ba0107af7",
+      "name": "Read Saved Props",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2070,
+        0
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Choose Video View').first().json.spreadsheet_id }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Props"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "video_id",
+              "lookupValue": "={{ $('Choose Video View').first().json.selected_video.video_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "b2252b1e-1339-4924-9fad-a0be0fce2f9c",
+      "name": "Build Saved Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2300,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const view=$('Choose Video View').first().json;\nconst row=view.selected_video;\nconst esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');\nconst short=(v,n)=>{const s=String(v??'').replace(/\\s+/g,' ').trim();return s.length>n?s.slice(0,n-1)+'…':s;};\nconst rowsOf=name=>$(name).all().map(i=>i.json);\nconst pickData=rowsOf('Read Saved Picks'),propData=rowsOf('Read Saved Props');\nconst keyboard_rows=[];\nconst buttons=[];\nconst back={text:'🎬 Back to videos',additionalFields:{callback_data:'videos '+view.list_page}};\nconst watch={text:'▶️ Watch video',additionalFields:{url:'https://www.youtube.com/watch?v='+row.video_id}};\nconst sheet={text:'📄 Spreadsheet',additionalFields:{url:view.spreadsheet_url||'https://docs.google.com/spreadsheets/d/'+view.spreadsheet_id+'/edit'}};\nif([...pickData,...propData].some(r=>r.error)){\n return [{json:{...view,text:'Could not load the saved summary from the event spreadsheet. Try again in a moment.',keyboard_rows:[{row:{buttons:[back,sheet]}}],summary_available:false}}];\n}\nconst picks=pickData.filter(p=>p.video_id===row.video_id&&p.event_key===view.event_key&&p.picked_fighter).sort((a,b)=>Number(a.fight_order||999)-Number(b.fight_order||999));\nconst props=propData.filter(p=>p.video_id===row.video_id&&p.event_key===view.event_key&&p.market);\nconst header=['<b>Saved video summary</b>','<b>'+esc(short(row.channel_name,70))+'</b>',esc(short(row.video_title,120)),esc(short(view.event_name,120)),picks.length+' picks · '+props.length+' props'].join('\\n');\nfunction method(pick){\n const priorities=['method_and_round','method_of_victory','inside_distance','winning_round'];\n const matching=props.filter(p=>Number(p.fight_order)===Number(pick.fight_order)&&p.fighter===pick.picked_fighter);\n let p;\n for(const market of priorities){p=matching.find(p=>p.market===market);if(p)break;}\n if(!p)return 'to win';\n const round=p.round?' in R'+p.round:p.round_range?' in '+short(p.round_range,20):'';\n if(p.method==='KO_TKO')return 'by KO/TKO'+round;\n if(p.method==='submission')return 'by submission'+round;\n if(p.method==='decision')return 'by decision';\n if(p.market==='inside_distance')return 'inside the distance'+round;\n if(p.market==='winning_round')return 'to win'+round;\n return 'to win';\n}\nconst sections=[];\nif(picks.length)sections.push('<b>Fight-card picks</b>');\nfor(const p of picks){\n const opponent=p.picked_fighter===p.fighter_a?p.fighter_b:p.fighter_a;\n const confidence=Number(p.confidence_score);\n let text='<b>'+Number(p.fight_order||0)+'. '+esc(short(p.picked_fighter,55))+' '+esc(method(p))+'</b> over '+esc(short(opponent,55));\n if(Number.isFinite(confidence)&&confidence>0)text+=' — '+confidence+'/10';\n if(p.reasoning_summary)text+='\\n↳ '+esc(short(p.reasoning_summary,150));\n sections.push(text);\n}\nconst recommended=props.filter(p=>['lean','recommended_bet','best_bet'].includes(p.recommendation_strength)).sort((a,b)=>Number(a.fight_order||999)-Number(b.fight_order||999));\nif(recommended.length)sections.push('<b>Betting leans and recommendations</b>');\nfor(const p of recommended)sections.push('• Fight '+Number(p.fight_order||0)+': '+esc(short(p.selection,140))+(p.odds_mentioned?' at '+esc(short(p.odds_mentioned,20)):'')+' — '+esc(String(p.recommendation_strength).replace(/_/g,' ')));\nif(!sections.length)sections.push('No saved picks or betting recommendations were found. Open the spreadsheet to inspect the extraction.');\nconst pages=[];let chunk='';\nconst budget=Math.max(1200,3600-header.length);\nfor(const section of sections){\n const next=chunk?chunk+'\\n\\n'+section:section;\n if(next.length>budget&&chunk){pages.push(chunk);chunk=section;}else chunk=next;\n}\nif(chunk)pages.push(chunk);\nconst page=Math.min(view.page,pages.length),nav=[];\nif(page>1)nav.push({text:'← Previous',additionalFields:{callback_data:'video '+row.video_id+' '+(page-1)+' '+view.list_page}});\nif(page<pages.length)nav.push({text:'More →',additionalFields:{callback_data:'video '+row.video_id+' '+(page+1)+' '+view.list_page}});\nif(nav.length)keyboard_rows.push({row:{buttons:nav}});\nkeyboard_rows.push({row:{buttons:[back,watch]}},{row:{buttons:[sheet]}});\nreturn [{json:{...view,text:header+'\\nPage '+page+' of '+pages.length+'\\n\\n'+pages[page-1],keyboard_rows,summary_available:picks.length>0||props.length>0,pick_count:picks.length,prop_count:props.length,summary_page:page,summary_pages:pages.length}}];"
+      }
+    },
+    {
+      "id": "c6fbe056-6dbc-423f-b0f0-dbad63afbeda",
+      "name": "Notify Owner?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2760,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.dry_run !== true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "d0891870-f42f-4f29-ac78-99654ef1096f",
+      "name": "Send Video Browser",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2990,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ String($json.chat_id) }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[0].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[0].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "952655d7-84ce-4dea-bd6a-fc8a6af379dc",
+      "name": "Choose Keyboard Size",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "mode": "rules",
+        "rules": {
+          "values": [
+            {
+              "renameOutput": true,
+              "outputKey": "1 buttons",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.keyboard_count }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 1
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "2 buttons",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.keyboard_count }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 2
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "3 buttons",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.keyboard_count }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 3
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "4 buttons",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.keyboard_count }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 4
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "5 buttons",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.keyboard_count }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 5
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "6 buttons",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.keyboard_count }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 6
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "7 buttons",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.keyboard_count }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 7
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "8 buttons",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.keyboard_count }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 8
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "9 buttons",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.keyboard_count }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 9
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "10 buttons",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.keyboard_count }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 10
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "11 buttons",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.keyboard_count }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 11
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "renameOutput": true,
+              "outputKey": "12 buttons",
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.keyboard_count }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 12
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "none"
+        }
+      }
+    },
+    {
+      "id": "820d9e38-37c6-4509-8f56-3fbac7a6f8d1",
+      "name": "Send Video Browser 2",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3200,
+        440
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ String($json.chat_id) }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[0].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[0].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[1].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[1].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "edcf01ae-6d7d-48cd-8710-9b0ff1a0f6d4",
+      "name": "Send Video Browser 3",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3200,
+        660
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ String($json.chat_id) }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[0].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[0].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[1].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[1].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[2].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[2].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "d280c245-3328-4045-8316-a42fbed8bcad",
+      "name": "Send Video Browser 4",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3200,
+        880
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ String($json.chat_id) }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[0].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[0].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[1].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[1].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[2].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[2].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[3].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[3].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "9ca6d1fe-e21b-4ad4-8019-b518559299da",
+      "name": "Send Video Browser 5",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3200,
+        1100
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ String($json.chat_id) }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[0].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[0].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[1].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[1].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[2].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[2].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[3].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[3].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[4].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[4].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "17629bb5-e38b-43d3-a70a-a2742fe5361e",
+      "name": "Send Video Browser 6",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3200,
+        1320
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ String($json.chat_id) }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[0].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[0].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[1].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[1].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[2].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[2].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[3].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[3].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[4].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[4].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[5].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[5].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "e69092b1-dff6-4f6c-9f5a-ef0e758075ae",
+      "name": "Send Video Browser 7",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3200,
+        1540
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ String($json.chat_id) }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[0].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[0].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[1].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[1].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[2].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[2].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[3].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[3].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[4].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[4].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[5].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[5].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[6].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[6].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "3f7582b7-9fd7-4a27-910d-072b4aea74bd",
+      "name": "Send Video Browser 8",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3200,
+        1760
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ String($json.chat_id) }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[0].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[0].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[1].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[1].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[2].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[2].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[3].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[3].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[4].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[4].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[5].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[5].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[6].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[6].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[7].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[7].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "14801534-0134-4e55-9f0a-d0c27f5839f2",
+      "name": "Send Video Browser 9",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3200,
+        1980
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ String($json.chat_id) }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[0].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[0].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[1].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[1].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[2].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[2].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[3].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[3].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[4].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[4].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[5].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[5].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[6].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[6].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[7].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[7].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[8].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[8].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "a249efc3-15e3-4fc8-bbb3-e4956d42efcb",
+      "name": "Send Video Browser 10",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3200,
+        2200
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ String($json.chat_id) }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[0].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[0].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[1].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[1].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[2].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[2].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[3].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[3].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[4].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[4].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[5].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[5].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[6].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[6].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[7].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[7].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[8].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[8].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[9].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[9].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "5f70fa3f-99c5-442f-b7e3-22425c5177bc",
+      "name": "Send Video Browser 11",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3200,
+        2420
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ String($json.chat_id) }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[0].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[0].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[1].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[1].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[2].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[2].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[3].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[3].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[4].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[4].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[5].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[5].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[6].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[6].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[7].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[7].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[8].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[8].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[9].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[9].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[10].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[10].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "5b81a290-78c2-439a-b2ad-bd32523119ad",
+      "name": "Send Video Browser 12",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3200,
+        2640
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ String($json.chat_id) }}",
+        "text": "={{ $json.text }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[0].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[0].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[1].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[1].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[2].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[2].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[3].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[3].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[4].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[4].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[5].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[5].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[6].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[6].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[7].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[7].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[8].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[8].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[9].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[9].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[10].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[10].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "={{ $json.keyboard_rows[11].row.buttons[0].text }}",
+                    "additionalFields": {
+                      "callback_data": "={{ $json.keyboard_rows[11].row.buttons[0].additionalFields.callback_data }}"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    }
+  ],
+  "nodeGroups": [
+    {
+      "id": "c9080c54-ab8e-425d-a8ad-5c5ac36e806c",
+      "name": "Browse captured videos",
+      "nodeNames": [
+        "Normalize Video Request",
+        "Read Active Event",
+        "Read Event Videos",
+        "Choose Video View",
+        "Read Saved Summary?",
+        "Read Saved Picks",
+        "Read Saved Props",
+        "Build Saved Summary",
+        "Video Browser Result",
+        "Notify Owner?",
+        "Send Video Browser",
+        "Choose Keyboard Size",
+        "Send Video Browser 2",
+        "Send Video Browser 3",
+        "Send Video Browser 4",
+        "Send Video Browser 5",
+        "Send Video Browser 6",
+        "Send Video Browser 7",
+        "Send Video Browser 8",
+        "Send Video Browser 9",
+        "Send Video Browser 10",
+        "Send Video Browser 11",
+        "Send Video Browser 12"
+      ],
+      "description": "Lists captured videos for the active event and reopens saved picks and reasoning without rerunning analysis."
+    }
+  ]
+}

@@ -1,0 +1,628 @@
+{
+  "id": "VkgPostfkMxFPWj6",
+  "name": "UFC | 6. UFC Consensus Picks (weighted)",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "timezone": "Australia/Melbourne",
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki"
+  },
+  "tags": [],
+  "description": "Weighted consensus of the pickers for the active UFC event (confidence-led weights with a small nudge for graded record), with a 2-3 sentence explanation per bout generated once per set of picks and cached. Called by /consensus and sends a pre-event diges",
+  "connections": {
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Get Active Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Active Event": {
+      "main": [
+        [
+          {
+            "node": "Read Picks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Digest Check": {
+      "main": [
+        [
+          {
+            "node": "Get Active Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Picks": {
+      "main": [
+        [
+          {
+            "node": "Read Props",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Props": {
+      "main": [
+        [
+          {
+            "node": "Read Fight Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Fight Analysis": {
+      "main": [
+        [
+          {
+            "node": "Get Pick Grades",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Pick Grades": {
+      "main": [
+        [
+          {
+            "node": "Get Consensus Cache",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Consensus Cache": {
+      "main": [
+        [
+          {
+            "node": "Build Weighted Consensus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Weighted Consensus": {
+      "main": [
+        [
+          {
+            "node": "Needs Explanations?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Needs Explanations?": {
+      "main": [
+        [
+          {
+            "node": "Generate Explanations",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format Consensus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Explanations": {
+      "main": [
+        [
+          {
+            "node": "Parse Explanations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Explanations": {
+      "main": [
+        [
+          {
+            "node": "Explanations OK?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Explanations OK?": {
+      "main": [
+        [
+          {
+            "node": "Save Explanations",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format Consensus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Explanations": {
+      "main": [
+        [
+          {
+            "node": "Format Consensus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Consensus": {
+      "main": [
+        [
+          {
+            "node": "Send Consensus",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "75056f2c-0299-43f1-94a4-b6cecc904b6a",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        48
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    },
+    {
+      "id": "b271174d-d08d-4772-b914-845e67192756",
+      "name": "Get Active Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        224,
+        144
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "WTTpdZSDVOxOB3Ex",
+          "cachedResultName": "ufc_events"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "active",
+              "condition": "isTrue"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "f3982c29-4393-480b-8cd3-4732a77a3b10",
+      "name": "Daily Digest Check",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        240
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 18,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "6f0e0bdc-1771-4b3d-a383-b3f765a3fe93",
+      "name": "Read Picks",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        144
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $(\"Get Active Event\").first().json.spreadsheet_id }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Picks"
+        }
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "71895535-f5fe-4ee4-8887-196c2f2b2370",
+      "name": "Read Props",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        672,
+        144
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $(\"Get Active Event\").first().json.spreadsheet_id }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Props"
+        }
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "21d5aeb4-3858-4688-8820-e315b6c552b7",
+      "name": "Read Fight Analysis",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        896,
+        144
+      ],
+      "parameters": {
+        "resource": "sheet",
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $(\"Get Active Event\").first().json.spreadsheet_id }}"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Fight Analysis"
+        }
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "name": "googleSheetsOAuth2Api credential"
+        }
+      }
+    },
+    {
+      "id": "df6e5d40-c452-4fc2-a115-32fcba9aa42e",
+      "name": "Get Pick Grades",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        144
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "r3YKyjLCAU8EiANs",
+          "cachedResultName": "ufc_pick_grades"
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "9ffe1618-0850-4d48-96e5-a3245cda32fa",
+      "name": "Get Consensus Cache",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1344,
+        144
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "0bCqy4NhtJzGAULv",
+          "cachedResultName": "ufc_consensus_cache"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_key",
+              "condition": "eq",
+              "keyValue": "={{ $(\"Get Active Event\").first().json.event_key }}"
+            }
+          ]
+        },
+        "returnAll": false,
+        "limit": 1
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "96b0cd33-5dc7-4035-880d-b6a7b99c1512",
+      "name": "Build Weighted Consensus",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        144
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Weighted consensus.\n// Pick weight = confidence (main factor) x a small nudge for the picker's graded record.\n// A leave-one-event-out backtest on graded history showed confidence helps while record\n// weighting is mostly noise, so the record nudge is capped to +/-15%.\n\nconst OWNER_CHAT_ID = 0;\nconst CONSENSUS_VERSION = 'consensus_v1';\nconst EXPLANATION_MODEL = 'openai/gpt-6-luna';\nconst DIGEST_MIN_HOURS = 1;\nconst DIGEST_MAX_HOURS = 30;\nconst RECORD_PRIOR_PICKS = 100;\nconst RECORD_SLOPE = 2;\nconst RECORD_MIN_FACTOR = 0.85;\nconst RECORD_MAX_FACTOR = 1.15;\nconst REASONING_CHARS = 420;\nconst OUTLOOK_CHARS = 320;\n\nconst event = $('Get Active Event').first().json;\nconst eventKey = event.event_key;\nconst eventName = event.event_name || eventKey || 'Active event';\n\nlet trigger = null;\n\ntry {\n  trigger = $('When Called').first().json || {};\n} catch {\n  // Scheduled digest: the on-demand trigger did not fire.\n}\n\nconst isDigest = trigger === null;\nconst chatId = trigger?.chat_id || OWNER_CHAT_ID;\nconst plain = String(trigger?.args ?? '').trim().toLowerCase().startsWith('plain');\n\nif (isDigest) {\n  const hoursToStart = (Date.parse(event.event_datetime_local) - Date.now()) / 3600000;\n\n  if (!(hoursToStart >= DIGEST_MIN_HOURS && hoursToStart <= DIGEST_MAX_HOURS)) {\n    return [];\n  }\n}\n\nconst clip = (value, low, high) => Math.min(high, Math.max(low, value));\nconst isTrue = (value) => String(value).toLowerCase() !== 'false';\n\n// --- Picker track records from graded history ---------------------------\nconst records = new Map();\nlet gradedCorrect = 0;\nlet gradedTotal = 0;\n\nfor (const item of $('Get Pick Grades').all()) {\n  const grade = item.json;\n\n  if (!grade.pick_id) continue;\n  if (grade.result !== 'CORRECT' && grade.result !== 'INCORRECT') continue;\n\n  const record = records.get(grade.channel_name) || { c: 0, n: 0 };\n  record.n += 1;\n  gradedTotal += 1;\n\n  if (grade.result === 'CORRECT') {\n    record.c += 1;\n    gradedCorrect += 1;\n  }\n\n  records.set(grade.channel_name, record);\n}\n\nconst baseline = gradedTotal > 0 ? gradedCorrect / gradedTotal : null;\n\nfunction recordFactor(picker) {\n  const record = records.get(picker);\n\n  if (baseline === null || !record) return 1;\n\n  const shrunk = (record.c + RECORD_PRIOR_PICKS * baseline) / (record.n + RECORD_PRIOR_PICKS);\n\n  return clip(1 + RECORD_SLOPE * (shrunk - baseline), RECORD_MIN_FACTOR, RECORD_MAX_FACTOR);\n}\n\n// --- Picks: one per picker per fight (latest extraction wins) -----------\nconst latestPick = new Map();\n\nfor (const item of $('Read Picks').all().filter((i) => !String(i.json.review_status || '').startsWith('VOID'))) {\n  const row = item.json;\n\n  if (!row.picked_fighter || !row.channel_name) continue;\n  if (row.event_key && row.event_key !== eventKey) continue;\n  if (!isTrue(row.is_official_pick)) continue;\n\n  const key = `${row.channel_name}|${row.fight_order}`;\n  const existing = latestPick.get(key);\n\n  if (!existing || String(row.extracted_at || '') > String(existing.extracted_at || '')) {\n    latestPick.set(key, row);\n  }\n}\n\nconst picks = [...latestPick.values()];\n\nif (picks.length === 0) {\n  return [\n    {\n      json: {\n        chat_id: chatId,\n        event_key: eventKey,\n        event_name: eventName,\n        no_picks: true,\n        needs_llm: false,\n      },\n    },\n  ];\n}\n\n// --- Fight analysis (one outlook per picker per fight) ------------------\nconst latestOutlook = new Map();\n\nfor (const item of $('Read Fight Analysis').all().filter((i) => !String(i.json.review_status || '').startsWith('VOID'))) {\n  const row = item.json;\n\n  if (!row.channel_name || !row.fight_outlook) continue;\n  if (row.event_key && row.event_key !== eventKey) continue;\n\n  const key = `${row.channel_name}|${row.fight_order}`;\n  const existing = latestOutlook.get(key);\n\n  if (!existing || String(row.extracted_at || '') > String(existing.extracted_at || '')) {\n    latestOutlook.set(key, row);\n  }\n}\n\n// --- Method mix from props ----------------------------------------------\nconst methodLabels = { ko_tko: 'KO/TKO', submission: 'SUB', decision: 'DEC' };\nconst methodVotes = new Map();\nconst seenVotes = new Set();\n\nfor (const item of $('Read Props').all().filter((i) => !String(i.json.review_status || '').startsWith('VOID'))) {\n  const row = item.json;\n\n  if (!row.channel_name || !String(row.market || '').includes('method')) continue;\n\n  const method = String(row.method || '').toLowerCase();\n\n  if (!methodLabels[method]) continue;\n\n  const voteKey = `${row.channel_name}|${row.fight_order}|${row.fighter}|${method}`;\n\n  if (seenVotes.has(voteKey)) continue;\n\n  seenVotes.add(voteKey);\n\n  const mapKey = `${row.fight_order}|${row.fighter}`;\n  const tally = methodVotes.get(mapKey) || {};\n  tally[method] = (tally[method] || 0) + 1;\n  methodVotes.set(mapKey, tally);\n}\n\n// --- Group by fight ------------------------------------------------------\nconst byFight = new Map();\n\nfor (const pick of picks) {\n  const order = Number(pick.fight_order);\n  const fight = byFight.get(order) || { order, a: pick.fighter_a, b: pick.fighter_b, entries: [] };\n  const score = Number.isFinite(Number(pick.confidence_score)) ? Number(pick.confidence_score) : 5;\n  const weight = plain ? 1 : (score / 5) * recordFactor(pick.channel_name);\n  const outlook = latestOutlook.get(`${pick.channel_name}|${order}`)?.fight_outlook ?? '';\n\n  fight.entries.push({\n    picker: pick.channel_name,\n    side: pick.picked_fighter,\n    score,\n    weight,\n    reasoning: String(pick.reasoning_summary || '').trim(),\n    outlook: String(outlook).trim(),\n  });\n\n  byFight.set(order, fight);\n}\n\nconst fights = [];\n\nfor (const fight of [...byFight.values()].sort((x, y) => x.order - y.order)) {\n  const sides = new Map();\n\n  for (const entry of fight.entries) {\n    const side = sides.get(entry.side) || { side: entry.side, weight: 0, count: 0, scoreSum: 0 };\n    side.weight += entry.weight;\n    side.count += 1;\n    side.scoreSum += entry.score;\n    sides.set(entry.side, side);\n  }\n\n  const ranked = [...sides.values()].sort((x, y) => y.weight - x.weight || y.count - x.count);\n  const byCount = [...sides.values()].sort((x, y) => y.count - x.count || y.weight - x.weight);\n  const totalWeight = ranked.reduce((sum, side) => sum + side.weight, 0);\n  const winner = ranked[0];\n  const isTie =\n    ranked.length > 1 && Math.abs(ranked[0].weight - ranked[1].weight) < 1e-9;\n\n  const tally = methodVotes.get(`${fight.order}|${winner.side}`) || {};\n  const methodText = Object.keys(tally)\n    .sort((x, y) => tally[y] - tally[x])\n    .map((method) => `${methodLabels[method]} ${tally[method]}`)\n    .join(', ');\n\n  fights.push({\n    order: fight.order,\n    winner: winner.side,\n    loser: winner.side === fight.a ? fight.b : fight.a,\n    share: winner.weight / totalWeight,\n    count: winner.count,\n    total: fight.entries.length,\n    avgConfidence: winner.scoreSum / winner.count,\n    isTie,\n    plainWinner: byCount[0].side,\n    flipped: byCount[0].side !== winner.side,\n    methodText,\n    entries: fight.entries,\n  });\n}\n\n// --- Cache lookup and explanation request -------------------------------\nfunction hashText(text) {\n  let hash = 5381;\n\n  for (let index = 0; index < text.length; index += 1) {\n    hash = ((hash << 5) + hash + text.charCodeAt(index)) | 0;\n  }\n\n  return (hash >>> 0).toString(16);\n}\n\nconst inputHash = hashText(\n  [\n    CONSENSUS_VERSION,\n    EXPLANATION_MODEL,\n    ...picks\n      .map((pick) => `${pick.channel_name}|${pick.fight_order}|${pick.picked_fighter}|${pick.confidence_score}|${pick.extracted_at}`)\n      .sort(),\n  ].join('\\n')\n);\n\nlet explanations = null;\n\nif (!plain) {\n  const cache = $('Get Consensus Cache').first()?.json ?? {};\n\n  if (cache.input_hash === inputHash && cache.explanations_json) {\n    try {\n      explanations = JSON.parse(cache.explanations_json);\n    } catch {\n      explanations = null;\n    }\n  }\n}\n\nconst needsLlm = !plain && explanations === null;\n\nconst clipText = (text, max) =>\n  text.length > max ? `${text.slice(0, max - 1).trim()}…` : text;\n\nconst llmInput = fights.map((fight) => ({\n  fight_order: fight.order,\n  fighters: [fight.winner, fight.loser],\n  weighted_lean: `${fight.winner} (${Math.round(fight.share * 100)}%)`,\n  plain_vote: `${fight.count} of ${fight.total} pickers chose ${fight.winner}`,\n  picker_views: fight.entries.map((entry) => ({\n    picker: entry.picker,\n    picked: entry.side,\n    confidence: entry.score,\n    weight: Math.round(entry.weight * 100) / 100,\n    reasoning: clipText(entry.reasoning, REASONING_CHARS),\n    matchup_outlook: clipText(entry.outlook, OUTLOOK_CHARS),\n  })),\n}));\n\nconst SYSTEM_PROMPT =\n  'You summarise the rough consensus of a panel of YouTube MMA pickers for each fight on a UFC card.\\n\\n' +\n  'For every fight, write 2 to 3 sentences (at most 90 words) that say: who the panel favours, the main ' +\n  'reasons they give, and where they disagree. Mention the weighted lean only when it differs from the ' +\n  'plain vote or the fight is close.\\n\\n' +\n  'Rules:\\n' +\n  '- Use only the material provided. Do not add your own MMA knowledge, stats or odds.\\n' +\n  '- Pickers with a higher weight count for more, so lean on their reasoning when pickers disagree.\\n' +\n  '- Write plain, neutral prose. No bullet points, no markdown, no betting advice.\\n' +\n  '- Return one explanation for every fight_order provided.';\n\nconst SCHEMA = {\n  type: 'object',\n  properties: {\n    fights: {\n      type: 'array',\n      items: {\n        type: 'object',\n        properties: {\n          fight_order: { type: 'integer' },\n          explanation: { type: 'string', maxLength: 600 },\n        },\n        required: ['fight_order', 'explanation'],\n        additionalProperties: false,\n      },\n    },\n  },\n  required: ['fights'],\n  additionalProperties: false,\n};\n\nreturn [\n  {\n    json: {\n      chat_id: chatId,\n      event_key: eventKey,\n      event_name: eventName,\n      plain,\n      is_digest: isDigest,\n      no_picks: false,\n      fights,\n      picker_count: new Set(picks.map((pick) => pick.channel_name)).size,\n      video_count: new Set(picks.map((pick) => pick.video_id)).size,\n      explanations,\n      needs_llm: needsLlm,\n      input_hash: inputHash,\n      explanation_model: EXPLANATION_MODEL,\n      openrouter_payload: {\n        model: EXPLANATION_MODEL,\n        messages: [\n          { role: 'system', content: SYSTEM_PROMPT },\n          { role: 'user', content: JSON.stringify(llmInput) },\n        ],\n        max_tokens: 8000,\n        stream: false,\n        response_format: {\n          type: 'json_schema',\n          json_schema: { name: 'consensus_explanations', strict: true, schema: SCHEMA },\n        },\n      },\n    },\n  },\n];\n"
+      }
+    },
+    {
+      "id": "1498cc6a-e234-43b0-9536-4ce9401ad146",
+      "name": "Needs Explanations?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1792,
+        144
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.needs_llm }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "b05bc747-2b32-4f99-bed7-a7cc77d859e6",
+      "name": "Generate Explanations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2016,
+        80
+      ],
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.openrouter_payload }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 180000
+        }
+      },
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "openRouterApi": {
+          "name": "openRouterApi credential"
+        }
+      }
+    },
+    {
+      "id": "7ca9e510-e30c-4828-a6c9-78817e79cf36",
+      "name": "Parse Explanations",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        80
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Parse the model's explanations and prepare the cache row.\n\nconst base = $('Build Weighted Consensus').first().json;\nconst response = $input.first().json || {};\n\nlet explanations = null;\nlet error = '';\n\nif (response.error || !response.choices) {\n  error = response.error?.message || response.message || 'no response from the model';\n}\n\ntry {\n  if (error) {\n    throw new Error(error);\n  }\n\n  const content = response.choices?.[0]?.message?.content;\n  const parsed = typeof content === 'string' ? JSON.parse(content) : content;\n  const map = {};\n\n  for (const entry of parsed?.fights ?? []) {\n    if (Number.isFinite(Number(entry.fight_order)) && entry.explanation) {\n      map[String(Number(entry.fight_order))] = String(entry.explanation).trim();\n    }\n  }\n\n  const expected = base.fights.map((fight) => String(fight.order));\n  const missing = expected.filter((order) => !map[order]);\n\n  if (missing.length > 0) {\n    error = `missing explanations for fights ${missing.join(', ')}`;\n  } else {\n    explanations = map;\n  }\n} catch (parseError) {\n  if (!error) {\n    error = `could not parse model output: ${parseError.message}`;\n  }\n}\n\nconst cost = Number(response.usage?.cost);\n\nreturn [\n  {\n    json: {\n      ok: explanations !== null,\n      error,\n      event_key: base.event_key,\n      input_hash: base.input_hash,\n      explanations,\n      explanations_json: explanations ? JSON.stringify(explanations) : '',\n      model: response.model || base.explanation_model,\n      cost_usd: Number.isFinite(cost) ? cost : null,\n      created_at: new Date().toISOString(),\n    },\n  },\n];\n"
+      }
+    },
+    {
+      "id": "ab0ecbdf-0a90-4009-94fe-e2477dccf138",
+      "name": "Explanations OK?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2464,
+        80
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.ok }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      }
+    },
+    {
+      "id": "63d81a55-3efc-4834-a2d4-1e6ba299ea93",
+      "name": "Save Explanations",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        2688,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "0bCqy4NhtJzGAULv",
+          "cachedResultName": "ufc_consensus_cache"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "event_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.event_key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "event_key": "={{ $json.event_key }}",
+            "input_hash": "={{ $json.input_hash }}",
+            "explanations_json": "={{ $json.explanations_json }}",
+            "model": "={{ $json.model }}",
+            "cost_usd": "={{ $json.cost_usd }}",
+            "created_at": "={{ $json.created_at }}"
+          },
+          "matchingColumns": []
+        }
+      }
+    },
+    {
+      "id": "e95fd4d7-3fb2-4500-8206-e26cb7db93d8",
+      "name": "Format Consensus",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2912,
+        144
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Format the weighted consensus for Telegram.\n\nconst base = $('Build Weighted Consensus').first().json;\n\nconst escapeHtml = (value) =>\n  String(value ?? '')\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;');\n\nif (base.no_picks) {\n  return [\n    {\n      json: {\n        chat_id: base.chat_id,\n        text:\n          `<b>${escapeHtml(base.event_name)}</b>\\n\\n` +\n          'No analysed picks yet. Send /analyse to process the captured videos.',\n      },\n    },\n  ];\n}\n\nlet explanations = base.explanations;\nlet generatedCostUsd = null;\nlet explanationError = '';\nlet freshlyGenerated = false;\n\ntry {\n  const generated = $('Parse Explanations').first().json;\n\n  if (generated) {\n    if (generated.ok) {\n      explanations = generated.explanations;\n      generatedCostUsd = generated.cost_usd;\n      freshlyGenerated = true;\n    } else {\n      explanationError = generated.error || 'unknown error';\n    }\n  }\n} catch {\n  // Explanations came from the cache, or this is a plain vote.\n}\n\nconst lines = [\n  base.is_digest\n    ? '<b>Pre-event digest — weighted consensus</b>'\n    : base.plain\n      ? '<b>Plain-vote consensus</b>'\n      : '<b>Weighted consensus</b>',\n  `<b>${escapeHtml(base.event_name)}</b>`,\n  `${base.picker_count} pickers, ${base.video_count} videos analysed`,\n  base.plain\n    ? 'Every pick counts equally.'\n    : 'Weights: pick confidence (main factor), with a small nudge for each picker’s graded record.',\n  '',\n];\n\nfor (const fight of base.fights) {\n  let tag = '';\n\n  if (fight.isTie) tag = ' ⚖️ toss-up';\n  else if (fight.share >= 0.8 && fight.total >= 4) tag = ' 🔒 strong';\n  else if (fight.share < 0.6) tag = ' ⚖️ close';\n\n  const shareText = base.plain\n    ? `${fight.count}/${fight.total} pickers`\n    : `${Math.round(fight.share * 100)}% weighted · ${fight.count}/${fight.total} pickers`;\n\n  const methodPart = fight.methodText ? ` · ${fight.methodText}` : '';\n  const flipNote = fight.flipped\n    ? ` (plain vote: ${escapeHtml(fight.plainWinner)})`\n    : '';\n\n  lines.push(\n    `${fight.order}. <b>${escapeHtml(fight.winner)}</b> over ${escapeHtml(fight.loser)} — ` +\n    `${shareText}${methodPart}${tag}${flipNote}`\n  );\n\n  const explanation = explanations?.[String(fight.order)];\n\n  if (explanation) {\n    lines.push(`   ${escapeHtml(explanation)}`);\n  }\n\n  lines.push('');\n}\n\nconst flips = base.fights.filter((fight) => fight.flipped);\n\nif (!base.plain && flips.length > 0) {\n  lines.push(\n    `<i>Weighting changed the call in ${flips.length} fight${flips.length > 1 ? 's' : ''} ` +\n    `compared with a plain vote.</i>`\n  );\n}\n\nif (!base.plain) {\n  if (explanationError) {\n    lines.push(`<i>Explanations unavailable this time (${escapeHtml(explanationError)}).</i>`);\n  } else if (freshlyGenerated) {\n    lines.push(\n      `<i>Explanations generated now${generatedCostUsd !== null ? ` for $${generatedCostUsd.toFixed(4)} (${(generatedCostUsd * 100).toFixed(2)} cents)` : ''}; ` +\n      `saved until new picks arrive.</i>`\n    );\n  } else if (explanations) {\n    lines.push('<i>Explanations saved from earlier (no new picks since), so this cost nothing.</i>');\n  }\n}\n\nconst messages = [];\nlet current = '';\n\nfor (const line of lines) {\n  if (current && current.length + line.length + 1 > 3800) {\n    messages.push(current.trim());\n    current = '';\n  }\n\n  current = current ? `${current}\\n${line}` : line;\n}\n\nif (current.trim()) messages.push(current.trim());\n\nreturn messages.map((text) => ({ json: { chat_id: base.chat_id, text } }));\n"
+      }
+    },
+    {
+      "id": "e86fbffb-a074-44fe-a428-b20b7e15158a",
+      "name": "Send Consensus",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3136,
+        144
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    }
+  ],
+  "nodeGroups": []
+}

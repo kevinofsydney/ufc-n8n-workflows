@@ -1,0 +1,20 @@
+const req=$('When Called').first().json;
+const nl=String.fromCharCode(10);
+const rows=$('Read All Incidents').all().map(function(item){return item.json;}).filter(function(row){return row && row.incident_key;});
+const clean=function(value,max){return String(value===undefined||value===null?'':value).trim().slice(0,max);};
+const esc=function(value){return clean(value,4000).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};
+const target=clean(req.incident,120);
+const dry=req.dry_run===true;
+const fail=function(reason){
+ return [{json:{ok:false,key:'',incident_key:'',telegram_message:'<b>Could not close that incident</b>'+nl+reason,dry_run:dry,update:null,already_resolved:false}}];
+};
+if(!target)return fail('Give an incident number or key, for example: /fixed 3');
+const found=rows.find(function(row){return String(row.id)===target || row.incident_key===target;});
+if(!found)return fail('No incident matches "'+esc(target)+'". Send /issues to see the current list.');
+const resolution=clean(req.resolution,900)||'Marked fixed by owner from Telegram.';
+const version=clean(req.fixed_in_version,120);
+const alreadyResolved=found.status==='resolved';
+const lines=['<b>Incident closed</b> #'+found.id,'<b>Workflow:</b> '+esc(found.workflow_name||found.node_name||'unknown'),'<b>Was:</b> '+esc(found.last_message||'(no message)').slice(0,300),'<b>Resolution:</b> '+esc(resolution)];
+if(version)lines.push('<b>Fixed in:</b> '+esc(version));
+if(alreadyResolved)lines.push('<i>Already resolved; the details above were updated.</i>');
+return [{json:{ok:true,incident_key:String(found.id===undefined?'':found.id),key:found.incident_key,update:{status:'resolved',resolved_at:new Date().toISOString(),resolution:resolution,resolved_by:'owner',fixed_in_version:version},telegram_message:lines.join(nl),dry_run:dry,already_resolved:alreadyResolved}}];

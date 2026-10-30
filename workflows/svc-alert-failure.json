@@ -1,0 +1,813 @@
+{
+  "id": "SrL8ScYMIBiJ9Gki",
+  "name": "UFC | svc.alert_failure",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "timezone": "Australia/Sydney",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "tags": [],
+  "description": "Sends the owner a Telegram alert when an allowed UFC workflow fails, with workflow, node, concise error and execution link.",
+  "connections": {
+    "On UFC Failure": {
+      "main": [
+        [
+          {
+            "node": "Format UFC Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Format UFC Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format UFC Failure": {
+      "main": [
+        [
+          {
+            "node": "Record UFC Failed Run",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Mark Interrupted Video Analysis Failed",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Classify Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classify Failure": {
+      "main": [
+        [
+          {
+            "node": "Find Incidents",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Incidents": {
+      "main": [
+        [
+          {
+            "node": "Decide Incident Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decide Incident Action": {
+      "main": [
+        [
+          {
+            "node": "Record Incident",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Record Incident": {
+      "main": [
+        [
+          {
+            "node": "Should Alert?",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Should Retry?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Alert?": {
+      "main": [
+        [
+          {
+            "node": "Send UFC Failure Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Retry?": {
+      "main": [
+        [
+          {
+            "node": "Wait Before Retry",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Before Retry": {
+      "main": [
+        [
+          {
+            "node": "Empty Retry Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Empty Retry Input": {
+      "main": [
+        [
+          {
+            "node": "Retry Failed Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "05d910e9-061a-4313-85a4-58f311e2dc32",
+      "name": "On UFC Failure",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {}
+    },
+    {
+      "id": "8d4d3b14-1f58-41c2-8adf-b10c2505fe10",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        192
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    },
+    {
+      "id": "cc650048-140f-4334-871e-ecea950fd8f8",
+      "name": "Format UFC Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        96
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const allowed = new Set([\"VkgPostfkMxFPWj6\",\"mxXosIjmMSiItiYM\",\"MWmlPIyBDUKoheXO\",\"y20ZZYzBVS6y8kC0\",\"YeYpgLGiYlzCTopn\",\"PulwhLsIZhfvCGxl\",\"f2CKNtQUpZ5Rm80Z\",\"BvLnPFMwQ2vhPkgv\",\"MabSJBF0Vt6sMICp\",\"GQs7zaGeF1vZBRaj\",\"LuALxCWYzByUY2Iq\",\"G1EMMFVSzpGE4q3Q\",\"SBBK0hOGx2uPYpm4\"]);\nconst input = $input.first().json;\nconst isTest = input.__test === true || String(input.workflow?.name || '').startsWith('UFC | test.');\n// Every UFC workflow alerts (new ones included), except this alert workflow itself.\nconst workflowId = String(input.workflow?.id || '');\nif (workflowId === 'SrL8ScYMIBiJ9Gki' || !(allowed.has(workflowId) || String(input.workflow?.name || '').startsWith('UFC | '))) return [];\nconst esc = value => String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');\nconst clean = value => String(value ?? '').replace(/Bearer\\s+\\S+/gi, 'Bearer [redacted]').replace(/\\bsk-[A-Za-z0-9_-]+/g, '[redacted]').replace(/([?&](?:token|key|api_key|secret)=)[^&\\s]+/gi, '$1[redacted]');\nconst execution = input.execution || {};\nconst failure = execution.error || input.trigger?.error || {};\nconst message = clean(failure.message || failure.description || 'The workflow failed. Open its execution for details.').slice(0,1400);\nconst when = new Date().toLocaleString('en-AU', { timeZone: 'Australia/Sydney', dateStyle: 'medium', timeStyle: 'short' });\nconst lines = [\n isTest ? '<b>UFC failure alert — TEST</b>' : '<b>UFC workflow failed</b>',\n '<b>Workflow:</b> ' + esc(input.workflow.name || input.workflow.id),\n '<b>Step:</b> ' + esc(execution.lastNodeExecuted || failure.node?.name || input.trigger?.error?.node?.name || 'Trigger / unavailable'),\n '<b>Time:</b> ' + esc(when) + ' (Sydney)',\n '<b>Error:</b> ' + esc(message),\n];\nconst link = String(execution.url || '');\nif (/^https:\\/\\//i.test(link)) lines.push('<a href=\"' + esc(link).replace(/\"/g, '&quot;') + '\">Open failed execution</a>');\nelse if (execution.id) lines.push('Execution: ' + esc(execution.id));\nif (isTest) lines.push('Test message: failure alert delivery is working.');\nreturn [{ json: { text: lines.join('\\n'), run_key:String(execution.id || 'trigger-'+input.workflow.id+'-'+Date.now()), workflow_id: String(input.workflow.id), workflow_name:String(input.workflow.name || ''), failure_summary: message, execution_url:link, failure_description: clean(failure.description || '').slice(0,600), mode: String(execution.mode || ''), node_name: String(execution.lastNodeExecuted || failure.node?.name || ''), is_test: isTest, dry_run: input.__dry_run === true } }];"
+      }
+    },
+    {
+      "id": "87028a74-3fcc-4e6c-933c-8d3a55b94d3a",
+      "name": "Send UFC Failure Alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        96
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "0",
+        "text": "={{ $('Decide Incident Action').first().json.telegram_text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "executeOnce": true,
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "edb636a6-e35e-47ce-8669-bc4c27b8e921",
+      "name": "Record UFC Failed Run",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Tb9mpsswwq6uJvr6",
+          "cachedResultName": "ufc_pipeline_runs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "run_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.run_key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "run_key": "={{ $json.run_key }}",
+            "workflow_id": "={{ $json.workflow_id }}",
+            "workflow_name": "={{ $json.workflow_name }}",
+            "state": "error",
+            "summary": "={{ $json.failure_summary }}",
+            "finished_at": "={{ $now.toISO() }}",
+            "execution_url": "={{ $json.execution_url }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "run_key",
+              "displayName": "run_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "state",
+              "displayName": "state",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "summary",
+              "displayName": "summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "finished_at",
+              "displayName": "finished_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "execution_url",
+              "displayName": "execution_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "570c7db7-f397-4f39-aa35-b8ed5479f043",
+      "name": "Mark Interrupted Video Analysis Failed",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "cAQonN6NYOY3fqxl",
+          "cachedResultName": "ufc_videos"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "analysis_execution_id",
+              "condition": "eq",
+              "keyValue": "={{ $json.run_key }}"
+            },
+            {
+              "keyName": "analysis_status",
+              "condition": "eq",
+              "keyValue": "PROCESSING"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "analysis_status": "FAILED",
+            "analysis_error": "={{ $json.failure_summary }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "analysis_status",
+              "displayName": "analysis_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "analysis_error",
+              "displayName": "analysis_error",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "a54aade6-9ddd-467a-8f8e-84e5f4431143",
+      "name": "Classify Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Turns a failure into a stable incident key: same workflow + same error (ignoring ids, numbers, URLs) = same incident.\nconst f=$input.first().json;\nconst text=v=>String(v??'').trim();\nconst signature=text(f.failure_summary).toLowerCase()\n .replace(/\\[line \\d+\\]/g,'')\n .replace(/https?:\\/\\/\\S+/g,'<url>')\n .replace(/\\b[0-9a-f]{8,}\\b|\\b[a-z0-9]{16,}\\b/gi,'<id>')\n .replace(/\\d+(\\.\\d+)?/g,'<n>')\n .replace(/\\s+/g,' ').trim().slice(0,300);\nlet hash=2166136261;for(let i=0;i<signature.length;i++)hash=Math.imul(hash^signature.charCodeAt(i),16777619)>>>0;\n// Temporary problems a later attempt usually gets past. Checked against the message and Google's longer description.\nconst TRANSIENT=/quota exceeded|rate.?limit|too many requests|\\b429\\b|\\b50[234]\\b|service unavailable|bad gateway|gateway time-?out|etimedout|econnreset|econnrefused|socket hang up|\\btimed? ?out\\b|temporarily unavailable|network error|eai_again/i;\nconst category=TRANSIENT.test(text(f.failure_summary)+' '+text(f.failure_description))?'transient':'unknown';\nconst key=(f.is_test?'test|':'error|')+f.workflow_id+'|fnv1a-'+hash.toString(16).padStart(8,'0');\nreturn [{json:{...f,signature,incident_key:key,category}}];\n"
+      }
+    },
+    {
+      "id": "d7c0ed75-c538-469d-bcec-71eb3b3a32d9",
+      "name": "Find Incidents",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        300
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "matchType": "allConditions",
+        "returnAll": true,
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "signature",
+              "condition": "eq",
+              "keyValue": "={{ $json.signature }}"
+            }
+          ]
+        }
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "6365ff5f-a159-4979-a1bb-08e1c0d65330",
+      "name": "Decide Incident Action",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        300
+      ],
+      "parameters": {
+        "jsCode": "// Decides, for one failure, whether to alert and whether to retry, and builds the incident row.\n// Rules: temporary errors in retry-safe workflows are retried once (no alert); a failed retry alerts.\n// Repeats of an open incident alert at most once a day; the same error in a second workflow within\n// 15 minutes (a sub-workflow and its caller) alerts once. Resolved incidents alert again if they return.\nconst RETRY_SAFE={y20ZZYzBVS6y8kC0:'2. Extract Picker Video Transcripts',BvLnPFMwQ2vhPkgv:'3. Analyse Picker Video Transcripts',PulwhLsIZhfvCGxl:'7. Grade Picks'};\nconst SCHEDULE_ONLY={mxXosIjmMSiItiYM:true,MWmlPIyBDUKoheXO:true};\nconst c=$('Classify Failure').first().json;\nconst now=new Date(),nowIso=now.toISOString();\nconst hours=t=>t?(now-Date.parse(t))/3600e3:Infinity;\nconst esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');\nconst sydney=t=>new Date(t).toLocaleString('en-AU',{timeZone:'Australia/Sydney',dateStyle:'medium',timeStyle:'short'});\nconst rows=$('Find Incidents').all().map(i=>i.json).filter(r=>r.incident_key);\nconst prev=rows.find(r=>r.incident_key===c.incident_key)||null;\nconst reopened=!!prev&&prev.status==='resolved';\nconst retryFailed=!!prev&&prev.status==='retrying'&&hours(prev.last_retry_at)<6;\nconst topLevel=c.mode!=='integrated';\nconst recentRetries=prev&&!reopened&&hours(prev.last_retry_at)<6?Number(prev.retry_count||0):0;\nconst retry=c.category==='transient'&&topLevel&&!!RETRY_SAFE[c.workflow_id]&&!retryFailed&&recentRetries<1;\nconst sibling=rows.find(r=>r.incident_key!==c.incident_key&&hours(r.last_alerted_at)<0.25);\nconst occurrences=(prev&&!reopened?Number(prev.occurrences||0):0)+1;\nlet alert,reason;\n// A retried run is started by this workflow, so it counts as a sub-workflow run: check for it first.\nif(retryFailed){alert=true;reason='failed again after an automatic retry';}\nelse if(retry){alert=false;reason='temporary error: retrying in 5 minutes';}\nelse if(c.category==='transient'&&!topLevel){alert=false;reason='temporary error in a sub-workflow: its caller handles it';}\nelse if(sibling){alert=false;reason='same error already alerted for '+sibling.workflow_name;}\nelse if(!prev||reopened){alert=true;reason=reopened?'back after being resolved':'new';}\nelse if(hours(prev.last_alerted_at)>=24){alert=true;reason='still failing';}\nelse{alert=false;reason='repeat within 24 hours';}\nconst firstSeen=prev&&!reopened?prev.first_seen_at:nowIso;\nconst extra=[];\nif(retryFailed)extra.push('<b>Automatic retry:</b> tried once; it failed again.');\nelse if(reopened)extra.push('<b>Note:</b> this had been resolved; it is failing again.');\nelse if(reason==='still failing')extra.push('<b>Repeats:</b> '+occurrences+' times since '+esc(sydney(firstSeen))+' (Sydney).');\nif(alert&&c.category==='transient'&&SCHEDULE_ONLY[c.workflow_id])extra.push('Temporary error: this workflow will run again at its next scheduled time.');\nconst row={incident_key:c.incident_key,source:'error',workflow_id:c.workflow_id,workflow_name:c.workflow_name,node_name:c.node_name,category:c.category,\n signature:c.signature,last_message:String(c.failure_summary||'').slice(0,1400),status:retry?'retrying':'open',occurrences,first_seen_at:firstSeen,last_seen_at:nowIso,\n last_execution_id:String(c.run_key),last_execution_url:c.execution_url||'',retry_count:retry?recentRetries+1:Number(prev?.retry_count||0),\n last_retry_at:retry?nowIso:(prev?.last_retry_at||null),last_alerted_at:alert?nowIso:(reason.startsWith('same error already alerted')?sibling.last_alerted_at:(prev?.last_alerted_at||null)),resolved_at:null,resolution:''};\nreturn [{json:{...row,alert,alert_reason:reason,retry,retry_workflow_id:retry?c.workflow_id:'',telegram_text:[c.text,...extra].join('\\n'),dry_run:c.is_test===true&&c.dry_run===true}}];\n"
+      }
+    },
+    {
+      "id": "70831a2e-b1a2-4153-89a2-290fed5bc581",
+      "name": "Record Incident",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        1120,
+        300
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "bPLtuvVfcVLTLv2h",
+          "cachedResultName": "ufc_incidents"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "incident_key",
+              "condition": "eq",
+              "keyValue": "={{ $json.incident_key }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "incident_key": "={{ $json.incident_key }}",
+            "source": "={{ $json.source }}",
+            "workflow_id": "={{ $json.workflow_id }}",
+            "workflow_name": "={{ $json.workflow_name }}",
+            "node_name": "={{ $json.node_name }}",
+            "category": "={{ $json.category }}",
+            "signature": "={{ $json.signature }}",
+            "last_message": "={{ $json.last_message }}",
+            "status": "={{ $json.status }}",
+            "occurrences": "={{ $json.occurrences }}",
+            "first_seen_at": "={{ $json.first_seen_at }}",
+            "last_seen_at": "={{ $json.last_seen_at }}",
+            "last_execution_id": "={{ $json.last_execution_id }}",
+            "last_execution_url": "={{ $json.last_execution_url }}",
+            "retry_count": "={{ $json.retry_count }}",
+            "last_retry_at": "={{ $json.last_retry_at }}",
+            "last_alerted_at": "={{ $json.last_alerted_at }}",
+            "resolved_at": "={{ $json.resolved_at }}",
+            "resolution": "={{ $json.resolution }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "incident_key",
+              "displayName": "incident_key",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "workflow_id",
+              "displayName": "workflow_id",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "workflow_name",
+              "displayName": "workflow_name",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "node_name",
+              "displayName": "node_name",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "category",
+              "displayName": "category",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "signature",
+              "displayName": "signature",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "last_message",
+              "displayName": "last_message",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "occurrences",
+              "displayName": "occurrences",
+              "type": "number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "first_seen_at",
+              "displayName": "first_seen_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "last_seen_at",
+              "displayName": "last_seen_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "last_execution_id",
+              "displayName": "last_execution_id",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "last_execution_url",
+              "displayName": "last_execution_url",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "retry_count",
+              "displayName": "retry_count",
+              "type": "number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "last_retry_at",
+              "displayName": "last_retry_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "last_alerted_at",
+              "displayName": "last_alerted_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "resolved_at",
+              "displayName": "resolved_at",
+              "type": "dateTime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            },
+            {
+              "id": "resolution",
+              "displayName": "resolution",
+              "type": "string",
+              "required": false,
+              "defaultMatch": false,
+              "display": true
+            }
+          ]
+        },
+        "options": {
+          "dryRun": "={{ $json.dry_run === true }}"
+        }
+      }
+    },
+    {
+      "id": "b9b7e2da-1806-463b-a26d-e7575ffa5357",
+      "name": "Should Alert?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1344,
+        220
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Decide Incident Action').first().json.alert === true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "38dfc405-a45d-4fa7-8fc7-0f38d2f41244",
+      "name": "Should Retry?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1344,
+        420
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Decide Incident Action').first().json.retry === true && $('Decide Incident Action').first().json.dry_run !== true }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "d4a12283-48e9-4b13-b12e-e47c020c7d81",
+      "name": "Wait Before Retry",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1568,
+        400
+      ],
+      "parameters": {
+        "resume": "timeInterval",
+        "amount": 5,
+        "unit": "minutes"
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "c4aad326-f1bf-4188-b717-b7e549268876",
+      "name": "Empty Retry Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1792,
+        400
+      ],
+      "parameters": {
+        "jsCode": "// Retry-safe workflows treat an empty on-demand call exactly like a scheduled run.\nreturn [{json:{}}];"
+      }
+    },
+    {
+      "id": "b4f0f974-7fde-4bb8-86fa-b4d762188946",
+      "name": "Retry Failed Workflow",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        2016,
+        400
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Decide Incident Action').first().json.retry_workflow_id }}"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "onError": "continueErrorOutput"
+    }
+  ],
+  "nodeGroups": [
+    {
+      "id": "26e86e87-f343-4cee-9642-4dd88e181c8c",
+      "name": "Track the incident",
+      "nodeNames": [
+        "Classify Failure",
+        "Find Incidents",
+        "Decide Incident Action",
+        "Record Incident"
+      ],
+      "description": "Group the failure with earlier ones (same workflow + same error), decide whether to alert or retry, and record it in ufc_incidents."
+    },
+    {
+      "id": "26c153aa-9e83-4525-9e12-fe5f254fcf7a",
+      "name": "Retry a temporary error",
+      "nodeNames": [
+        "Wait Before Retry",
+        "Empty Retry Input",
+        "Retry Failed Workflow"
+      ],
+      "description": "Wait 5 minutes and re-run the workflow. A failed retry reports back here; otherwise the health sweep resolves the incident."
+    }
+  ]
+}

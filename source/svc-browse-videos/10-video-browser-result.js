@@ -1,0 +1,10 @@
+const source=$input.first().json;
+const esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const buttons=(source.keyboard_rows||[]).flatMap(r=>r.row?.buttons||[]);
+const callbackButtons=buttons.filter(b=>b.additionalFields?.callback_data);
+const links=buttons.filter(b=>b.additionalFields?.url&&/^https:\/\//.test(b.additionalFields.url));
+let text=source.text;
+if(links.length)text+='\n\n'+links.map(b=>'<a href="'+esc(b.additionalFields.url)+'">'+esc(b.text)+'</a>').join(' · ');
+if(!callbackButtons.length)callbackButtons.push({text:'Main menu',additionalFields:{callback_data:'menu'}});
+const keyboard_rows=callbackButtons.slice(0,12).map(button=>({row:{buttons:[button]}}));
+return [{json:{...source,text,keyboard_rows,keyboard_count:keyboard_rows.length}}];

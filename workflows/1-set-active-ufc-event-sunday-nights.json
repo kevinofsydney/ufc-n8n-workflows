@@ -1,0 +1,561 @@
+{
+  "id": "mxXosIjmMSiItiYM",
+  "name": "UFC | 1. Set Active UFC Event (Sunday nights)",
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki"
+  },
+  "tags": [],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Retrieve all UFC Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve all UFC Events": {
+      "main": [
+        [
+          {
+            "node": "Identify Next UFC Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Identify Next UFC Event": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Deactivate Current UFC Event",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message: event failed to update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Deactivate Current UFC Event": {
+      "main": [
+        [
+          {
+            "node": "Activate Current UFC Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Activate Current UFC Event": {
+      "main": [
+        [
+          {
+            "node": "Ensure UFC Event Spreadsheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ensure UFC Event Spreadsheet": {
+      "main": [
+        [
+          {
+            "node": "Event Ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Event Ready": {
+      "main": [
+        [
+          {
+            "node": "Send a message: event successfully updated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        0
+      ],
+      "id": "e62cf153-bdca-4f53-abde-a0a028affa93",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WTTpdZSDVOxOB3Ex",
+          "mode": "list",
+          "cachedResultName": "ufc_events",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/WTTpdZSDVOxOB3Ex"
+        },
+        "orderBy": true,
+        "orderByColumn": "event_datetime_local",
+        "orderByDirection": "ASC"
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "a4708d6c-59ac-4ab0-be81-9fae1c146c02",
+      "name": "Retrieve all UFC Events"
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date();\n\nconst events = $input.all().map(item => item.json);\n\nconst futureEvents = events\n  .filter(event => {\n    const eventDate = new Date(event.event_datetime_local);\n\n    return (\n      event.event_datetime_local &&\n      !Number.isNaN(eventDate.getTime()) &&\n      eventDate > now\n    );\n  })\n  .sort(\n    (a, b) =>\n      new Date(a.event_datetime_local).getTime() -\n      new Date(b.event_datetime_local).getTime()\n  );\n\nif (futureEvents.length === 0) {\n  return [\n    {\n      json: {\n        next_event_found: false,\n        error_message: 'No future UFC event exists in ufc_events.',\n      },\n    },\n  ];\n}\n\nconst nextEvent = futureEvents[0];\n\nreturn [\n  {\n    json: {\n      next_event_found: true,\n      next_event_id: nextEvent.id,\n      next_event_key: nextEvent.event_key,\n      next_event_name: nextEvent.event_name,\n      next_event_datetime_local: nextEvent.event_datetime_local,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "a7231745-8fa1-4105-a371-85a286d02087",
+      "name": "Identify Next UFC Event"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d190bd00-7bae-4bac-ba63-99791d75e445",
+              "leftValue": "={{ $json.next_event_found }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        624,
+        0
+      ],
+      "id": "fb3c78a4-ab35-48f8-a709-6d641f3dbf96",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WTTpdZSDVOxOB3Ex",
+          "mode": "list",
+          "cachedResultName": "ufc_events",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/WTTpdZSDVOxOB3Ex"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "active",
+              "condition": "isTrue"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "active": false
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "event_name",
+              "displayName": "event_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "event_datetime_local",
+              "displayName": "event_datetime_local",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "active",
+              "displayName": "active",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "spreadsheet_id",
+              "displayName": "spreadsheet_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "spreadsheet_url",
+              "displayName": "spreadsheet_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "closed_at",
+              "displayName": "closed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        832,
+        -96
+      ],
+      "id": "fef005ab-36de-4d61-a9f0-c4a56f7916a3",
+      "name": "Deactivate Current UFC Event"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "value": "WTTpdZSDVOxOB3Ex",
+          "mode": "list",
+          "cachedResultName": "ufc_events",
+          "cachedResultUrl": "/projects/kfViLPZPj3GmFOj5/datatables/WTTpdZSDVOxOB3Ex"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyValue": "={{ $('Identify Next UFC Event').first().json.next_event_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "active": true
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "event_key",
+              "displayName": "event_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "event_name",
+              "displayName": "event_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "event_datetime_local",
+              "displayName": "event_datetime_local",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "active",
+              "displayName": "active",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "spreadsheet_id",
+              "displayName": "spreadsheet_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "spreadsheet_url",
+              "displayName": "spreadsheet_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "closed_at",
+              "displayName": "closed_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        992,
+        -96
+      ],
+      "id": "3a668ca2-2201-4388-a3d5-c29d40494f4d",
+      "name": "Activate Current UFC Event"
+    },
+    {
+      "parameters": {
+        "chatId": "0",
+        "text": "=Active UFC event updated:\n\n{{ $('Identify Next UFC Event').first().json.next_event_name }}\n\nEvent time:\n{{ $('Identify Next UFC Event').first().json.next_event_datetime_local }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1200,
+        -96
+      ],
+      "id": "8987e336-4317-4873-9baa-5105477f1c20",
+      "name": "Send a message: event successfully updated",
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "0",
+        "text": "No future UFC event was found in ufc_events. Add upcoming cards to the table.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1200,
+        112
+      ],
+      "id": "0a6f9b29-daf6-4ef2-8e8f-c553dc82a5cf",
+      "name": "Send a message: event failed to update",
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1392,
+        -608
+      ],
+      "id": "b2bb09c9-f94b-4e34-a4fc-41aa30019901",
+      "name": "Event Ready"
+    },
+    {
+      "id": "546bf669-932c-4d7a-bf74-746aeb1c7844",
+      "name": "Ensure UFC Event Spreadsheet",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        1100,
+        -250
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "LuALxCWYzByUY2Iq",
+          "cachedResultName": "UFC | svc.ensure_event_spreadsheet"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    }
+  ],
+  "nodeGroups": [
+    {
+      "id": "fd8f07ee-99bc-41ed-adda-bfb020440c40",
+      "name": "Choose next event",
+      "nodeNames": [
+        "Retrieve all UFC Events",
+        "Identify Next UFC Event"
+      ],
+      "description": "Select the earliest upcoming UFC event from the stored schedule."
+    },
+    {
+      "id": "41bae0f7-bbef-4a9f-9d78-c76264b2de44",
+      "name": "Activate and prepare event",
+      "nodeNames": [
+        "Deactivate Current UFC Event",
+        "Activate Current UFC Event",
+        "Ensure UFC Event Spreadsheet",
+        "Event Ready",
+        "Send a message: event successfully updated"
+      ],
+      "description": "Activate the chosen event, prepare its spreadsheet and confirm readiness."
+    }
+  ]
+}

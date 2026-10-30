@@ -1,0 +1,571 @@
+{
+  "id": "f2CKNtQUpZ5Rm80Z",
+  "name": "UFC | 9. OpenRouter Balance",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki",
+    "timezone": "Australia/Sydney"
+  },
+  "tags": [],
+  "description": "Looks up the OpenRouter credit balance (account balance when the key allows it, otherwise this key's spend and any key limit) and sends it to Telegram. Called by the command router (credit button).",
+  "connections": {
+    "Get Credits": {
+      "main": [
+        [
+          {
+            "node": "Get Key Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Key Info": {
+      "main": [
+        [
+          {
+            "node": "Format Balance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When Called": {
+      "main": [
+        [
+          {
+            "node": "Read Credit Monitor State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Credit Morning and Evening": {
+      "main": [
+        [
+          {
+            "node": "Read Credit Monitor State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Credit Monitor State": {
+      "main": [
+        [
+          {
+            "node": "Prepare Balance Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Balance Request": {
+      "main": [
+        [
+          {
+            "node": "Get Credits",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Balance": {
+      "main": [
+        [
+          {
+            "node": "Save Credit Monitor Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Credit Monitor Check": {
+      "main": [
+        [
+          {
+            "node": "Balance Reply Needed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Balance Reply Needed?": {
+      "main": [
+        [
+          {
+            "node": "Send Balance",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Balance": {
+      "main": [
+        [
+          {
+            "node": "Low Credit Alert Delivered?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Low Credit Alert Delivered?": {
+      "main": [
+        [
+          {
+            "node": "Record Credit Alert Delivery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "8d8ac920-21fe-4810-9a17-d93ed1d315be",
+      "name": "When Called",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "inputSource": "passthrough"
+      }
+    },
+    {
+      "id": "8e6e1663-14bb-4604-9a95-e074e7f7aca9",
+      "name": "Get Credits",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        224,
+        0
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "https://openrouter.ai/api/v1/credits",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "openRouterApi": {
+          "name": "openRouterApi credential"
+        }
+      }
+    },
+    {
+      "id": "fcf863a3-fbe4-4a80-90d8-6a7f64465a50",
+      "name": "Get Key Info",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        448,
+        0
+      ],
+      "parameters": {
+        "method": "GET",
+        "url": "https://openrouter.ai/api/v1/key",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openRouterApi",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "executeOnce": true,
+      "onError": "continueRegularOutput",
+      "credentials": {
+        "openRouterApi": {
+          "name": "openRouterApi credential"
+        }
+      }
+    },
+    {
+      "id": "7b669adc-4620-4772-bbda-b2b60c85d4a8",
+      "name": "Format Balance",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "\nconst request=$('Prepare Balance Request').first().json;\nconst credits=$('Get Credits').first()?.json??{}, key=$('Get Key Info').first()?.json?.data??{};\nconst valid=value=>value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value));\nconst totals=credits.data||{};\nconst account=valid(totals.total_credits)&&valid(totals.total_usage)?Number(totals.total_credits)-Number(totals.total_usage):null;\nconst keyRemaining=valid(key.limit_remaining)?Number(key.limit_remaining):null;\nconst remaining=account!==null&&keyRemaining!==null?Math.min(account,keyRemaining):account??keyRemaining;\nconst source=remaining===null?'unavailable':keyRemaining!==null&&(account===null||keyRemaining<account)?'key_limit':'account';\nconst low=remaining!==null&&remaining<request.threshold_usd;\nconst old=request.monitor_state||{};\nconst since=Date.now()-Date.parse(old.last_alerted_at||0);\nconst due=!old.last_alerted_at||!Number.isFinite(since)||since>=24*60*60*1000;\nconst issue=low||remaining===null;\nconst should_alert=request.is_scheduled&&issue&&(due||old.status==='healthy');\nconst money=value=>valid(value)?'$'+Number(value).toFixed(2):'unavailable';\nconst lines=request.is_scheduled\n ? [remaining===null?'<b>UFC credit monitor unavailable</b>':'<b>UFC OpenRouter credit is low</b>',remaining===null?'The credential cannot currently report an account balance or key limit. Use /credits to inspect access.':'Remaining: <b>'+money(remaining)+'</b> ('+source.replace('_',' ')+')',remaining===null?'':'Alert threshold: US$'+request.threshold_usd.toFixed(2),'Checks run at 9 am and 9 pm Sydney time; low-balance reminders are limited to once per day.','<a href=\"https://openrouter.ai/settings/credits\">OpenRouter credits</a>']\n : ['<b>OpenRouter credit</b>','Remaining: <b>'+money(remaining)+'</b>'+ (remaining!==null?' ('+source.replace('_',' ')+')':''),'Alert threshold: US$'+request.threshold_usd.toFixed(2),'Spend today '+money(key.usage_daily)+' · 7 days '+money(key.usage_weekly)+' · month '+money(key.usage_monthly),'Automatic checks: 9 am and 9 pm Sydney time.'];\nreturn [{json:{chat_id:request.chat_id||0,text:lines.filter(Boolean).join('\\n'),monitor_key:'openrouter',threshold_usd:request.threshold_usd,is_scheduled:request.is_scheduled,remaining_usd:remaining,balance_source:source,status:remaining===null?'unavailable':low?'low':'healthy',last_alerted_at:old.last_alerted_at||null,should_alert,should_notify:!request.is_scheduled||should_alert}}];"
+      }
+    },
+    {
+      "id": "0ec15d9e-ea2e-447c-87e9-29058b4e88ee",
+      "name": "Send Balance",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        0
+      ],
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{ $('Format Balance').first().json.chat_id }}",
+        "text": "={{ $('Format Balance').first().json.text }}",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML",
+          "disable_web_page_preview": true
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
+    },
+    {
+      "id": "16d9dfc3-45bc-4adb-82e0-2554fe0274d4",
+      "name": "Check Credit Morning and Evening",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9,21 * * *"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "475cb93c-7a20-475c-8532-5f393409ee0c",
+      "name": "Read Credit Monitor State",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "j1D3nXVJHbVZvnUh",
+          "cachedResultName": "ufc_monitor_state"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "monitor_key",
+              "condition": "eq",
+              "keyValue": "openrouter"
+            }
+          ]
+        },
+        "returnAll": true
+      }
+    },
+    {
+      "id": "62c9c0b5-da09-4038-b5c4-a9845560199e",
+      "name": "Prepare Balance Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "let request={};let scheduled=true;try {request=$('When Called').first().json;scheduled=false;}catch{}\nconst state=$input.all().map(item=>item.json).find(row=>row.monitor_key==='openrouter')||{};\nreturn [{json:{...request,is_scheduled:scheduled,monitor_state:state,threshold_usd:Number(state.threshold_usd??5)}}];"
+      }
+    },
+    {
+      "id": "12e63576-883b-45bd-9745-ad1149735fa8",
+      "name": "Save Credit Monitor Check",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "j1D3nXVJHbVZvnUh",
+          "cachedResultName": "ufc_monitor_state"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "monitor_key",
+              "condition": "eq",
+              "keyValue": "openrouter"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "monitor_key": "openrouter",
+            "threshold_usd": "={{ $json.threshold_usd }}",
+            "last_checked_at": "={{ $now.toISO() }}",
+            "remaining_usd": "={{ $json.remaining_usd }}",
+            "balance_source": "={{ $json.balance_source }}",
+            "status": "={{ $json.status }}",
+            "last_alerted_at": "={{ $json.last_alerted_at }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "monitor_key",
+              "displayName": "monitor_key",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "threshold_usd",
+              "displayName": "threshold_usd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_checked_at",
+              "displayName": "last_checked_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "remaining_usd",
+              "displayName": "remaining_usd",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "balance_source",
+              "displayName": "balance_source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "last_alerted_at",
+              "displayName": "last_alerted_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "2a6feefd-a40a-4b8c-935d-37f2a456a0c6",
+      "name": "Balance Reply Needed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Format Balance').first().json.should_notify }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "063fbb34-8a2c-4f02-8ef6-2ef9b0638079",
+      "name": "Low Credit Alert Delivered?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Format Balance').first().json.should_alert }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "4a1bb726-95b6-46cf-b2cf-097a48546ffc",
+      "name": "Record Credit Alert Delivery",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "j1D3nXVJHbVZvnUh",
+          "cachedResultName": "ufc_monitor_state"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "monitor_key",
+              "condition": "eq",
+              "keyValue": "openrouter"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "last_alerted_at": "={{ $now.toISO() }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "last_alerted_at",
+              "displayName": "last_alerted_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      }
+    }
+  ],
+  "nodeGroups": [
+    {
+      "id": "845060da-564e-42fc-bc34-21bef0e1e7b9",
+      "name": "Check and report OpenRouter credit",
+      "nodeNames": [
+        "Get Credits",
+        "Get Key Info",
+        "Format Balance",
+        "Send Balance",
+        "Read Credit Monitor State",
+        "Prepare Balance Request",
+        "Save Credit Monitor Check",
+        "Balance Reply Needed?",
+        "Low Credit Alert Delivered?",
+        "Record Credit Alert Delivery"
+      ],
+      "description": "Read credit, save monitor state, answer manual requests and throttle scheduled low-credit alerts."
+    }
+  ]
+}
