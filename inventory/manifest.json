@@ -19,10 +19,10 @@
       "file": "workflows/2-extract-picker-video-transcripts.json",
       "documentation": "docs/workflows/2-extract-picker-video-transcripts.md",
       "active": true,
-      "activeVersionId": "19248b00-46bb-43a0-8aaf-527890eb075c",
-      "versionId": "19248b00-46bb-43a0-8aaf-527890eb075c",
-      "nodeCount": 53,
-      "snapshotSha256": "36a1cdcd697d7f6fe2959505c7e8c723132fa325f2e8c4ea17b324823b8864d7"
+      "activeVersionId": "50f5245f-619e-4c4a-ab25-b952c48ca0f7",
+      "versionId": "50f5245f-619e-4c4a-ab25-b952c48ca0f7",
+      "nodeCount": 57,
+      "snapshotSha256": "998d67bff4854b9a37c1e423c3782210a4e3c67594f9ac38c896944ff33e8127"
     },
     {
       "id": "BvLnPFMwQ2vhPkgv",
@@ -30,10 +30,10 @@
       "file": "workflows/3-analyse-picker-video-transcripts.json",
       "documentation": "docs/workflows/3-analyse-picker-video-transcripts.md",
       "active": true,
-      "activeVersionId": "a7a7750c-433a-44f9-ae96-0739fb0bf34b",
-      "versionId": "a7a7750c-433a-44f9-ae96-0739fb0bf34b",
-      "nodeCount": 65,
-      "snapshotSha256": "a973500b98874a869221dfb7cea95c8ba90779ac9b1c8ee4eb7ecab4d6ff7989"
+      "activeVersionId": "70512820-84f9-49ab-b49f-e65bfb8bda3c",
+      "versionId": "70512820-84f9-49ab-b49f-e65bfb8bda3c",
+      "nodeCount": 69,
+      "snapshotSha256": "045f368fbec4b5f05f5f25f2b59cd461f92c6a891ff7cd1ed1c61f5051d59f77"
     },
     {
       "id": "MWmlPIyBDUKoheXO",
@@ -107,10 +107,10 @@
       "file": "workflows/svc-add-video.json",
       "documentation": "docs/workflows/svc-add-video.md",
       "active": true,
-      "activeVersionId": "bf121e7d-0638-4d68-80f7-371b1e0b573c",
-      "versionId": "bf121e7d-0638-4d68-80f7-371b1e0b573c",
-      "nodeCount": 24,
-      "snapshotSha256": "db2e51097428a7f558fd844a4691841b40d7de66d94daaa1b93f1fe188c9c022"
+      "activeVersionId": "a8f8022e-874f-46e0-80b2-a2b4827a4c0d",
+      "versionId": "a8f8022e-874f-46e0-80b2-a2b4827a4c0d",
+      "nodeCount": 25,
+      "snapshotSha256": "414e241dc1372b4795348c6da84ec9866ad0345e379c4b15daec81b65247af35"
     },
     {
       "id": "SrL8ScYMIBiJ9Gki",

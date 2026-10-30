@@ -16,6 +16,7 @@ The system discovers UFC events and YouTube prediction videos, captures English 
 - [Interfaces](docs/interfaces.md): caller payloads and response semantics.
 - [Credentials](docs/credentials.md), [dependency graph](docs/dependencies.md) and [verification record](docs/verification.md).
 - [Privacy review](docs/privacy-review.md): redactions, retained configuration and safe restoration.
+- [Shorts exclusion policy](docs/shorts-filter.md): duration checks across capture, analysis and submitted videos.
 
 ```mermaid
 flowchart LR
@@ -41,7 +42,7 @@ The arrows above include shared-data dependencies. Capture and analysis are sepa
 | --- | --- |
 | `docs/` | Human operating guide and detailed reference |
 | `workflows/` | 28 sanitized workflow JSON snapshots |
-| `source/` | 124 extracted Code-node JavaScript files, indexed by workflow and node |
+| `source/` | 128 extracted Code-node JavaScript files, indexed by workflow and node |
 | `inventory/` | Version/hash manifest and ten data-table schemas, with no table rows |
 | `scripts/` | Reference generator, editorial workflow descriptions and verification script |
 

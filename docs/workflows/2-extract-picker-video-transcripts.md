@@ -8,10 +8,10 @@ Discover eligible prediction videos for the active event and save English transc
 
 - Workflow ID: `y20ZZYzBVS6y8kC0`
 - Published: `True`
-- Published version: `19248b00-46bb-43a0-8aaf-527890eb075c`
-- Draft version: `19248b00-46bb-43a0-8aaf-527890eb075c`
+- Published version: `50f5245f-619e-4c4a-ab25-b952c48ca0f7`
+- Draft version: `50f5245f-619e-4c4a-ab25-b952c48ca0f7`
 - Snapshot: 2026-10-30. Published graph matched draft when read.
-- Nodes: 53
+- Nodes: 57
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 
 ## How it works
@@ -20,10 +20,11 @@ Discover eligible prediction videos for the active event and save English transc
 2. Ordinary scans resolve all 13 channel uploads playlists with channels.list and fetch playlistItems.list pages. Each page holds 50 videos; stop on no nextPageToken or an entirely older-than-six-days page, with ten pages maximum per channel.
 3. Normalize video IDs, owners and original publication dates. Keep recent UFC prediction/pick/breakdown titles; reject excluded formats and ambiguous or other-event titles.
 4. Skip previously recorded videos; permit RETRY_LATER below three attempts after a five-hour gap. Process at most ten selected videos per run, with new videos ahead of retries.
-5. Fetch English native captions with Supadata. Validate language and content, split at 49,000 characters and upsert transcript chunks by record_id.
-6. Record CAPTURED_AUTO and transcript_appended on success; otherwise record RETRY_LATER or NO_ENGLISH_TRANSCRIPT and attempt/error metadata.
-7. Send one completion summary and finish the run ledger. Empty scans report nothing new; API failures explicitly report an incomplete scan.
-8. A targeted manual_retry request bypasses discovery and processes only the validated target_video_row.
+5. Before Supadata, batch video IDs into videos.list requests of at most 50. Require duration over 181 seconds (three minutes plus one second API rounding tolerance), and reject explicit Shorts paths/title markers. Missing or invalid metadata blocks processing. This shared gate also protects targeted capture retries. Report excluded short clips in capture summaries.
+6. Fetch English native captions with Supadata. Validate language and content, split at 49,000 characters and upsert transcript chunks by record_id.
+7. Record CAPTURED_AUTO and transcript_appended on success; otherwise record RETRY_LATER or NO_ENGLISH_TRANSCRIPT and attempt/error metadata.
+8. Send one completion summary and finish the run ledger. Empty scans report nothing new; API failures explicitly report an incomplete scan.
+9. A targeted manual_retry request bypasses discovery and processes only the validated target_video_row.
 
 ## Important behavior and limits
 
@@ -159,6 +160,10 @@ Terminal nodes in the saved graph: `Send Telegram Summary`, `Record Capture Resu
 | 51 | YouTube — BetSam | httpRequest | https://www.googleapis.com/youtube/v3/playlistItems | onError=continueRegularOutput, retryOnFail=True, maxTries=3, waitBetweenTries=2000, alwaysOutputData=True |
 | 52 | YouTube — JakeGerberMMA | httpRequest | https://www.googleapis.com/youtube/v3/playlistItems | onError=continueRegularOutput, retryOnFail=True, maxTries=3, waitBetweenTries=2000, alwaysOutputData=True |
 | 53 | YouTube — Funky Bunch MMA | httpRequest | https://www.googleapis.com/youtube/v3/playlistItems | onError=continueRegularOutput, retryOnFail=True, maxTries=3, waitBetweenTries=2000, alwaysOutputData=True |
+| 54 | Prepare Video Duration Batches | code | [JavaScript](../../source/2-extract-picker-video-transcripts/54-prepare-video-duration-batches.js) |  |
+| 55 | Read Video Durations | httpRequest | https://www.googleapis.com/youtube/v3/videos | retryOnFail=True, maxTries=3, waitBetweenTries=2000 |
+| 56 | Exclude Shorts | code | [JavaScript](../../source/2-extract-picker-video-transcripts/56-exclude-shorts.js) |  |
+| 57 | Long Videos Remain? | if |  |  |
 
 ## Exact graph edges
 
@@ -202,9 +207,8 @@ Main output indexes are zero-based. If outputs 0/1 mean true/false for an If nod
 | Capture One Video? | main | 0 | Prepare Requested Capture | 0 |
 | Capture One Video? | main | 1 | Attach Active Event | 0 |
 | Capture One Video? | main | 1 | Get YouTube Upload Playlists | 0 |
-| Prepare Requested Capture | main | 0 | Max Video Limit (10) | 0 |
 | Select Videos To Process | main | 0 | Capture Work Found? | 0 |
-| Capture Work Found? | main | 0 | Max Video Limit (10) | 0 |
+| Capture Work Found? | main | 0 | Prepare Video Duration Batches | 0 |
 | Capture Work Found? | main | 1 | Record Capture Idle | 0 |
 | Record Capture Idle | main | 0 | Build Capture Idle Summary | 0 |
 | Build Capture Idle Summary | main | 0 | Send Telegram Summary | 0 |
@@ -234,6 +238,12 @@ Main output indexes are zero-based. If outputs 0/1 mean true/false for an If nod
 | YouTube — BetSam | main | 0 | Merge All Channel Feeds1 | 0 |
 | YouTube — JakeGerberMMA | main | 0 | Merge All Channel Feeds1 | 1 |
 | YouTube — Funky Bunch MMA | main | 0 | Merge All Channel Feeds1 | 2 |
+| Prepare Video Duration Batches | main | 0 | Read Video Durations | 0 |
+| Read Video Durations | main | 0 | Exclude Shorts | 0 |
+| Prepare Requested Capture | main | 0 | Prepare Video Duration Batches | 0 |
+| Exclude Shorts | main | 0 | Long Videos Remain? | 0 |
+| Long Videos Remain? | main | 0 | Max Video Limit (10) | 0 |
+| Long Videos Remain? | main | 1 | Record Capture Idle | 0 |
 
 ## Code and configuration
 
@@ -245,5 +255,7 @@ Main output indexes are zero-based. If outputs 0/1 mean true/false for an If nod
 - `Resolve Capture Request`: [source](../../source/2-extract-picker-video-transcripts/33-resolve-capture-request.js)
 - `Prepare Requested Capture`: [source](../../source/2-extract-picker-video-transcripts/35-prepare-requested-capture.js)
 - `Build Capture Idle Summary`: [source](../../source/2-extract-picker-video-transcripts/39-build-capture-idle-summary.js)
+- `Prepare Video Duration Batches`: [source](../../source/2-extract-picker-video-transcripts/54-prepare-video-duration-batches.js)
+- `Exclude Shorts`: [source](../../source/2-extract-picker-video-transcripts/56-exclude-shorts.js)
 
 Full parameter expressions, sheet ranges, table filters, prompt/schema definitions and credential names are in the sanitized JSON snapshot. Credential IDs and values, webhook IDs, execution data and pinned data are excluded. Rebind credentials and environment-specific resources before importing. [Restore procedure](../operations.md#restore-or-clone).

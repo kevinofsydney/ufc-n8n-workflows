@@ -1,3 +1,9 @@
+function durationSeconds(value) {
+ const match=/^P(?:(\d+(?:\.\d+)?)D)?(?:T(?:(\d+(?:\.\d+)?)H)?(?:(\d+(?:\.\d+)?)M)?(?:(\d+(?:\.\d+)?)S)?)?$/.exec(String(value||''));
+ if(!match||!match.slice(1).some(v=>v!==undefined))return null;
+ const seconds=Number(match[1]||0)*86400+Number(match[2]||0)*3600+Number(match[3]||0)*60+Number(match[4]||0);
+ return Number.isFinite(seconds)&&seconds>0?seconds:null;
+}
 function ufcText(value) {
  return String(value ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim().replace(/\s+/g,' ');
 }
@@ -41,10 +47,14 @@ if(rows.length){
  const same=rows.length===1&&rows[0].event_key===event.event_key;
  return fail('duplicate',completed?'This video has already been analysed. Nothing was added or rerun.':same?'This video is already recorded. Use /status or /retry '+request.video_id+' for unfinished work.':'This video is already recorded for another event, or has duplicate records. Nothing was changed.');
 }
-const response=$input.first().json;
+const response=$('Read YouTube Metadata').first().json;
 let metadata=response.body??response.data??response;
 if(typeof metadata==='string'){try{metadata=JSON.parse(metadata);}catch{metadata={};}}
 if(response.error||(response.statusCode&&response.statusCode!==200)||!metadata.title||!metadata.author_name)return fail('metadata_unavailable','Could not read this YouTube video. Check that it is public and available, then try again.');
+const durationResponse=$input.first().json;
+const seconds=durationSeconds(durationResponse.items?.find(v=>v.id===request.video_id)?.contentDetails?.duration);
+if(durationResponse.error||seconds===null)return fail('duration_unavailable','Video not added: its duration could not be verified. Try again later; unverified clips are blocked.');
+if(seconds<=181||/\bshorts\b|#short\b/i.test(String(metadata.title||'')))return fail('short_excluded','Video not added: Shorts and clips three minutes or shorter are excluded. Please submit the full breakdown instead.');
 const video_title=String(metadata.title).trim(),channel_name=String(metadata.author_name).trim();
 const match=classifyUfcVideo(video_title,event,events);
 if(match.event_match_status!=='MATCHED')return fail('event_mismatch','Video not added: '+match.event_match_reason+'. Active event: '+event.event_name+'.',{video_title,channel_name,...match});

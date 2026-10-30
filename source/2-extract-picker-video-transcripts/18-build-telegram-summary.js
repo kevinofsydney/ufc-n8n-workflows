@@ -110,6 +110,8 @@ if (gaveUp.length > 0) {
   lines.push('');
 }
 
+let shortsExcluded=0;try{shortsExcluded=Number($('Exclude Shorts').first().json.shorts_excluded_count||0);}catch{}
+if(shortsExcluded)lines.push(shortsExcluded+' Shorts/short clips excluded (three minutes or shorter, or explicit Shorts marker).','');
 const scan=readCaptureFeedStats();
 if(scan.checked){
  lines.push('YouTube channels checked: '+scan.checked+'/'+scan.expected+'.');

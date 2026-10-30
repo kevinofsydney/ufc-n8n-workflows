@@ -8,21 +8,22 @@ Turn captured transcripts into structured winner picks, props and fight reasonin
 
 - Workflow ID: `BvLnPFMwQ2vhPkgv`
 - Published: `True`
-- Published version: `a7a7750c-433a-44f9-ae96-0739fb0bf34b`
-- Draft version: `a7a7750c-433a-44f9-ae96-0739fb0bf34b`
+- Published version: `70512820-84f9-49ab-b49f-e65bfb8bda3c`
+- Draft version: `70512820-84f9-49ab-b49f-e65bfb8bda3c`
 - Snapshot: 2026-10-30. Published graph matched draft when read.
-- Nodes: 65
+- Nodes: 69
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 
 ## How it works
 
 1. Load the active event, ensure its card and spreadsheet, validate the sheet contract, synchronize bout IDs, detect official card changes and apply eligible changes before extraction.
 2. Select captured videos for this event with no analysis, retryable FAILED/RETRY state, stale PROCESSING state, explicit targeted retry or CARD_CHANGED. Automatic analysis normally caps attempts at three; PROCESSING becomes stale after one hour.
-3. Reassemble transcript parts in order, build official-card context and mark each selected video PROCESSING, incrementing the analysis attempt count.
-4. Request strict JSON extraction through OpenRouter using openai/gpt-6-luna-pro with deepseek/deepseek-v4.1-flash-1017 fallback, maximum 20,000 output tokens and configured provider output-price ceiling 0.66 USD per million tokens.
-5. Parse and validate extracted fighters, fight order, confidence, props and reasoning. When a non-bingo card of at least five bouts yields fewer than three winner picks and under 30% coverage, make one diversity retry with DeepSeek.
-6. Build stable row identifiers and write Picks, Props, Fight Analysis and Extraction Log records; verify the configured completion signals before marking the video COMPLETED.
-7. Record model, prompt version, token/cost information and validation outcomes; deliver the Telegram summary and finish the analysis run ledger.
+3. Before joining transcripts or invoking any model, verify selected video durations with the same fail-closed guard. Exclude Shorts/short clips, including existing captured rows and targeted analysis retries; all-excluded work finishes idle.
+4. Reassemble transcript parts in order, build official-card context and mark each selected video PROCESSING, incrementing the analysis attempt count.
+5. Request strict JSON extraction through OpenRouter using openai/gpt-6-luna-pro with deepseek/deepseek-v4.1-flash-1017 fallback, maximum 20,000 output tokens and configured provider output-price ceiling 0.66 USD per million tokens.
+6. Parse and validate extracted fighters, fight order, confidence, props and reasoning. When a non-bingo card of at least five bouts yields fewer than three winner picks and under 30% coverage, make one diversity retry with DeepSeek.
+7. Build stable row identifiers and write Picks, Props, Fight Analysis and Extraction Log records; verify the configured completion signals before marking the video COMPLETED.
+8. Record model, prompt version, token/cost information and validation outcomes; deliver the Telegram summary and finish the analysis run ledger.
 
 ## Important behavior and limits
 
@@ -189,6 +190,10 @@ Terminal nodes in the saved graph: `Upsert Fight Analysis`, `Record Analysis Idl
 | 63 | Continue Without Card Check | code | [JavaScript](../../source/3-analyse-picker-video-transcripts/63-continue-without-card-check.js) |  |
 | 64 | Apply Card Changes | executeWorkflow | jWFGMw2faC2zLseh | onError=continueErrorOutput |
 | 65 | Continue Without Card Apply | code | [JavaScript](../../source/3-analyse-picker-video-transcripts/65-continue-without-card-apply.js) |  |
+| 66 | Prepare Video Duration Batches | code | [JavaScript](../../source/3-analyse-picker-video-transcripts/66-prepare-video-duration-batches.js) |  |
+| 67 | Read Video Durations | httpRequest | https://www.googleapis.com/youtube/v3/videos | retryOnFail=True, maxTries=3, waitBetweenTries=2000 |
+| 68 | Exclude Shorts | code | [JavaScript](../../source/3-analyse-picker-video-transcripts/68-exclude-shorts.js) |  |
+| 69 | Long Videos Remain? | if |  |  |
 
 ## Exact graph edges
 
@@ -257,7 +262,7 @@ Main output indexes are zero-based. If outputs 0/1 mean true/false for an If nod
 | One Active Event Only | main | 0 | Record Analysis Start | 0 |
 | Record Analysis Start | main | 0 | Restore Analysis Event | 0 |
 | Keep Videos Needing Analysis | main | 0 | Analysis Work Found? | 0 |
-| Analysis Work Found? | main | 0 | Match Videos to Transcripts | 0 |
+| Analysis Work Found? | main | 0 | Prepare Video Duration Batches | 0 |
 | Analysis Work Found? | main | 1 | Record Analysis Idle | 0 |
 | Restore Analysis Event | main | 0 | Ensure UFC Fight Card | 0 |
 | Ensure UFC Fight Card | main | 0 | Fight Card Ready? | 0 |
@@ -270,6 +275,11 @@ Main output indexes are zero-based. If outputs 0/1 mean true/false for an If nod
 | Apply Card Changes | main | 0 | Sync Bout IDs | 0 |
 | Apply Card Changes | main | 1 | Continue Without Card Apply | 0 |
 | Continue Without Card Apply | main | 0 | Sync Bout IDs | 0 |
+| Prepare Video Duration Batches | main | 0 | Read Video Durations | 0 |
+| Read Video Durations | main | 0 | Exclude Shorts | 0 |
+| Exclude Shorts | main | 0 | Long Videos Remain? | 0 |
+| Long Videos Remain? | main | 0 | Match Videos to Transcripts | 0 |
+| Long Videos Remain? | main | 1 | Record Analysis Idle | 0 |
 
 ## Code and configuration
 
@@ -298,5 +308,7 @@ Main output indexes are zero-based. If outputs 0/1 mean true/false for an If nod
 - `Restore Analysis Event`: [source](../../source/3-analyse-picker-video-transcripts/54-restore-analysis-event.js)
 - `Continue Without Card Check`: [source](../../source/3-analyse-picker-video-transcripts/63-continue-without-card-check.js)
 - `Continue Without Card Apply`: [source](../../source/3-analyse-picker-video-transcripts/65-continue-without-card-apply.js)
+- `Prepare Video Duration Batches`: [source](../../source/3-analyse-picker-video-transcripts/66-prepare-video-duration-batches.js)
+- `Exclude Shorts`: [source](../../source/3-analyse-picker-video-transcripts/68-exclude-shorts.js)
 
 Full parameter expressions, sheet ranges, table filters, prompt/schema definitions and credential names are in the sanitized JSON snapshot. Credential IDs and values, webhook IDs, execution data and pinned data are excluded. Rebind credentials and environment-specific resources before importing. [Restore procedure](../operations.md#restore-or-clone).

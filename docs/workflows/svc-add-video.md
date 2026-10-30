@@ -8,20 +8,21 @@ Capture and analyse one owner-submitted public YouTube video from /addvideo.
 
 - Workflow ID: `JcNXgWql9K4RrHm9`
 - Published: `True`
-- Published version: `bf121e7d-0638-4d68-80f7-371b1e0b573c`
-- Draft version: `bf121e7d-0638-4d68-80f7-371b1e0b573c`
+- Published version: `a8f8022e-874f-46e0-80b2-a2b4827a4c0d`
+- Draft version: `a8f8022e-874f-46e0-80b2-a2b4827a4c0d`
 - Snapshot: 2026-10-30. Published graph matched draft when read.
-- Nodes: 24
+- Nodes: 25
 - Timezone: `Australia/Sydney`
 
 ## How it works
 
 1. Parse and canonicalize an allowed YouTube URL; reject malformed/ambiguous URLs and non-owner input.
 2. Read public oEmbed metadata, the event catalogue and any saved video with the same ID.
-3. Require one future active event with a spreadsheet and a title identifying that event. Reject duplicates and videos assigned elsewhere; manual test defaults to dry_run.
-4. Reserve a video row, then conditionally claim an empty status as MANUAL_CAPTURE_REQUESTED. Only a successful claim dispatches capture.
-5. Run targeted capture and wait, reread the row, then run targeted analysis only if capture succeeded and analysis is unfinished.
-6. Reread the final record and send a success/failure/duplicate reply with useful navigation.
+3. Read videos.list duration metadata before reserving a new row. Reject Shorts/short clips and unverified duration with an explicit owner reply; a short input cannot reach reservation, caption capture or model analysis.
+4. Require one future active event with a spreadsheet and a title identifying that event. Reject duplicates and videos assigned elsewhere; manual test defaults to dry_run.
+5. Reserve a video row, then conditionally claim an empty status as MANUAL_CAPTURE_REQUESTED. Only a successful claim dispatches capture.
+6. Run targeted capture and wait, reread the row, then run targeted analysis only if capture succeeded and analysis is unfinished.
+7. Reread the final record and send a success/failure/duplicate reply with useful navigation.
 
 ## Important behavior and limits
 
@@ -98,6 +99,7 @@ Terminal nodes in the saved graph: `Send Add Video Reply`. Terminal nodes includ
 | 22 | Send Add Video Reply | telegram | Telegram sendMessage | onError=continueRegularOutput |
 | 23 | Claim Submitted Video | dataTable | update ufc_videos | alwaysOutputData=True |
 | 24 | Capture Claim Acquired? | if |  |  |
+| 25 | Read Submitted Video Duration | httpRequest | https://www.googleapis.com/youtube/v3/videos | onError=continueRegularOutput, retryOnFail=True, maxTries=3, waitBetweenTries=2000 |
 
 ## Exact graph edges
 
@@ -113,7 +115,6 @@ Main output indexes are zero-based. If outputs 0/1 mean true/false for an If nod
 | Read UFC Events | main | 0 | Read Existing Video | 0 |
 | Add Video Result | main | 0 | Notify Owner? | 0 |
 | Read Existing Video | main | 0 | Read YouTube Metadata | 0 |
-| Read YouTube Metadata | main | 0 | Validate Add Video | 0 |
 | Validate Add Video | main | 0 | Add This Video? | 0 |
 | Add This Video? | main | 0 | Reserve Video | 0 |
 | Add This Video? | main | 1 | Add Video Result | 0 |
@@ -132,6 +133,8 @@ Main output indexes are zero-based. If outputs 0/1 mean true/false for an If nod
 | Capture Claim Acquired? | main | 0 | Capture Submitted Video | 0 |
 | Capture Claim Acquired? | main | 1 | Add Video Result | 0 |
 | Test Manually | main | 0 | Manual Test Request | 0 |
+| Read YouTube Metadata | main | 0 | Read Submitted Video Duration | 0 |
+| Read Submitted Video Duration | main | 0 | Validate Add Video | 0 |
 
 ## Code and configuration
 

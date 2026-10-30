@@ -633,7 +633,7 @@
       "main": [
         [
           {
-            "node": "Match Videos to Transcripts",
+            "node": "Prepare Video Duration Batches",
             "type": "main",
             "index": 0
           }
@@ -750,6 +750,57 @@
         [
           {
             "node": "Sync Bout IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Video Duration Batches": {
+      "main": [
+        [
+          {
+            "node": "Read Video Durations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Video Durations": {
+      "main": [
+        [
+          {
+            "node": "Exclude Shorts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exclude Shorts": {
+      "main": [
+        [
+          {
+            "node": "Long Videos Remain?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Long Videos Remain?": {
+      "main": [
+        [
+          {
+            "node": "Match Videos to Transcripts",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record Analysis Idle",
             "type": "main",
             "index": 0
           }
@@ -3384,7 +3435,7 @@
             "workflow_name": "3. Analyse Picker Video Transcripts",
             "event_key": "={{ $('One Active Event Only').first().json.event_key }}",
             "state": "idle",
-            "summary": "No eligible videos awaiting analysis",
+            "summary": "={{ $json.shorts_excluded_count ? 'No eligible long-form videos; '+$json.shorts_excluded_count+' Shorts/short clips excluded' : 'No eligible videos awaiting analysis' }}",
             "execution_url": "={{ 'https://N8N_INSTANCE.example/workflow/BvLnPFMwQ2vhPkgv/executions/' + $execution.id }}",
             "finished_at": "={{ $now.toISO() }}"
           },
@@ -3885,6 +3936,117 @@
       "parameters": {
         "jsCode": "// Applying card changes failed (an alert has been sent); carry on with the event as it was.\nreturn [{json:$('Fight Card Ready?').first().json}];"
       }
+    },
+    {
+      "id": "75d50111-fde8-48d1-a93b-69c31eb5f9ac",
+      "name": "Prepare Video Duration Batches",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const videos=$input.all().map(i=>i.json);\nif(!videos.length||videos.some(v=>!/^[A-Za-z0-9_-]{11}$/.test(String(v.video_id||''))))throw new Error('Duration check requires valid video IDs.');\nconst unique=[...new Map(videos.map(v=>[v.video_id,v])).values()];\nconst batches=[];\nfor(let offset=0;offset<unique.length;offset+=50){\n const rows=unique.slice(offset,offset+50);\n batches.push({json:{video_ids:rows.map(v=>v.video_id).join(','),videos:rows}});\n}\nreturn batches;"
+      }
+    },
+    {
+      "id": "a2c90da3-1841-43d6-bbb7-f5fe6c9b097e",
+      "name": "Read Video Durations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        500,
+        0
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/videos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "contentDetails"
+            },
+            {
+              "name": "id",
+              "value": "={{ $json.video_ids }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    },
+    {
+      "id": "fa0e891e-2ce0-4f28-8134-e59b685ad65e",
+      "name": "Exclude Shorts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "function durationSeconds(value) {\n const match=/^P(?:(\\d+(?:\\.\\d+)?)D)?(?:T(?:(\\d+(?:\\.\\d+)?)H)?(?:(\\d+(?:\\.\\d+)?)M)?(?:(\\d+(?:\\.\\d+)?)S)?)?$/.exec(String(value||''));\n if(!match||!match.slice(1).some(v=>v!==undefined))return null;\n const seconds=Number(match[1]||0)*86400+Number(match[2]||0)*3600+Number(match[3]||0)*60+Number(match[4]||0);\n return Number.isFinite(seconds)&&seconds>0?seconds:null;\n}\nconst candidates=$('Prepare Video Duration Batches').all().flatMap(i=>i.json.videos);\nconst metadata=new Map();\nfor(const response of $input.all()){\n if(response.json.error||!Array.isArray(response.json.items))throw new Error('YouTube duration lookup failed; processing blocked to prevent Shorts.');\n for(const video of response.json.items)metadata.set(video.id,video);\n}\nconst kept=[],excluded=[];\nfor(const candidate of candidates){\n const seconds=durationSeconds(metadata.get(candidate.video_id)?.contentDetails?.duration);\n if(seconds===null)throw new Error('YouTube duration unavailable for '+candidate.video_id+'; processing blocked to prevent Shorts.');\n const explicit=/\\/shorts\\//i.test(String(candidate.video_url||''))||/(?:#short\\b|\\bshorts\\b)/i.test(String(candidate.video_title||''));\n if(seconds<=181||explicit){excluded.push({video_id:candidate.video_id,seconds,reason:explicit?'explicit_shorts_marker':'duration_at_most_181_seconds'});continue;}\n kept.push({...candidate,video_duration_seconds:seconds});\n}\nif(kept.length)return kept.map(v=>({json:{...v,shorts_excluded_count:excluded.length}}));\nlet context={...candidates[0]};\ndelete context.video_id;\ntry{context.scan_stats=$('Select Videos To Process').first().json.scan_stats;}catch{}\nreturn [{json:{...context,__no_capture_work:true,__no_analysis_work:true,shorts_excluded_count:excluded.length,shorts_excluded:excluded,capture_run_state:'idle',capture_run_summary:'No eligible long-form videos; '+excluded.length+' Shorts/short clips excluded (three minutes or shorter, or explicit Shorts marker).'}}];"
+      }
+    },
+    {
+      "id": "d576b7e7-57b1-44f5-8a64-d8278aa0fde7",
+      "name": "Long Videos Remain?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        900,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ Boolean($json.video_id) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
     }
   ],
   "nodeGroups": [
@@ -3917,7 +4079,11 @@
         "Detect Card Changes",
         "Continue Without Card Check",
         "Apply Card Changes",
-        "Continue Without Card Apply"
+        "Continue Without Card Apply",
+        "Prepare Video Duration Batches",
+        "Read Video Durations",
+        "Exclude Shorts",
+        "Long Videos Remain?"
       ],
       "description": "Validate the spreadsheet and event match, select work and record idle runs."
     },

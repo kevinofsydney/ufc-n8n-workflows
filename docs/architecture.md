@@ -12,6 +12,8 @@ Workflow 2 resolves uploads playlists for 13 tracked YouTube channels through Yo
 
 Workflow 3 subsequently reads captured videos needing analysis. It reconstructs transcript parts, supplies the official Fight Card to OpenRouter, validates structured extraction and writes Picks, Props, Fight Analysis and Extraction Log. Completed/failed processing and model metadata are recorded in `ufc_videos`; run outcomes are recorded in `ufc_pipeline_runs`.
 
+Both capture and analysis verify video duration before paid extraction/model work. Videos at or below 181 seconds (three minutes plus API rounding tolerance), explicit Shorts markers and unverified duration are blocked. `/addvideo` applies the same policy before reservation. This conservative rule also excludes short landscape clips. See the [Shorts policy](shorts-filter.md) for tests and treatment of previously saved data.
+
 Neither a Telegram dispatch acknowledgement nor a successful API discovery request proves extraction finished. Capture and analysis have independent completion paths. Ordinary Capture does not invoke analysis; the analysis schedule or `/analyse` does. A failed API channel can also be handled without failing the entire n8n execution, so the application ledger and final summary carry essential meaning.
 
 ## Two ways to ingest a video

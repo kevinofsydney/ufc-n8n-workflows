@@ -4,9 +4,9 @@
 
 On 30 October 2026, n8n MCP search returned 28 UFC workflows. Full get_workflow_details responses were read for every one. Each was active/published and reported activeVersion.sameAsDraft=true. Ten referenced data-table schemas were exported; unrelated tables were excluded. No operational rows, transcripts, picks, credentials or execution histories are included.
 
-The per-workflow pages document all **496 nodes**, every main/AI graph edge, direct child-workflow calls and wait settings, data-table reads/writes, credential names and exact trigger definitions. **124 Code-node files** are extracted without executing them. The human explanations cover each workflow's purpose, processing stages, important limits and relationships. The version/hash manifest links each page to its sanitized snapshot.
+The per-workflow pages document all **505 nodes**, every main/AI graph edge, direct child-workflow calls and wait settings, data-table reads/writes, credential names and exact trigger definitions. **128 Code-node files** are extracted without executing them. The human explanations cover each workflow's purpose, processing stages, important limits and relationships. The version/hash manifest links each page to its sanitized snapshot.
 
-This task did not change or execute any n8n workflow. Reads and GitHub publication only were needed for documentation. A repository verification pass is not an end-to-end runtime test of all 28 workflows.
+The original documentation task did not change or execute n8n workflows. The subsequent Shorts-filter change did update and publish capture, analysis and add-video; its controlled tests and behavior are recorded in the [Shorts policy](shorts-filter.md). A repository verification pass is not an end-to-end runtime test of all 28 workflows.
 
 ## Checks performed
 

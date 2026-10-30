@@ -379,17 +379,6 @@
         ]
       ]
     },
-    "Prepare Requested Capture": {
-      "main": [
-        [
-          {
-            "node": "Max Video Limit (10)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Select Videos To Process": {
       "main": [
         [
@@ -405,7 +394,7 @@
       "main": [
         [
           {
-            "node": "Max Video Limit (10)",
+            "node": "Prepare Video Duration Batches",
             "type": "main",
             "index": 0
           }
@@ -651,6 +640,68 @@
             "node": "Merge All Channel Feeds1",
             "type": "main",
             "index": 2
+          }
+        ]
+      ]
+    },
+    "Prepare Video Duration Batches": {
+      "main": [
+        [
+          {
+            "node": "Read Video Durations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Video Durations": {
+      "main": [
+        [
+          {
+            "node": "Exclude Shorts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Requested Capture": {
+      "main": [
+        [
+          {
+            "node": "Prepare Video Duration Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Exclude Shorts": {
+      "main": [
+        [
+          {
+            "node": "Long Videos Remain?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Long Videos Remain?": {
+      "main": [
+        [
+          {
+            "node": "Max Video Limit (10)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Record Capture Idle",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -1437,7 +1488,7 @@
     },
     {
       "parameters": {
-        "jsCode": "function readCaptureFeedStats() {\n const names=[\"YouTube — UFC Predictions Tracker\",\"YouTube — The MMA Guru\",\"YouTube — Lucrative James\",\"YouTube — MMA Lock of the Night\",\"YouTube — Kunath MMA\",\"YouTube — TonyHasDiedMMA\",\"YouTube — MMA Husky Hustler\",\"YouTube — Walk the Line MMA\",\"YouTube — Artem MMA\",\"YouTube — BedtimeMMA\",\"YouTube — BetSam\",\"YouTube — JakeGerberMMA\",\"YouTube — Funky Bunch MMA\"];\n const failed=[];let checked=0;\n let root;\n try {root=$('Get YouTube Upload Playlists').first().json;} catch {return {expected:names.length,checked:0,failed_count:0,loaded:0,failed:[]};}\n const channels=Array.isArray(root.items)?root.items:[];\n const ids=[\"UCaU2fDiT9fCTABiiotiG2aw\",\"UCIhQvpinmS8Eq6PrQ021DKQ\",\"UCrxm8U7aEu18LW3YRFZSvNg\",\"UClwn3zgkfyne2Ecj36Dl7ZQ\",\"UCxl-gwVZTPPhhCbQ5DKTP6Q\",\"UCAELXX1-cUSA5Lc7aDFMZsw\",\"UCFjXgUzCT23D11yF4bcEl2g\",\"UCk9hwi3iECE1Xs-dpdFhXEA\",\"UCpSQhfFzpZ9COp_WiKSUEkQ\",\"UCQAMRRo7fPbQMzlJWOexlZg\",\"UC7LH9bWIKZd82LpdouIBOLw\",\"UCADS14Ed6epGTSy9I3VLxCg\",\"UCwOnVxzxkqDOYnEhhffNMAA\"];\n for(let index=0;index<names.length;index++){\n  const name=names[index];let rows=[];\n  try {rows=$(name).all().map(i=>i.json);} catch {}\n  checked++;\n  const channel=channels.find(c=>c.id===ids[index]);\n  let issue='';\n  if(!channel?.contentDetails?.relatedPlaylists?.uploads)issue='Channel uploads unavailable; check YouTube API access.';\n  else if(!rows.length)issue='No API response received.';\n  else if(rows.some(r=>r.error))issue='YouTube API request failed; check quota and credential restrictions.';\n  else if(rows.some(r=>!Array.isArray(r.items)))issue='Unexpected YouTube API response.';\n  else {\n   const last=rows[rows.length-1];\n   const old=last.items.length>0&&last.items.every(v=>Date.parse(v.contentDetails?.videoPublishedAt||v.snippet?.publishedAt)<Date.now()-6*24*60*60*1000);\n   if(last.nextPageToken&&!old)issue='Scan reached the 500-video safety limit; channel check is incomplete.';\n  }\n  if(issue)failed.push({channel:name.replace(/^YouTube — /,''),error:issue});\n }\n return {expected:names.length,checked,failed_count:failed.length,loaded:checked-failed.length,failed};\n}\n// Build one Telegram summary from all videos processed in this run.\n\nconst results = $input.all().map((item) => item.json);\n\nif (results.length === 0) {\n  return [];\n}\n\nconst escapeHtml = (value = '') =>\n  String(value)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;');\n\nconst MAX_ATTEMPTS = 3;\n\nconst captured = results.filter(\n  (item) => item.result_type === 'captured'\n);\n\nconst retrying = results.filter(\n  (item) => item.result_type === 'retry'\n);\n\nconst gaveUp = results.filter(\n  (item) => item.result_type === 'gave_up'\n);\n\nconst eventName =\n  results[0]?.event_name || 'UFC event';\n\nconst spreadsheetUrl =\n  results[0]?.spreadsheet_url || '';\n\nconst lines = [\n  '<b>UFC transcript run complete</b>',\n  '',\n  `<b>Event:</b> ${escapeHtml(eventName)}`,\n  '',\n];\n\nif (captured.length > 0) {\n  lines.push(`<b>Captured (${captured.length}):</b>`);\n\n  for (const item of captured) {\n    lines.push(\n      `• ${escapeHtml(item.channel_name)} — ` +\n      `${escapeHtml(item.video_title)}`\n    );\n  }\n\n  lines.push('');\n}\n\nif (retrying.length > 0) {\n  lines.push(\n    `<b>No English transcript yet — will retry (${retrying.length}):</b>`\n  );\n\n  for (const item of retrying) {\n    lines.push(\n      `• ${escapeHtml(item.channel_name)} — ` +\n      `${escapeHtml(item.video_title)} ` +\n      `(attempt ${item.attempt_count} of ${MAX_ATTEMPTS})`\n    );\n  }\n\n  lines.push('');\n}\n\nif (gaveUp.length > 0) {\n  lines.push(\n    `<b>Gave up — no English transcript (${gaveUp.length}):</b>`\n  );\n\n  for (const item of gaveUp) {\n    lines.push(\n      `• ${escapeHtml(item.channel_name)} — ` +\n      `${escapeHtml(item.video_title)}`\n    );\n  }\n\n  lines.push('');\n}\n\nconst scan=readCaptureFeedStats();\nif(scan.checked){\n lines.push('YouTube channels checked: '+scan.checked+'/'+scan.expected+'.');\n if(scan.failed_count){\n  lines.push('<b>Warning:</b> '+scan.failed_count+' YouTube channels failed; additional videos may have been missed.');\n  for(const failure of scan.failed.slice(0,3))lines.push('• '+escapeHtml(failure.channel)+': '+escapeHtml(failure.error));\n  if(scan.failed_count>3)lines.push('… and '+(scan.failed_count-3)+' more channel failures.');\n }\n lines.push('');\n}\nif (spreadsheetUrl) {\n  lines.push(\n    `<a href=\"${escapeHtml(spreadsheetUrl)}\">` +\n    `Open transcript spreadsheet</a>`\n  );\n}\n\nreturn [\n  {\n    json: {\n      telegram_message: lines.join('\\n'),\n      event_name: eventName,\n      spreadsheet_url: spreadsheetUrl,\n      capture_run_state: scan.failed_count ? 'error' : 'success',\n      feed_failed_count: scan.failed_count,\n      captured_count: captured.length,\n      retry_count: retrying.length,\n      gave_up_count: gaveUp.length,\n      total_processed: results.length,\n    },\n  },\n];"
+        "jsCode": "function readCaptureFeedStats() {\n const names=[\"YouTube — UFC Predictions Tracker\",\"YouTube — The MMA Guru\",\"YouTube — Lucrative James\",\"YouTube — MMA Lock of the Night\",\"YouTube — Kunath MMA\",\"YouTube — TonyHasDiedMMA\",\"YouTube — MMA Husky Hustler\",\"YouTube — Walk the Line MMA\",\"YouTube — Artem MMA\",\"YouTube — BedtimeMMA\",\"YouTube — BetSam\",\"YouTube — JakeGerberMMA\",\"YouTube — Funky Bunch MMA\"];\n const failed=[];let checked=0;\n let root;\n try {root=$('Get YouTube Upload Playlists').first().json;} catch {return {expected:names.length,checked:0,failed_count:0,loaded:0,failed:[]};}\n const channels=Array.isArray(root.items)?root.items:[];\n const ids=[\"UCaU2fDiT9fCTABiiotiG2aw\",\"UCIhQvpinmS8Eq6PrQ021DKQ\",\"UCrxm8U7aEu18LW3YRFZSvNg\",\"UClwn3zgkfyne2Ecj36Dl7ZQ\",\"UCxl-gwVZTPPhhCbQ5DKTP6Q\",\"UCAELXX1-cUSA5Lc7aDFMZsw\",\"UCFjXgUzCT23D11yF4bcEl2g\",\"UCk9hwi3iECE1Xs-dpdFhXEA\",\"UCpSQhfFzpZ9COp_WiKSUEkQ\",\"UCQAMRRo7fPbQMzlJWOexlZg\",\"UC7LH9bWIKZd82LpdouIBOLw\",\"UCADS14Ed6epGTSy9I3VLxCg\",\"UCwOnVxzxkqDOYnEhhffNMAA\"];\n for(let index=0;index<names.length;index++){\n  const name=names[index];let rows=[];\n  try {rows=$(name).all().map(i=>i.json);} catch {}\n  checked++;\n  const channel=channels.find(c=>c.id===ids[index]);\n  let issue='';\n  if(!channel?.contentDetails?.relatedPlaylists?.uploads)issue='Channel uploads unavailable; check YouTube API access.';\n  else if(!rows.length)issue='No API response received.';\n  else if(rows.some(r=>r.error))issue='YouTube API request failed; check quota and credential restrictions.';\n  else if(rows.some(r=>!Array.isArray(r.items)))issue='Unexpected YouTube API response.';\n  else {\n   const last=rows[rows.length-1];\n   const old=last.items.length>0&&last.items.every(v=>Date.parse(v.contentDetails?.videoPublishedAt||v.snippet?.publishedAt)<Date.now()-6*24*60*60*1000);\n   if(last.nextPageToken&&!old)issue='Scan reached the 500-video safety limit; channel check is incomplete.';\n  }\n  if(issue)failed.push({channel:name.replace(/^YouTube — /,''),error:issue});\n }\n return {expected:names.length,checked,failed_count:failed.length,loaded:checked-failed.length,failed};\n}\n// Build one Telegram summary from all videos processed in this run.\n\nconst results = $input.all().map((item) => item.json);\n\nif (results.length === 0) {\n  return [];\n}\n\nconst escapeHtml = (value = '') =>\n  String(value)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;');\n\nconst MAX_ATTEMPTS = 3;\n\nconst captured = results.filter(\n  (item) => item.result_type === 'captured'\n);\n\nconst retrying = results.filter(\n  (item) => item.result_type === 'retry'\n);\n\nconst gaveUp = results.filter(\n  (item) => item.result_type === 'gave_up'\n);\n\nconst eventName =\n  results[0]?.event_name || 'UFC event';\n\nconst spreadsheetUrl =\n  results[0]?.spreadsheet_url || '';\n\nconst lines = [\n  '<b>UFC transcript run complete</b>',\n  '',\n  `<b>Event:</b> ${escapeHtml(eventName)}`,\n  '',\n];\n\nif (captured.length > 0) {\n  lines.push(`<b>Captured (${captured.length}):</b>`);\n\n  for (const item of captured) {\n    lines.push(\n      `• ${escapeHtml(item.channel_name)} — ` +\n      `${escapeHtml(item.video_title)}`\n    );\n  }\n\n  lines.push('');\n}\n\nif (retrying.length > 0) {\n  lines.push(\n    `<b>No English transcript yet — will retry (${retrying.length}):</b>`\n  );\n\n  for (const item of retrying) {\n    lines.push(\n      `• ${escapeHtml(item.channel_name)} — ` +\n      `${escapeHtml(item.video_title)} ` +\n      `(attempt ${item.attempt_count} of ${MAX_ATTEMPTS})`\n    );\n  }\n\n  lines.push('');\n}\n\nif (gaveUp.length > 0) {\n  lines.push(\n    `<b>Gave up — no English transcript (${gaveUp.length}):</b>`\n  );\n\n  for (const item of gaveUp) {\n    lines.push(\n      `• ${escapeHtml(item.channel_name)} — ` +\n      `${escapeHtml(item.video_title)}`\n    );\n  }\n\n  lines.push('');\n}\n\nlet shortsExcluded=0;try{shortsExcluded=Number($('Exclude Shorts').first().json.shorts_excluded_count||0);}catch{}\nif(shortsExcluded)lines.push(shortsExcluded+' Shorts/short clips excluded (three minutes or shorter, or explicit Shorts marker).','');\nconst scan=readCaptureFeedStats();\nif(scan.checked){\n lines.push('YouTube channels checked: '+scan.checked+'/'+scan.expected+'.');\n if(scan.failed_count){\n  lines.push('<b>Warning:</b> '+scan.failed_count+' YouTube channels failed; additional videos may have been missed.');\n  for(const failure of scan.failed.slice(0,3))lines.push('• '+escapeHtml(failure.channel)+': '+escapeHtml(failure.error));\n  if(scan.failed_count>3)lines.push('… and '+(scan.failed_count-3)+' more channel failures.');\n }\n lines.push('');\n}\nif (spreadsheetUrl) {\n  lines.push(\n    `<a href=\"${escapeHtml(spreadsheetUrl)}\">` +\n    `Open transcript spreadsheet</a>`\n  );\n}\n\nreturn [\n  {\n    json: {\n      telegram_message: lines.join('\\n'),\n      event_name: eventName,\n      spreadsheet_url: spreadsheetUrl,\n      capture_run_state: scan.failed_count ? 'error' : 'success',\n      feed_failed_count: scan.failed_count,\n      captured_count: captured.length,\n      retry_count: retrying.length,\n      gave_up_count: gaveUp.length,\n      total_processed: results.length,\n    },\n  },\n];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -1593,7 +1644,7 @@
         -176
       ],
       "parameters": {
-        "jsCode": "function readCaptureFeedStats() {\n const names=[\"YouTube — UFC Predictions Tracker\",\"YouTube — The MMA Guru\",\"YouTube — Lucrative James\",\"YouTube — MMA Lock of the Night\",\"YouTube — Kunath MMA\",\"YouTube — TonyHasDiedMMA\",\"YouTube — MMA Husky Hustler\",\"YouTube — Walk the Line MMA\",\"YouTube — Artem MMA\",\"YouTube — BedtimeMMA\",\"YouTube — BetSam\",\"YouTube — JakeGerberMMA\",\"YouTube — Funky Bunch MMA\"];\n const failed=[];let checked=0;\n let root;\n try {root=$('Get YouTube Upload Playlists').first().json;} catch {return {expected:names.length,checked:0,failed_count:0,loaded:0,failed:[]};}\n const channels=Array.isArray(root.items)?root.items:[];\n const ids=[\"UCaU2fDiT9fCTABiiotiG2aw\",\"UCIhQvpinmS8Eq6PrQ021DKQ\",\"UCrxm8U7aEu18LW3YRFZSvNg\",\"UClwn3zgkfyne2Ecj36Dl7ZQ\",\"UCxl-gwVZTPPhhCbQ5DKTP6Q\",\"UCAELXX1-cUSA5Lc7aDFMZsw\",\"UCFjXgUzCT23D11yF4bcEl2g\",\"UCk9hwi3iECE1Xs-dpdFhXEA\",\"UCpSQhfFzpZ9COp_WiKSUEkQ\",\"UCQAMRRo7fPbQMzlJWOexlZg\",\"UC7LH9bWIKZd82LpdouIBOLw\",\"UCADS14Ed6epGTSy9I3VLxCg\",\"UCwOnVxzxkqDOYnEhhffNMAA\"];\n for(let index=0;index<names.length;index++){\n  const name=names[index];let rows=[];\n  try {rows=$(name).all().map(i=>i.json);} catch {}\n  checked++;\n  const channel=channels.find(c=>c.id===ids[index]);\n  let issue='';\n  if(!channel?.contentDetails?.relatedPlaylists?.uploads)issue='Channel uploads unavailable; check YouTube API access.';\n  else if(!rows.length)issue='No API response received.';\n  else if(rows.some(r=>r.error))issue='YouTube API request failed; check quota and credential restrictions.';\n  else if(rows.some(r=>!Array.isArray(r.items)))issue='Unexpected YouTube API response.';\n  else {\n   const last=rows[rows.length-1];\n   const old=last.items.length>0&&last.items.every(v=>Date.parse(v.contentDetails?.videoPublishedAt||v.snippet?.publishedAt)<Date.now()-6*24*60*60*1000);\n   if(last.nextPageToken&&!old)issue='Scan reached the 500-video safety limit; channel check is incomplete.';\n  }\n  if(issue)failed.push({channel:name.replace(/^YouTube — /,''),error:issue});\n }\n return {expected:names.length,checked,failed_count:failed.length,loaded:checked-failed.length,failed};\n}\n\nconst MAX_ATTEMPTS=3;\nconst minGapMs=5*60*60*1000;\nconst nowMs=Date.now();\nconst candidates=$('Attach Active Event').all().map(i=>i.json);\nconst recordedById=new Map($input.all().map(i=>i.json).filter(r=>r.id!=null&&r.video_id).map(r=>[String(r.video_id),r]));\nconst newVideos=[],retryVideos=[];\nlet alreadyRecorded=0,waitingRetries=0,exhaustedRetries=0;\nfor(const video of candidates){\n if(!video.video_id)continue;\n const row=recordedById.get(String(video.video_id));\n if(!row){newVideos.push({json:{...video,is_retry:false,next_attempt_count:1}});continue;}\n const status=String(row.status||'').trim().toUpperCase();\n if(status!=='RETRY_LATER'){alreadyRecorded++;continue;}\n const attempts=Number(row.attempt_count||0)||0;\n if(attempts>=MAX_ATTEMPTS){exhaustedRetries++;continue;}\n const lastAttempt=Date.parse(row.last_attempt_at);\n if(Number.isFinite(lastAttempt)&&nowMs-lastAttempt<minGapMs){waitingRetries++;continue;}\n retryVideos.push({json:{...video,is_retry:true,next_attempt_count:attempts+1}});\n}\nconst selected=[...newVideos,...retryVideos];\nif(selected.length)return selected;\nconst event=$('Event Ready').first().json;\nconst scan=readCaptureFeedStats();\nconst failed=scan.failed_count;\nconst summary=failed?'No transcripts captured; '+failed+' of '+scan.expected+' YouTube channels failed; scan incomplete':'No new eligible videos to capture';\nreturn [{json:{...event,__no_capture_work:true,scan_stats:scan,eligible_count:candidates.filter(v=>v.video_id).length,already_recorded:alreadyRecorded,waiting_retries:waitingRetries,exhausted_retries:exhaustedRetries,capture_run_state:failed?'error':'idle',capture_run_summary:summary}}];"
+        "jsCode": "function readCaptureFeedStats() {\n const names=[\"YouTube — UFC Predictions Tracker\",\"YouTube — The MMA Guru\",\"YouTube — Lucrative James\",\"YouTube — MMA Lock of the Night\",\"YouTube — Kunath MMA\",\"YouTube — TonyHasDiedMMA\",\"YouTube — MMA Husky Hustler\",\"YouTube — Walk the Line MMA\",\"YouTube — Artem MMA\",\"YouTube — BedtimeMMA\",\"YouTube — BetSam\",\"YouTube — JakeGerberMMA\",\"YouTube — Funky Bunch MMA\"];\n const failed=[];let checked=0;\n let root;\n try {root=$('Get YouTube Upload Playlists').first().json;} catch {return {expected:names.length,checked:0,failed_count:0,loaded:0,failed:[]};}\n const channels=Array.isArray(root.items)?root.items:[];\n const ids=[\"UCaU2fDiT9fCTABiiotiG2aw\",\"UCIhQvpinmS8Eq6PrQ021DKQ\",\"UCrxm8U7aEu18LW3YRFZSvNg\",\"UClwn3zgkfyne2Ecj36Dl7ZQ\",\"UCxl-gwVZTPPhhCbQ5DKTP6Q\",\"UCAELXX1-cUSA5Lc7aDFMZsw\",\"UCFjXgUzCT23D11yF4bcEl2g\",\"UCk9hwi3iECE1Xs-dpdFhXEA\",\"UCpSQhfFzpZ9COp_WiKSUEkQ\",\"UCQAMRRo7fPbQMzlJWOexlZg\",\"UC7LH9bWIKZd82LpdouIBOLw\",\"UCADS14Ed6epGTSy9I3VLxCg\",\"UCwOnVxzxkqDOYnEhhffNMAA\"];\n for(let index=0;index<names.length;index++){\n  const name=names[index];let rows=[];\n  try {rows=$(name).all().map(i=>i.json);} catch {}\n  checked++;\n  const channel=channels.find(c=>c.id===ids[index]);\n  let issue='';\n  if(!channel?.contentDetails?.relatedPlaylists?.uploads)issue='Channel uploads unavailable; check YouTube API access.';\n  else if(!rows.length)issue='No API response received.';\n  else if(rows.some(r=>r.error))issue='YouTube API request failed; check quota and credential restrictions.';\n  else if(rows.some(r=>!Array.isArray(r.items)))issue='Unexpected YouTube API response.';\n  else {\n   const last=rows[rows.length-1];\n   const old=last.items.length>0&&last.items.every(v=>Date.parse(v.contentDetails?.videoPublishedAt||v.snippet?.publishedAt)<Date.now()-6*24*60*60*1000);\n   if(last.nextPageToken&&!old)issue='Scan reached the 500-video safety limit; channel check is incomplete.';\n  }\n  if(issue)failed.push({channel:name.replace(/^YouTube — /,''),error:issue});\n }\n return {expected:names.length,checked,failed_count:failed.length,loaded:checked-failed.length,failed};\n}\n\nconst MAX_ATTEMPTS=3;\nconst minGapMs=5*60*60*1000;\nconst nowMs=Date.now();\nconst candidates=$('Attach Active Event').all().map(i=>i.json);\nconst recordedById=new Map($input.all().map(i=>i.json).filter(r=>r.id!=null&&r.video_id).map(r=>[String(r.video_id),r]));\nconst newVideos=[],retryVideos=[];\nlet alreadyRecorded=0,waitingRetries=0,exhaustedRetries=0;\nfor(const video of candidates){\n if(!video.video_id)continue;\n const row=recordedById.get(String(video.video_id));\n if(!row){newVideos.push({json:{...video,is_retry:false,next_attempt_count:1}});continue;}\n const status=String(row.status||'').trim().toUpperCase();\n if(status!=='RETRY_LATER'){alreadyRecorded++;continue;}\n const attempts=Number(row.attempt_count||0)||0;\n if(attempts>=MAX_ATTEMPTS){exhaustedRetries++;continue;}\n const lastAttempt=Date.parse(row.last_attempt_at);\n if(Number.isFinite(lastAttempt)&&nowMs-lastAttempt<minGapMs){waitingRetries++;continue;}\n retryVideos.push({json:{...video,is_retry:true,next_attempt_count:attempts+1}});\n}\nconst selected=[...newVideos,...retryVideos];\nif(selected.length){const scan=readCaptureFeedStats();return selected.map(item=>({json:{...item.json,scan_stats:scan}}));}\nconst event=$('Event Ready').first().json;\nconst scan=readCaptureFeedStats();\nconst failed=scan.failed_count;\nconst summary=failed?'No transcripts captured; '+failed+' of '+scan.expected+' YouTube channels failed; scan incomplete':'No new eligible videos to capture';\nreturn [{json:{...event,__no_capture_work:true,scan_stats:scan,eligible_count:candidates.filter(v=>v.video_id).length,already_recorded:alreadyRecorded,waiting_retries:waitingRetries,exhausted_retries:exhaustedRetries,capture_run_state:failed?'error':'idle',capture_run_summary:summary}}];"
       }
     },
     {
@@ -2481,7 +2532,7 @@
       "parameters": {
         "mode": "runOnceForAllItems",
         "language": "javaScript",
-        "jsCode": "const source=$('Select Videos To Process').first().json;\nconst esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');\nconst scan=source.scan_stats||{expected:0,checked:0,loaded:0,failed_count:0,failed:[]};\nconst lines=[scan.failed_count?'<b>UFC capture finished with YouTube API errors</b>':'<b>UFC capture complete</b>','', '<b>Event:</b> '+esc(source.event_name),''];\nif(scan.failed_count===scan.expected&&scan.expected>0){\n lines.push('No transcripts captured. All '+scan.expected+' YouTube YouTube channels failed to load, so new videos could not be checked.');\n}else if(scan.failed_count){\n lines.push('No new eligible videos found in the '+scan.loaded+' YouTube channels that loaded. '+scan.failed_count+' of '+scan.expected+' channels failed, so this check is incomplete.');\n}else{\n lines.push('No new eligible videos to capture. Checked '+scan.checked+' YouTube channels.');\n if(source.already_recorded)lines.push(source.already_recorded+' eligible videos were already recorded.');\n}\nif(source.waiting_retries)lines.push(source.waiting_retries+' transcript retries are waiting for the five-hour retry interval.');\nif(source.exhausted_retries)lines.push(source.exhausted_retries+' videos have reached the transcript attempt limit.');\nif(scan.failed_count){\n lines.push('','<b>YouTube API errors:</b>');\n for(const failure of scan.failed.slice(0,4))lines.push('• '+esc(failure.channel)+': '+esc(failure.error));\n if(scan.failed.length>4)lines.push('… and '+(scan.failed.length-4)+' more YouTube channels.');\n lines.push('','Try /capture later. You can also use /addvideo URL to submit one public video directly.');\n}\nif(source.spreadsheet_url)lines.push('','<a href=\"'+esc(source.spreadsheet_url)+'\">Open transcript spreadsheet</a>');\nreturn [{json:{telegram_message:lines.join('\\n'),event_name:source.event_name,spreadsheet_url:source.spreadsheet_url,captured_count:0,retry_count:0,gave_up_count:0,total_processed:0,capture_run_state:source.capture_run_state,capture_run_summary:source.capture_run_summary}}];"
+        "jsCode": "let source;\ntry{source=$('Exclude Shorts').first().json;}catch{source=$('Select Videos To Process').first().json;}\nconst esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;');\nconst scan=source.scan_stats||{expected:0,checked:0,loaded:0,failed_count:0,failed:[]};\nconst lines=[scan.failed_count?'<b>UFC capture finished with YouTube API errors</b>':'<b>UFC capture complete</b>','', '<b>Event:</b> '+esc(source.event_name),''];\nif(scan.failed_count===scan.expected&&scan.expected>0){\n lines.push('No transcripts captured. All '+scan.expected+' YouTube channels failed to load, so new videos could not be checked.');\n}else if(scan.failed_count){\n lines.push('No new eligible videos found in the '+scan.loaded+' YouTube channels that loaded. '+scan.failed_count+' of '+scan.expected+' channels failed, so this check is incomplete.');\n}else{\n lines.push('No new eligible videos to capture. Checked '+scan.checked+' YouTube channels.');\n if(source.already_recorded)lines.push(source.already_recorded+' eligible videos were already recorded.');\n}\nif(source.shorts_excluded_count)lines.push(source.shorts_excluded_count+' Shorts/short clips excluded. Only videos longer than three minutes are eligible.');\nif(source.waiting_retries)lines.push(source.waiting_retries+' transcript retries are waiting for the five-hour retry interval.');\nif(source.exhausted_retries)lines.push(source.exhausted_retries+' videos have reached the transcript attempt limit.');\nif(scan.failed_count){\n lines.push('','<b>YouTube API errors:</b>');\n for(const failure of scan.failed.slice(0,4))lines.push('• '+esc(failure.channel)+': '+esc(failure.error));\n if(scan.failed.length>4)lines.push('… and '+(scan.failed.length-4)+' more YouTube channels.');\n lines.push('','Try /capture later. You can also use /addvideo URL to submit one public video directly.');\n}\nif(source.spreadsheet_url)lines.push('','<a href=\"'+esc(source.spreadsheet_url)+'\">Open transcript spreadsheet</a>');\nreturn [{json:{telegram_message:lines.join('\\n'),event_name:source.event_name,spreadsheet_url:source.spreadsheet_url,captured_count:0,retry_count:0,gave_up_count:0,total_processed:0,capture_run_state:source.capture_run_state,capture_run_summary:source.capture_run_summary}}];"
       }
     },
     {
@@ -3430,6 +3481,117 @@
           "name": "httpQueryAuth credential"
         }
       }
+    },
+    {
+      "id": "359117f6-f8f1-4023-8b6c-194541b56055",
+      "name": "Prepare Video Duration Batches",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "const videos=$input.all().map(i=>i.json);\nif(!videos.length||videos.some(v=>!/^[A-Za-z0-9_-]{11}$/.test(String(v.video_id||''))))throw new Error('Duration check requires valid video IDs.');\nconst unique=[...new Map(videos.map(v=>[v.video_id,v])).values()];\nconst batches=[];\nfor(let offset=0;offset<unique.length;offset+=50){\n const rows=unique.slice(offset,offset+50);\n batches.push({json:{video_ids:rows.map(v=>v.video_id).join(','),videos:rows}});\n}\nreturn batches;"
+      }
+    },
+    {
+      "id": "91bec20a-7999-4c88-96e8-82702a57fa9b",
+      "name": "Read Video Durations",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        500,
+        0
+      ],
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/videos",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "contentDetails"
+            },
+            {
+              "name": "id",
+              "value": "={{ $json.video_ids }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "50"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "httpQueryAuth": {
+          "name": "httpQueryAuth credential"
+        }
+      }
+    },
+    {
+      "id": "e385c205-0899-4389-af14-99f5c298c628",
+      "name": "Exclude Shorts",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        300,
+        0
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "function durationSeconds(value) {\n const match=/^P(?:(\\d+(?:\\.\\d+)?)D)?(?:T(?:(\\d+(?:\\.\\d+)?)H)?(?:(\\d+(?:\\.\\d+)?)M)?(?:(\\d+(?:\\.\\d+)?)S)?)?$/.exec(String(value||''));\n if(!match||!match.slice(1).some(v=>v!==undefined))return null;\n const seconds=Number(match[1]||0)*86400+Number(match[2]||0)*3600+Number(match[3]||0)*60+Number(match[4]||0);\n return Number.isFinite(seconds)&&seconds>0?seconds:null;\n}\nconst candidates=$('Prepare Video Duration Batches').all().flatMap(i=>i.json.videos);\nconst metadata=new Map();\nfor(const response of $input.all()){\n if(response.json.error||!Array.isArray(response.json.items))throw new Error('YouTube duration lookup failed; processing blocked to prevent Shorts.');\n for(const video of response.json.items)metadata.set(video.id,video);\n}\nconst kept=[],excluded=[];\nfor(const candidate of candidates){\n const seconds=durationSeconds(metadata.get(candidate.video_id)?.contentDetails?.duration);\n if(seconds===null)throw new Error('YouTube duration unavailable for '+candidate.video_id+'; processing blocked to prevent Shorts.');\n const explicit=/\\/shorts\\//i.test(String(candidate.video_url||''))||/(?:#short\\b|\\bshorts\\b)/i.test(String(candidate.video_title||''));\n if(seconds<=181||explicit){excluded.push({video_id:candidate.video_id,seconds,reason:explicit?'explicit_shorts_marker':'duration_at_most_181_seconds'});continue;}\n kept.push({...candidate,video_duration_seconds:seconds});\n}\nif(kept.length)return kept.map(v=>({json:{...v,shorts_excluded_count:excluded.length}}));\nlet context={...candidates[0]};\ndelete context.video_id;\ntry{context.scan_stats=$('Select Videos To Process').first().json.scan_stats;}catch{}\nreturn [{json:{...context,__no_capture_work:true,__no_analysis_work:true,shorts_excluded_count:excluded.length,shorts_excluded:excluded,capture_run_state:'idle',capture_run_summary:'No eligible long-form videos; '+excluded.length+' Shorts/short clips excluded (three minutes or shorter, or explicit Shorts marker).'}}];"
+      }
+    },
+    {
+      "id": "5ad8745e-a7f1-47ff-b3f5-838e3d5c1dee",
+      "name": "Long Videos Remain?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        900,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ Boolean($json.video_id) }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
     }
   ],
   "nodeGroups": [
@@ -3493,7 +3655,11 @@
         "YouTube — BetSam",
         "YouTube — JakeGerberMMA",
         "YouTube — Funky Bunch MMA",
-        "Get YouTube Upload Playlists"
+        "Get YouTube Upload Playlists",
+        "Prepare Video Duration Batches",
+        "Read Video Durations",
+        "Exclude Shorts",
+        "Long Videos Remain?"
       ],
       "description": "Match event titles, capture eligible transcripts, handle one-video retries and record run outcomes."
     }

@@ -5,15 +5,15 @@ All 28 UFC workflows visible through MCP were read directly from the live instan
 | Workflow | Nodes | Purpose |
 | --- | --- | --- |
 | [UFC \| 1. Set Active UFC Event (Sunday nights)](workflows/1-set-active-ufc-event-sunday-nights.md) | 10 | Select the next future UFC event and make it the single active event used by capture, analysis and Telegram views. |
-| [UFC \| 2. Extract Picker Video Transcripts](workflows/2-extract-picker-video-transcripts.md) | 53 | Discover eligible prediction videos for the active event and save English transcript chunks to its spreadsheet. |
-| [UFC \| 3. Analyse Picker Video Transcripts](workflows/3-analyse-picker-video-transcripts.md) | 65 | Turn captured transcripts into structured winner picks, props and fight reasoning while preserving event and fight identity. |
+| [UFC \| 2. Extract Picker Video Transcripts](workflows/2-extract-picker-video-transcripts.md) | 57 | Discover eligible prediction videos for the active event and save English transcript chunks to its spreadsheet. |
+| [UFC \| 3. Analyse Picker Video Transcripts](workflows/3-analyse-picker-video-transcripts.md) | 69 | Turn captured transcripts into structured winner picks, props and fight reasoning while preserving event and fight identity. |
 | [UFC \| 4. Add New UFC Events](workflows/4-add-new-ufc-events.md) | 12 | Maintain the event catalogue by scraping the official UFC upcoming-events page. |
 | [UFC \| 5. Telegram Command Router](workflows/5-telegram-command-router.md) | 29 | Provide the owner-only Telegram command and inline-button entry point for the system. |
 | [UFC \| 6. UFC Consensus Picks (weighted)](workflows/6-ufc-consensus-picks-weighted.md) | 16 | Aggregate saved official picks into a weighted consensus and optionally explain each bout. |
 | [UFC \| 7. Grade Picks](workflows/7-grade-picks.md) | 24 | Grade saved predictions against completed ESPN fight results and persist the historical record. |
 | [UFC \| 8. Picker Leaderboard](workflows/8-picker-leaderboard.md) | 5 | Report the all-time picker leaderboard from saved grades. |
 | [UFC \| 9. OpenRouter Balance](workflows/9-openrouter-balance.md) | 12 | Answer credit-balance requests and monitor OpenRouter credit availability. |
-| [UFC \| svc.add_video](workflows/svc-add-video.md) | 24 | Capture and analyse one owner-submitted public YouTube video from /addvideo. |
+| [UFC \| svc.add_video](workflows/svc-add-video.md) | 25 | Capture and analyse one owner-submitted public YouTube video from /addvideo. |
 | [UFC \| svc.alert_failure](workflows/svc-alert-failure.md) | 15 | Record production workflow failures as incidents, suppress repeat alerts and retry selected transient failures. |
 | [UFC \| svc.apply_card_changes](workflows/svc-apply-card-changes.md) | 26 | Apply eligible recorded Fight Card changes and queue affected videos for re-analysis. |
 | [UFC \| svc.auto_resolve_incidents](workflows/svc-auto-resolve-incidents.md) | 6 | Close quiet error incidents on a time-based rule. |

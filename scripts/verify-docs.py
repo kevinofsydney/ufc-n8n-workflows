@@ -43,7 +43,7 @@ for path in [ROOT/'README.md',*(ROOT/'docs').rglob('*.md')]:
   target=urllib.parse.unquote(target.split('#')[0])
   check((path.parent/target).exists(),f'Broken link in {path.relative_to(ROOT)}: {target}')
 patterns=[r'gh[pousr]_[A-Za-z0-9_]{20,}',r'sk-[A-Za-z0-9_-]{20,}',r'AIza[A-Za-z0-9_-]{30,}',r'eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}',r'Bearer [A-Za-z0-9._-]{15,}',r'-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----']
-paths=[ROOT/'README.md',*(ROOT/'workflows').rglob('*.json'),*(ROOT/'source').rglob('*.js'),*(ROOT/'docs').rglob('*'),*(ROOT/'inventory').glob('*.json'),*(ROOT/'scripts').glob('*.py'),*(ROOT/'scripts').glob('*.json')]
+paths=[ROOT/'README.md',*(ROOT/'workflows').rglob('*.json'),*(ROOT/'source').rglob('*.js'),*(ROOT/'docs').rglob('*'),*(ROOT/'inventory').glob('*.json'),*(ROOT/'scripts').glob('*.py'),*(ROOT/'scripts').glob('*.json'),*(ROOT/'shorts-filter').glob('*.js'),*(ROOT/'shorts-filter').glob('*.mjs')]
 private_identifiers={old for old,new in replacements_from_private().items() if new=='0' or new.startswith('YOUR_')}
 for path in paths:
  if not path.is_file():continue

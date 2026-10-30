@@ -45,7 +45,7 @@ for(const video of candidates){
  retryVideos.push({json:{...video,is_retry:true,next_attempt_count:attempts+1}});
 }
 const selected=[...newVideos,...retryVideos];
-if(selected.length)return selected;
+if(selected.length){const scan=readCaptureFeedStats();return selected.map(item=>({json:{...item.json,scan_stats:scan}}));}
 const event=$('Event Ready').first().json;
 const scan=readCaptureFeedStats();
 const failed=scan.failed_count;
