@@ -10,7 +10,7 @@ The original documentation task did not change or execute n8n workflows. The sub
 
 ## Changes since the first capture
 
-Eight workflows changed after the 30 October capture; the other 20 kept the same published versions.
+Nine workflows changed after the 30 October capture; the other 19 kept the same published versions.
 
 | Workflow | Change | Evidence |
 | --- | --- | --- |
@@ -21,11 +21,9 @@ Eight workflows changed after the 30 October capture; the other 20 kept the same
 | svc.sync_bout_ids | Slug-based ufc: IDs can upgrade to numeric UFC IDs | Local fixtures for the upgrade, the no-op and refused changes. Production execution 3558 ran successfully, but UFC still served no data-fmid, so the upgrade itself has not run live |
 | svc.apply_card_changes | A main event waiting to leave stays on as main_card, so a replacement applies at once | Simulated a full swap with live card data; before the change it threw while the old bout was waiting. No live swap has occurred since |
 | 2. Extract Picker Video Transcripts | Tracks DFS by the Numbers as the fourteenth channel | Production execution 3560 checked all 14 channels and captured its video; analysis execution 3563 completed it |
+| 2. Extract Picker Video Transcripts and 3. Analyse Picker Video Transcripts | A video with no usable duration is skipped and reported instead of failing the run | 46 fixture tests. Production executions 3574 and 3577 succeeded with no new work, so the skip has not run live |
+| svc.detect_card_changes, svc.health_sweep and svc.populate_fight_card | Repeated failed card checks raise an alert, and ESPN aliases merge with nicknames | 26 fixture tests. Production execution 3580 recorded an empty streak on a verified card and sweep 3584 reported no problems. No failed check or renamed opponent has occurred since |
 | 4. Add New UFC Events | Runs daily and sends a Telegram message when an event is renamed | Pinned-data execution 3545 routed a renamed item to the alert and an unchanged item away from it; production execution 3546 sent no false alert. No live rename has occurred since |
-
-## Changes awaiting publication
-
-The silent UNAVAILABLE check and the lost ESPN alias are fixed in this repository and covered by fixture tests, but **neither fix is live yet**. The published workflows keep both behaviors until the owner approves the [planned live change](card-handling.md#planned-live-change), which includes a schema change and a backfill of the current card. `inventory/pending-live.json` lists the source files that intentionally differ from their snapshots; the snapshots themselves still record live state.
 
 ## Checks performed
 

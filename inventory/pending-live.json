@@ -1,8 +1,4 @@
 {
   "description": "Source files changed in this repository but not yet published to n8n, so they intentionally differ from their snapshot. See docs/card-handling.md. Empty this list when the snapshots are refreshed after publishing.",
-  "sources": [
-    "source/svc-detect-card-changes/09-compare-card-changes.js",
-    "source/svc-health-sweep/08-sweep-pipeline-health.js",
-    "source/svc-populate-fight-card/21-build-fight-card-matrix.js"
-  ]
+  "sources": []
 }

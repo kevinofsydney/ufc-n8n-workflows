@@ -15,7 +15,7 @@ Capture summaries report short-clip exclusions and unverified videos separately 
 
 ## Unverified videos
 
-Status on 2 November 2026: this behaviour is in the repository source and snapshots but is not yet published to the live n8n workflows. The version IDs in `inventory/manifest.json` still name the previous live versions.
+Published on 2 November 2026. Production capture 3574 and analysis 3577 ran successfully after publishing, but neither had new work, so per-video skipping has only been exercised by fixtures so far.
 
 The guard adds `shorts_unverified_count`, `shorts_unverified` (ID, title, channel, reason) and `shorts_unverified_note` to its output. The reason is `no_usable_duration` or `absent_from_api_response`. If nothing remains, it returns the usual no-work result with `capture_run_state: idle`.
 

@@ -8,8 +8,8 @@ Discover eligible prediction videos for the active event and save English transc
 
 - Workflow ID: `y20ZZYzBVS6y8kC0`
 - Published: `True`
-- Published version: `31fa9d9b-7d7d-4ea7-bea5-301e6fa6ae5f`
-- Draft version: `31fa9d9b-7d7d-4ea7-bea5-301e6fa6ae5f`
+- Published version: `3c95b5ee-b352-427e-bbdd-795039d165fb`
+- Draft version: `3c95b5ee-b352-427e-bbdd-795039d165fb`
 - Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 58
 - Timezone: `inherits instance timezone; not present in MCP snapshot`

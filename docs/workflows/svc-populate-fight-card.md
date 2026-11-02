@@ -8,8 +8,8 @@ Build a verified Fight Card for an empty event sheet while protecting existing e
 
 - Workflow ID: `SBBK0hOGx2uPYpm4`
 - Published: `True`
-- Published version: `ad9a697e-2c72-4dab-b1bc-7d4dadf7f621`
-- Draft version: `ad9a697e-2c72-4dab-b1bc-7d4dadf7f621`
+- Published version: `3faf97d8-9f71-4818-9fdf-a4b4f3cd240b`
+- Draft version: `3faf97d8-9f71-4818-9fdf-a4b4f3cd240b`
 - Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 40
 - Timezone: `Australia/Sydney`

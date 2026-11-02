@@ -8,8 +8,8 @@ Turn captured transcripts into structured winner picks, props and fight reasonin
 
 - Workflow ID: `BvLnPFMwQ2vhPkgv`
 - Published: `True`
-- Published version: `70512820-84f9-49ab-b49f-e65bfb8bda3c`
-- Draft version: `70512820-84f9-49ab-b49f-e65bfb8bda3c`
+- Published version: `15109a9b-ed44-48ba-92c6-17dc9b7852be`
+- Draft version: `15109a9b-ed44-48ba-92c6-17dc9b7852be`
 - Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 69
 - Timezone: `inherits instance timezone; not present in MCP snapshot`

@@ -8,8 +8,8 @@ Detect differences between the saved Fight Card and the current official card.
 
 - Workflow ID: `UDRrGRyeFPL9Lk3S`
 - Published: `True`
-- Published version: `3aca1526-77ce-4ab5-86cc-4ee14d1f813e`
-- Draft version: `3aca1526-77ce-4ab5-86cc-4ee14d1f813e`
+- Published version: `0786ef94-5229-40f3-b75e-1b8f87cdc40e`
+- Draft version: `0786ef94-5229-40f3-b75e-1b8f87cdc40e`
 - Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 12
 - Timezone: `Australia/Sydney`
@@ -53,7 +53,7 @@ Configured error handler: [UFC | svc.alert_failure](svc-alert-failure.md). See [
 | Node | Table | Operation | Written fields |
 | --- | --- | --- | --- |
 | Read Fight Card State | ufc_fight_card_state | get |  |
-| Record Card Check | ufc_fight_card_state | update | change_status, change_checked_at, pending_change_json, pending_change_fingerprint, pending_seen_count, pending_first_seen_at, source_card_json, official_card_json |
+| Record Card Check | ufc_fight_card_state | update | change_status, change_checked_at, pending_change_json, pending_change_fingerprint, pending_seen_count, pending_first_seen_at, source_card_json, official_card_json, card_unavailable_since, card_unavailable_count, card_unavailable_reason |
 
 Terminal nodes in the saved graph: `Return Card Check`. Terminal nodes include notifications and parallel branches; not every terminal is the sub-workflow return contract. Caller wait settings and worker result code determine how outputs are consumed.
 

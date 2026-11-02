@@ -1,6 +1,6 @@
 # Fight-card handling changes
 
-**Status: committed in this repository, not published.** The three source files listed in [`inventory/pending-live.json`](../inventory/pending-live.json) differ from their live snapshots until the steps below are approved and run. Until then, the live pipeline still has both gaps.
+**Status: published on 2 November 2026.** Production execution 3580 recorded the new fields on a verified card, and health sweep 3584 ran with no problems. No failed check has occurred since, so the alert itself has only been exercised by fixtures.
 
 ## Silent UNAVAILABLE card checks
 
@@ -39,36 +39,24 @@ The comma format is valid because no code parses the alias cell. `Build Fight Ca
 Checked read-only on 2 November 2026 for UFC Fight Night: Cortes Acosta vs Walker (8 November UTC):
 
 - **Confirmed lost.** The saved card has `fighter_b_aliases` = `Canela` for José Souza. Recomputing the saved `source_fingerprint` proves the builder produced exactly `Jose Henrique` before the matrix step replaced it.
-- **No picks affected yet.** The event has three videos and none has been analysed, so no pick has been dropped.
+- **No picks lost so far.** All four analysed videos extracted this fight.
 - **Risk is low but real.** Two transcripts are captured. Lucrative James uses Jose Souza and "Jose Enrique" interchangeably, and Artem MMA uses auto-captioned forms of Souza. Both also name Jonny Parsons. The prompt tells the model to ignore a fighter it cannot reliably map to the card, so a picker using only the ESPN name could lose the pick with no error. That loss has not been observed.
 
-### Backfill
+### Current card not backfilled
 
-**The existing READY card needs a backfill.** `svc.populate_fight_card` only writes empty cards and the card check does not rewrite aliases, so publishing alone leaves this row unchanged.
+The fix applies to cards populated from now on. `svc.populate_fight_card` only writes empty cards and the card check does not rewrite aliases, so the current card keeps `Canela`.
 
-The alias cell is part of `card_fingerprint`, so changing only the sheet makes the preflight stop analysis with "data differs from the verified automatic card". All three values must change together, between analysis runs:
+This was left deliberately. The alias cell is part of `card_fingerprint`, so the sheet cell, `source_card_json` and `card_fingerprint` would all have to change together between analysis runs, or the preflight stops analysis with "data differs from the verified automatic card". The n8n MCP tools cannot update table rows, so that would need a temporary workflow, for a fight every analysed video has already extracted.
 
-| Target | Old | New |
-| --- | --- | --- |
-| Event sheet `Fight Card!E15` (fight 14, fighter_b_aliases) | `Canela` | `Jose Henrique, Canela` |
-| State `source_card_json`, fight 14 `fighter_b_aliases` | `Canela` | `Jose Henrique, Canela` |
-| State `card_fingerprint` | `fnv1a-f22a24f9` | `fnv1a-b97cb86f` |
+## Live rollout
 
-The old fingerprint was reproduced from the saved card, and the new one uses the same function. `source_fingerprint` does not change. Confirm the row and the old values again immediately before writing.
+On 2 November 2026 the three columns were added to `ufc_fight_card_state`, then these were published:
 
-## Planned live change
+1. `svc.detect_card_changes`: the `Compare Card Changes` code, plus the three `Record Card Check` mappings and schema entries.
+2. `svc.health_sweep`: the `Sweep Pipeline Health` code.
+3. `svc.populate_fight_card`: the `Build Fight Card Matrix` code.
 
-Nothing here has been run. Each step needs the owner's approval.
-
-1. Re-read the three published workflows and confirm they still match the 2 November snapshots.
-2. Add the three columns to `ufc_fight_card_state`.
-3. Update and publish `svc.detect_card_changes`: the `Compare Card Changes` code, plus the three `Record Card Check` mappings and matching schema entries.
-4. Update and publish `svc.health_sweep`: the `Sweep Pipeline Health` code.
-5. Update and publish `svc.populate_fight_card`: the `Build Fight Card Matrix` code.
-6. Apply the backfill above between analysis runs, then confirm the next analysis passes its preflight.
-7. Refresh the snapshots, empty `inventory/pending-live.json`, and update the narrative that describes these changes as unpublished.
-
-The next production analysis run is the first real exercise of the detection code published on 2 November as well as of these changes. To roll back, restore the previous workflow versions. The extra columns are harmless when unused, and the backfill can stay because the alias remains correct.
+To roll back, restore the previous workflow versions. The extra columns are harmless when unused.
 
 ## Tests
 
