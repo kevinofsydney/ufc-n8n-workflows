@@ -23,7 +23,7 @@ Detect differences between the saved Fight Card and the current official card.
 
 ## Important behavior and limits
 
-This workflow records a proposed difference and does not edit the spreadsheet. Removal/replacement safety depends on cross-source confirmation and the apply worker's gates; a changed page alone should not erase predictions. Its card builder is a separate copy of the svc.populate_fight_card code and must be changed with it. A card that cannot be verified returns UNAVAILABLE without failing the execution; analysis continues and no alert is raised.
+This workflow records a proposed difference and does not edit the spreadsheet. Removal/replacement safety depends on cross-source confirmation and the apply worker's gates; a changed page alone should not erase predictions. Its card builder is a separate copy of the svc.populate_fight_card code and must be changed with it. A card that cannot be verified returns UNAVAILABLE without failing the execution and analysis continues. The published version raises no alert; the repository source records a failure streak for svc.health_sweep and awaits publication (see docs/card-handling.md).
 
 ## Triggers and input contract
 

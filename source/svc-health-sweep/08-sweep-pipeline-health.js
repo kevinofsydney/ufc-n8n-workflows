@@ -1,7 +1,7 @@
 // Health sweep: finds problems that never raise an error, keeps their incidents up to date, and resolves
 // incidents that have cleared. Alerts go out as one message per sweep, each problem at most once a day.
 const WATCH={y20ZZYzBVS6y8kC0:{name:'2. Extract Picker Video Transcripts',maxGapHours:38},BvLnPFMwQ2vhPkgv:{name:'3. Analyse Picker Video Transcripts',maxGapHours:38}};
-const STUCK_RUN_HOURS=2,STUCK_VIDEO_HOURS=3,CARD_CHANGED_HOURS=13,CARD_READY_DAYS=5,WAITING_CHANGE_HOURS=24;
+const STUCK_RUN_HOURS=2,STUCK_VIDEO_HOURS=3,CARD_CHANGED_HOURS=13,CARD_READY_DAYS=5,WAITING_CHANGE_HOURS=24,CARD_UNAVAILABLE_CHECKS=2,CARD_UNAVAILABLE_HOURS=12;
 let request={};try{request=$('Run Sweep').first().json;}catch(e){request={};}
 const now=Date.now(),nowIso=new Date(now).toISOString();
 const hours=t=>t?(now-Date.parse(t))/3600e3:Infinity;
@@ -31,6 +31,8 @@ if(event){
  if(daysOut>0&&daysOut<=CARD_READY_DAYS&&(!state||!['READY','PRESERVED'].includes(state.status)))add('card_not_ready',event.event_key,'svc.populate_fight_card','The fight card for '+esc(event.event_name)+' is '+(state?state.status:'not set up')+' with '+Math.round(daysOut*24)+' hours to go.');
  if(state&&state.change_status==='NEEDS_REVIEW')add('card_needs_review',event.event_key,'svc.apply_card_changes','A card change for '+esc(event.event_name)+' needs review (too many removals at once).');
  if(state&&['CHANGED','PARTLY_APPLIED'].includes(state.change_status)&&hours(state.pending_first_seen_at)>WAITING_CHANGE_HOURS&&daysOut>0)add('card_change_waiting',event.event_key,'svc.apply_card_changes','A card change for '+esc(event.event_name)+' has been waiting '+Math.round(hours(state.pending_first_seen_at))+' hours (removals need ESPN to drop the bout too).');
+ const uncheckedCount=Number(state?.card_unavailable_count||0);
+ if(state&&['READY','PRESERVED'].includes(state.status)&&state.card_unavailable_since&&daysOut>0&&daysOut<=CARD_READY_DAYS&&(uncheckedCount>=CARD_UNAVAILABLE_CHECKS||hours(state.card_unavailable_since)>=CARD_UNAVAILABLE_HOURS))add('card_check_unavailable',event.event_key,'svc.detect_card_changes','Card changes for '+esc(event.event_name)+' could not be checked ('+uncheckedCount+' check'+(uncheckedCount===1?'':'s')+' in a row over '+Math.round(hours(state.card_unavailable_since))+' hours): '+esc(state.card_unavailable_reason)+'.');
  const mine=videos.filter(v=>v.event_key===event.event_key);
  const stuck=mine.filter(v=>v.analysis_status==='PROCESSING'&&hours(v.last_attempt_at||v.updatedAt)>STUCK_VIDEO_HOURS);
  if(stuck.length)add('stuck_videos',event.event_key,'3. Analyse Picker Video Transcripts',stuck.length+' video'+(stuck.length>1?'s have':' has')+' been PROCESSING for over '+STUCK_VIDEO_HOURS+' hours: '+stuck.slice(0,3).map(v=>esc(v.channel_name)).join(', ')+'.');

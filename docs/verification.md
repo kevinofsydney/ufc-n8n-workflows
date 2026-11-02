@@ -23,6 +23,10 @@ Eight workflows changed after the 30 October capture; the other 20 kept the same
 | 2. Extract Picker Video Transcripts | Tracks DFS by the Numbers as the fourteenth channel | Production execution 3560 checked all 14 channels and captured its video; analysis execution 3563 completed it |
 | 4. Add New UFC Events | Runs daily and sends a Telegram message when an event is renamed | Pinned-data execution 3545 routed a renamed item to the alert and an unchanged item away from it; production execution 3546 sent no false alert. No live rename has occurred since |
 
+## Changes awaiting publication
+
+The silent UNAVAILABLE check and the lost ESPN alias are fixed in this repository and covered by fixture tests, but **neither fix is live yet**. The published workflows keep both behaviors until the owner approves the [planned live change](card-handling.md#planned-live-change), which includes a schema change and a backfill of the current card. `inventory/pending-live.json` lists the source files that intentionally differ from their snapshots; the snapshots themselves still record live state.
+
 ## Checks performed
 
 - Inventory completeness against all 28 MCP search results, with one guide/snapshot per workflow.
@@ -33,7 +37,7 @@ Eight workflows changed after the 30 October capture; the other 20 kept the same
 - Workflow/source scans for common API-key/token patterns, literal authentication secrets, credential IDs/values and prohibited operational/pinned data. A separate pre-publication sweep removes owner identifiers, private resource locators and account-specific URLs; see the privacy review.
 - Public GitHub repository visibility and pushed commit verification.
 
-Run `python3 scripts/verify-docs.py` for repeatable local checks. It requires Python 3 and Node.js and does not contact live services. It is a consistency/secret-pattern check, not a guarantee that every future secret format is detectable. Review staged changes before publishing.
+Run `python3 scripts/verify-docs.py` for repeatable local checks. It requires Python 3 and Node.js and does not contact live services. Run `node --test card-handling/card-handling.test.mjs` for the card-handling fixtures. It is a consistency/secret-pattern check, not a guarantee that every future secret format is detectable. Review staged changes before publishing.
 
 ## Relevant prior runtime evidence
 
@@ -51,6 +55,7 @@ Those historical tests substantiate the recent ingestion change; they do not cer
 - Quiet/error retry resolution includes time-based inferences; diagnosis does not apply fixes.
 - Claim/reservation mechanisms reduce duplication, but a global transaction/lock across all workers is not established.
 - svc.detect_card_changes keeps its own copy of the svc.populate_fight_card card builder; a change to one must be applied to the other.
-- A card check that returns UNAVAILABLE is not alerted, so change detection can stop without an incident.
-- The ESPN spelling recorded for a renamed opponent is replaced by verified profile nicknames before the Fight Card is written.
+- A card check that never records a result (SKIPPED, or an error analysis continues past) raises no incident.
+- A failed card check overwrites change_status with UNAVAILABLE, so an open card_change_waiting incident resolves while the change is still pending.
+- svc.apply_card_changes writes blank aliases for a bout it adds or re-identifies, so an ESPN spelling is not carried through that path.
 - Separate first-class n8n Agent artifacts, actual credentials, template/data files, instance settings and historical executions are not backed up here.

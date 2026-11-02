@@ -25,7 +25,7 @@ Detect silent pipeline problems and maintain health incidents every 30 minutes.
 
 ## Important behavior and limits
 
-Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence.
+Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence. The card_check_unavailable condition is in the repository source and awaits publication (see docs/card-handling.md).
 
 ## Triggers and input contract
 
