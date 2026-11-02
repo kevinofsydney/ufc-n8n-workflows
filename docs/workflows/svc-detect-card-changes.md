@@ -8,9 +8,9 @@ Detect differences between the saved Fight Card and the current official card.
 
 - Workflow ID: `UDRrGRyeFPL9Lk3S`
 - Published: `True`
-- Published version: `b3cb0ce1-ad25-421a-9e0e-64073ee3ad23`
-- Draft version: `b3cb0ce1-ad25-421a-9e0e-64073ee3ad23`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Published version: `3aca1526-77ce-4ab5-86cc-4ee14d1f813e`
+- Draft version: `3aca1526-77ce-4ab5-86cc-4ee14d1f813e`
+- Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 12
 - Timezone: `Australia/Sydney`
 
@@ -23,7 +23,7 @@ Detect differences between the saved Fight Card and the current official card.
 
 ## Important behavior and limits
 
-This workflow records a proposed difference and does not edit the spreadsheet. Removal/replacement safety depends on cross-source confirmation and the apply worker's gates; a changed page alone should not erase predictions.
+This workflow records a proposed difference and does not edit the spreadsheet. Removal/replacement safety depends on cross-source confirmation and the apply worker's gates; a changed page alone should not erase predictions. Its card builder is a separate copy of the svc.populate_fight_card code and must be changed with it. A card that cannot be verified returns UNAVAILABLE without failing the execution; analysis continues and no alert is raised.
 
 ## Triggers and input contract
 

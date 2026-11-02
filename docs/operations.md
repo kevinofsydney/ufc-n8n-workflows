@@ -45,6 +45,7 @@ YouTube metadata quota, Supadata caption usage and OpenRouter model costs are se
 | Card change pending | pending_change_json, confirmation state and NEEDS_REVIEW | Inspect removal/replacement evidence; more than three removals requires review |
 | Summary hard to find | `/videos` then video title | Opens saved analysis without a new extraction charge |
 | Leaderboard/consensus looks stale | Saved grade/extraction timestamps, void markers and latest-per-channel rules | Grading/analysis produce the data; the view does not repair upstream work |
+| Card changes are not being detected | card_check.status and reason in the analysis execution; change_checked_at in ufc_fight_card_state | UNAVAILABLE is not alerted. Compare the official UFC and ESPN data, then keep the svc.detect_card_changes and svc.populate_fight_card builders in step |
 | An incident says resolved but issue persists | resolution text/source and later execution evidence | Quiet-period closure is an inference; record/reopen an owner issue if needed |
 
 ## Testing and publishing a change
@@ -75,7 +76,7 @@ For rollback on the same instance, use n8n version history or apply a known prev
 1. Use the n8n MCP workflow search to inventory every UFC workflow. Retrieve full get_workflow_details results and data-table schemas. Store workflow responses locally at `.private/workflows/WORKFLOW_ID.json` and the search_data_tables structured result at `.private/tables.json`. These inputs are ignored by Git.
 2. Check activeVersion.sameAsDraft. If false, decide whether documenting the published or draft graph, and update the generator/provenance language accordingly; the current generator is for this verified matching snapshot. Update the expected inventory count when workflows change.
 3. Update `scripts/workflow-descriptions.json` after reading changed code and caller contracts. The generator preserves exact references but cannot write an accurate new behavioral explanation by itself.
-4. Run `python3 scripts/build-docs.py`, review the diff and update narrative architecture/operations pages. Remove obsolete generated files deliberately if workflows/nodes were renamed; the generator does not automatically delete old paths.
-5. Run `python3 scripts/verify-docs.py`. Review staged files and secret-scan results. Commit and push only the intended documentation, source and sanitized snapshots.
+4. Run `python3 scripts/build-docs.py` (set `PYTHONUTF8=1` on Windows), review the diff and update narrative architecture/operations pages. Remove obsolete generated files deliberately if workflows/nodes were renamed; the generator does not automatically delete old paths.
+5. Run `python3 scripts/verify-docs.py` (also with `PYTHONUTF8=1` on Windows). Review staged files and secret-scan results. Commit and push only the intended documentation, source and sanitized snapshots.
 
 The snapshot date in the generator and narrative pages must be updated on a new capture. Do not regenerate stale local inputs and label them as freshly read live state.

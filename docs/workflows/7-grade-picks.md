@@ -10,7 +10,7 @@ Grade saved predictions against completed ESPN fight results and persist the his
 - Published: `True`
 - Published version: `5931bebc-95e7-49ae-ad85-ed8107db8ace`
 - Draft version: `5931bebc-95e7-49ae-ad85-ed8107db8ace`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 24
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 

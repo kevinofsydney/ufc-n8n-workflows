@@ -1,5 +1,5 @@
 {
-  "snapshotDate": "2026-10-30",
+  "snapshotDate": "2026-11-02",
   "workflowCount": 28,
   "workflows": [
     {
@@ -41,10 +41,10 @@
       "file": "workflows/4-add-new-ufc-events.json",
       "documentation": "docs/workflows/4-add-new-ufc-events.md",
       "active": true,
-      "activeVersionId": "f3f0c1ec-a566-43a4-867b-0f5db65e2057",
-      "versionId": "f3f0c1ec-a566-43a4-867b-0f5db65e2057",
+      "activeVersionId": "8590a70a-e8e3-400f-8dbe-e403ffb076e3",
+      "versionId": "8590a70a-e8e3-400f-8dbe-e403ffb076e3",
       "nodeCount": 12,
-      "snapshotSha256": "c38adff235aa841d1a53691f2198399f6aaa22838c30f70b6157763124a21d74"
+      "snapshotSha256": "14dc83b072d934d478b4424afefcd66db9a1b542f675ff63a913cffb9683fcfd"
     },
     {
       "id": "MabSJBF0Vt6sMICp",
@@ -173,10 +173,10 @@
       "file": "workflows/svc-detect-card-changes.json",
       "documentation": "docs/workflows/svc-detect-card-changes.md",
       "active": true,
-      "activeVersionId": "b3cb0ce1-ad25-421a-9e0e-64073ee3ad23",
-      "versionId": "b3cb0ce1-ad25-421a-9e0e-64073ee3ad23",
+      "activeVersionId": "3aca1526-77ce-4ab5-86cc-4ee14d1f813e",
+      "versionId": "3aca1526-77ce-4ab5-86cc-4ee14d1f813e",
       "nodeCount": 12,
-      "snapshotSha256": "33fa840bd2b4acd962bc17797d81f3778be1b1fcf30eaefb4e5d3cc91967ad14"
+      "snapshotSha256": "b38f5d3cba62cb3d5a4d3b24ae6f109cddeb0e256fc0281d23a778ce4d961fd7"
     },
     {
       "id": "UB711gFJFn9OuZwb",
@@ -239,10 +239,10 @@
       "file": "workflows/svc-populate-fight-card.json",
       "documentation": "docs/workflows/svc-populate-fight-card.md",
       "active": true,
-      "activeVersionId": "552df8ec-ee31-4838-82d1-c139c3c4bce4",
-      "versionId": "552df8ec-ee31-4838-82d1-c139c3c4bce4",
+      "activeVersionId": "ad9a697e-2c72-4dab-b1bc-7d4dadf7f621",
+      "versionId": "ad9a697e-2c72-4dab-b1bc-7d4dadf7f621",
       "nodeCount": 40,
-      "snapshotSha256": "cf4db237ae8c6ef6cfc5ad225a7372db28e6f42798a59150dd7be6d48865a18d"
+      "snapshotSha256": "851dfd8eb4be8d96941957a1005c4079ab0cf91fff67be469b2540634e11b51b"
     },
     {
       "id": "pHQCLT93NxqScBgQ",
@@ -261,10 +261,10 @@
       "file": "workflows/svc-record-diagnosis.json",
       "documentation": "docs/workflows/svc-record-diagnosis.md",
       "active": true,
-      "activeVersionId": "2b2bca4a-af82-4ce5-85e0-7cfe2cd58680",
-      "versionId": "2b2bca4a-af82-4ce5-85e0-7cfe2cd58680",
-      "nodeCount": 7,
-      "snapshotSha256": "7b5de47986de9019c2f19f76749ff46bbe76b17217d63573bd9e90a3788f157f"
+      "activeVersionId": "9a2a2636-5888-405c-8691-91939fc21034",
+      "versionId": "9a2a2636-5888-405c-8691-91939fc21034",
+      "nodeCount": 9,
+      "snapshotSha256": "3704d096b5762fde32b57bab9f64df0e530e6708b08e72ab8f43c56b9ccc9a26"
     },
     {
       "id": "fZB3SuyzKNXurQyI",
@@ -305,10 +305,10 @@
       "file": "workflows/svc-sync-bout-ids.json",
       "documentation": "docs/workflows/svc-sync-bout-ids.md",
       "active": true,
-      "activeVersionId": "cefcc33c-e278-4535-9fa9-ec7553d25483",
-      "versionId": "cefcc33c-e278-4535-9fa9-ec7553d25483",
+      "activeVersionId": "2ca9c66f-5ea0-4d83-8e16-b0770ea3b45d",
+      "versionId": "2ca9c66f-5ea0-4d83-8e16-b0770ea3b45d",
       "nodeCount": 18,
-      "snapshotSha256": "0fd4a51cf191c237c70e52b663af3491749fdeeae92979b47cc42cd158a1ec5b"
+      "snapshotSha256": "37c3daf352e600af27455ff957138d94b8975449e33f203143de3d1c75613477"
     }
   ]
 }

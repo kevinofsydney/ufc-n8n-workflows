@@ -35,10 +35,14 @@ const unsplit=['main','prelim','early'].every(s=>Array.isArray(official[s+'_ids'
 const mainTimestamp=Number(unsplit?official.hero_timestamp:official.main_timestamp);
 if(!mainTimestamp||Math.abs(mainTimestamp*1000-Date.parse(event.event_datetime_local))>18*3600000)throw new Error('Official UFC card date does not match the selected event.');
 const card=[];
+// UFC sometimes ships .c-listing-fight with an empty data-fmid (rebuilt or altered cards), which
+// collapses every bout_id to 'ufc:'. Fall back to athlete URL slugs, which are always present.
+const athleteSlug=u=>text(u).replace(/^.*\/athlete\//,'').replace(/[^A-Za-z0-9-]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase();
+const boutId=(id,u1,u2)=>text(id)?'ufc:'+text(id):'ufc:'+athleteSlug(u1)+'--'+athleteSlug(u2);
 for(const section of unsplit?['unsplit']:['main','prelim','early']){
  const arrays=['ids','a','b','a_url','b_url'].map(k=>official[section+'_'+k]);
  if(arrays.some(a=>!Array.isArray(a))||arrays.some(a=>a.length!==arrays[0].length))throw new Error('Official UFC card fields are incomplete in '+section+'.');
- arrays[0].forEach((id,i)=>card.push({bout_id:'ufc:'+id,fighter_a:cleanName(arrays[1][i]),fighter_b:cleanName(arrays[2][i]),fighter_a_url:arrays[3][i],fighter_b_url:arrays[4][i],bout_type:section==='main'?(i===0?'main_event':'main_card'):section==='unsplit'?null:'prelim'}));
+ arrays[0].forEach((id,i)=>card.push({bout_id:boutId(id,arrays[3][i],arrays[4][i]),fighter_a:cleanName(arrays[1][i]),fighter_b:cleanName(arrays[2][i]),fighter_a_url:arrays[3][i],fighter_b_url:arrays[4][i],bout_type:section==='main'?(i===0?'main_event':'main_card'):section==='unsplit'?null:'prelim'}));
 }
 if(!card.length)throw new Error('Official UFC page lists no fights. The page layout may have changed. No spreadsheet data was written.');
 if(card.length<2||card.length>30||new Set(card.map(b=>b.bout_id)).size!==card.length)throw new Error('Official UFC card is missing, duplicated or outside the expected size.');
@@ -47,28 +51,43 @@ const surname=v=>{const words=text(v).normalize('NFD').replace(/[̀-ͯ]/g,'').to
 const surnamePair=(a,b)=>[surname(a),surname(b)].sort().join('|');
 const names=c=>[c.competitors[0].athlete?.displayName,c.competitors[1].athlete?.displayName];
 // Exact full-name pairing first; fall back to surnames (e.g. Zach vs Zachary) only when that is unique.
-function findComps(comps,a,b){
+function findCompsBasic(comps,a,b){
  const named=(comps||[]).filter(c=>c.competitors?.length===2);
  const exact=named.filter(c=>pair(...names(c))===pair(a,b));
- return exact.length?exact:named.filter(c=>surnamePair(...names(c))===surnamePair(a,b));
+ if(exact.length)return {comps:exact,tier:'exact'};
+ const bySurname=named.filter(c=>surnamePair(...names(c))===surnamePair(a,b));
+ if(bySurname.length)return {comps:bySurname,tier:'surname'};
+ // One side renamed (UFC 'Jose Souza' vs ESPN 'Jose Henrique'): accept a competition where exactly one
+ // fighter hits by full name or surname, provided that hit is unique. The ESPN spelling is kept as an alias.
+ const one=named.filter(c=>{const [x,y]=names(c);const hit=v=>norm(v)===norm(a)||norm(v)===norm(b)||surname(v)===surname(a)||surname(v)===surname(b);return hit(x)!==hit(y);});
+ return {comps:one,tier:'alias'};
 }
+const findComps=(comps,a,b)=>findCompsBasic(comps,a,b).comps;
 const response=$input.first().json;
 if(response.statusCode!==200)throw new Error('ESPN round verification returned HTTP '+response.statusCode+'. No spreadsheet data was written.');
 const options=(response.body?.events||[]).filter(e=>Math.abs(Date.parse(e.date)-Date.parse(event.event_datetime_local))<=24*3600000&&findComps(e.competitions,card[0].fighter_a,card[0].fighter_b).length===1);
 if(options.length!==1)throw new Error('Could not uniquely verify this UFC event and its main event on ESPN.');
 const espn=options[0];
 const competitions=(espn.competitions||[]).filter(c=>!/cancel|postpon/i.test(String(c.status?.type?.name||'')));
-// Change detection treats UFC as the source of truth: ESPN-only bouts are reported, not fatal.
+if(!unsplit&&competitions.length!==card.length)throw new Error('UFC and ESPN list different bout counts ('+card.length+' vs '+competitions.length+'). Review the card before populating it.');
 const used=new Set();
 for(const bout of card){
- const matches=findComps(competitions,bout.fighter_a,bout.fighter_b);
+ const found=findCompsBasic(competitions,bout.fighter_a,bout.fighter_b);
+ const matches=found.comps;
  if(matches.length!==1||used.has(matches[0].id))throw new Error('Could not verify pairing and rounds for '+bout.fighter_a+' vs '+bout.fighter_b+'.');
  const comp=matches[0];used.add(comp.id);
+ if(found.tier==='alias'){
+  // Keep the ESPN spelling so later stages can reconcile the two names.
+  const [ea,eb]=names(comp);
+  const fits=(ufc,espn)=>norm(ufc)===norm(espn)||surname(ufc)===surname(espn);
+  if(!fits(bout.fighter_a,ea))bout.fighter_a_aliases=ea;
+  if(!fits(bout.fighter_b,eb))bout.fighter_b_aliases=eb;
+ }
  const rounds=Number(comp.format?.regulation?.periods);
  if(![3,5].includes(rounds))throw new Error('Scheduled rounds are unavailable for '+bout.fighter_a+' vs '+bout.fighter_b+'.');
  const weightClass=String(comp.type?.abbreviation||'').trim().toLowerCase();
  if(!/^[a-z][a-z '’-]{3,39}$/.test(weightClass))throw new Error('Weight class is unavailable for '+bout.fighter_a+' vs '+bout.fighter_b+'.');
- Object.assign(bout,{scheduled_rounds:rounds,weight_class:weightClass,espn_competition_id:String(comp.id),espn_start:Date.parse(comp.date),fighter_a_aliases:'',fighter_b_aliases:''});
+ Object.assign(bout,{scheduled_rounds:rounds,weight_class:weightClass,espn_competition_id:String(comp.id),espn_start:Date.parse(comp.date),fighter_a_aliases:bout.fighter_a_aliases||'',fighter_b_aliases:bout.fighter_b_aliases||''});
  for(const key of ['fighter_a_url','fighter_b_url'])if(!/^https:\/\/www\.ufc\.com\/athlete\/[a-z0-9-]+$/.test(bout[key]))throw new Error('Invalid official athlete URL.');
 }
 // ESPN bouts UFC does not list are left off the card (UFC is the source of truth) and reported.

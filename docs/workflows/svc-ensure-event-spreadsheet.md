@@ -10,7 +10,7 @@ Return a valid event spreadsheet, reusing an existing copy before creating a new
 - Published: `True`
 - Published version: `d48fa5ee-96ed-47cb-a0fc-8532a2d3b07a`
 - Draft version: `d48fa5ee-96ed-47cb-a0fc-8532a2d3b07a`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 13
 - Timezone: `Australia/Sydney`
 

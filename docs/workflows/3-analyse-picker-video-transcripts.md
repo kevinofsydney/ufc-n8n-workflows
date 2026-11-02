@@ -10,7 +10,7 @@ Turn captured transcripts into structured winner picks, props and fight reasonin
 - Published: `True`
 - Published version: `70512820-84f9-49ab-b49f-e65bfb8bda3c`
 - Draft version: `70512820-84f9-49ab-b49f-e65bfb8bda3c`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 69
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 

@@ -10,7 +10,7 @@ Provide the owner-only Telegram command and inline-button entry point for the sy
 - Published: `True`
 - Published version: `3f56928f-f0c8-4816-84a2-17a3d85b6df6`
 - Draft version: `3f56928f-f0c8-4816-84a2-17a3d85b6df6`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 29
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 

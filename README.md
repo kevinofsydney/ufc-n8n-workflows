@@ -1,6 +1,6 @@
 # UFC n8n workflows
 
-Documentation and sanitized snapshots of the UFC prediction automation running on [the n8n instance](https://N8N_INSTANCE.example/), captured on **30 October 2026**.
+Documentation and sanitized snapshots of the UFC prediction automation running on [the n8n instance](https://N8N_INSTANCE.example/), captured on **2 November 2026**.
 
 The system discovers UFC events and YouTube prediction videos, captures English transcripts, extracts picks and reasoning, presents saved analysis through Telegram, computes consensus, grades completed fights and monitors its own health.
 
@@ -42,7 +42,7 @@ The arrows above include shared-data dependencies. Capture and analysis are sepa
 | --- | --- |
 | `docs/` | Human operating guide and detailed reference |
 | `workflows/` | 28 sanitized workflow JSON snapshots |
-| `source/` | 128 extracted Code-node JavaScript files, indexed by workflow and node |
+| `source/` | 129 extracted Code-node JavaScript files, indexed by workflow and node |
 | `inventory/` | Version/hash manifest and ten data-table schemas, with no table rows |
 | `scripts/` | Reference generator, editorial workflow descriptions and verification script |
 

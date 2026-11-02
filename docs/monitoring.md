@@ -45,7 +45,7 @@ The sweep resolves health incidents when their condition clears. It can close er
 
 The separate `read_execution` tool calls `svc.read_execution`, which trims output instead of loading giant page/transcript bodies into the model. Exa search and a bounded public fetch tool provide external evidence. The agent prompt treats fetched material as untrusted and forbids changing, executing or publishing workflows. The configured Agent node permits 25 iterations; the prompt recommends about 15 investigation calls.
 
-`svc.record_diagnosis` validates and saves the summary, root cause, evidence, affected resources, proposed fix, confidence and human steps. It sends a fixed escaped Telegram message. This writes diagnosis metadata but does not implement the fix or mark the incident resolved.
+`svc.record_diagnosis` validates and saves the summary, root cause, evidence, affected resources, proposed fix, confidence and human steps. It sends a fixed escaped Telegram message. This writes diagnosis metadata but does not implement the fix or mark the incident resolved. Invalid input returns ok:false with a retry hint and writes nothing, so a rejected diagnosis does not create another incident.
 
 Separate first-class n8n Agent artifacts are not included in the workflow export. The claim service recognizes `agent` as a possible claimer, but that alone does not prove another Agent is currently active or configured.
 

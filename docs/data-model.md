@@ -19,7 +19,7 @@ The durable application state is split between ten n8n data tables and one Googl
 
 ## Keys and relationships
 
-`event_key` joins the catalogue, video rows, event sheet extraction, grades, card state and consensus cache. `spreadsheet_id` identifies the event's external storage and also appears in card state. Do not move a saved video to a new event merely because the active event changed.
+`event_key` joins the catalogue, video rows, event sheet extraction, grades, card state and consensus cache. It stays fixed when UFC renames an event in place, so it can name the original matchup; use event_name for display. `spreadsheet_id` identifies the event's external storage and also appears in card state. Do not move a saved video to a new event merely because the active event changed.
 
 `video_id` is the canonical YouTube ID. Capture upserts by that ID; saved transcript records additionally identify each chunk. `part_number` and `part_count` reconstruct complete transcripts in order. An incomplete/missing set of chunks is different from a transcript being successfully captured.
 

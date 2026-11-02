@@ -8,9 +8,9 @@ Give bouts stable identities and align spreadsheet references to those identitie
 
 - Workflow ID: `ya1uS9XFsrlhq6e3`
 - Published: `True`
-- Published version: `cefcc33c-e278-4535-9fa9-ec7553d25483`
-- Draft version: `cefcc33c-e278-4535-9fa9-ec7553d25483`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Published version: `2ca9c66f-5ea0-4d83-8e16-b0770ea3b45d`
+- Draft version: `2ca9c66f-5ea0-4d83-8e16-b0770ea3b45d`
+- Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 18
 - Timezone: `Australia/Sydney`
 
@@ -23,7 +23,7 @@ Give bouts stable identities and align spreadsheet references to those identitie
 
 ## Important behavior and limits
 
-fight_order can change when the card is rearranged; bout_id is the durable association. Keep Fight Card column I available and preserve existing row IDs and identity mappings. A read-back failure stops completion.
+fight_order can change when the card is rearranged; bout_id is the durable association. Keep Fight Card column I available and preserve existing row IDs and identity mappings. A read-back failure stops completion. A saved bout_id can change only by upgrade: a name-based card: ID to a ufc: ID, or a slug-based ufc:a--b ID to a numeric UFC ID. Any other difference is refused and stops the run.
 
 ## Triggers and input contract
 

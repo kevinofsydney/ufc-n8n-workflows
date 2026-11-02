@@ -1,6 +1,6 @@
 # Workflow catalogue
 
-All 28 UFC workflows visible through MCP were read directly from the live instance on 2026-10-30. Every workflow was published and its published graph matched its current draft. This is a point-in-time reference, not automatic synchronization.
+All 28 UFC workflows visible through MCP were read directly from the live instance on 2026-11-02. Every workflow was published and its published graph matched its current draft. This is a point-in-time reference, not automatic synchronization.
 
 | Workflow | Nodes | Purpose |
 | --- | --- | --- |
@@ -27,7 +27,7 @@ All 28 UFC workflows visible through MCP were read directly from the live instan
 | [UFC \| svc.list_issues](workflows/svc-list-issues.md) | 5 | Send a readable list of open and recently resolved incidents. |
 | [UFC \| svc.populate_fight_card](workflows/svc-populate-fight-card.md) | 40 | Build a verified Fight Card for an empty event sheet while protecting existing extraction. |
 | [UFC \| svc.read_execution](workflows/svc-read-execution.md) | 3 | Return compact read-only execution evidence for diagnosers. |
-| [UFC \| svc.record_diagnosis](workflows/svc-record-diagnosis.md) | 7 | Persist a diagnosis and send the owner a consistently formatted diagnosis message. |
+| [UFC \| svc.record_diagnosis](workflows/svc-record-diagnosis.md) | 9 | Persist a diagnosis and send the owner a consistently formatted diagnosis message. |
 | [UFC \| svc.record_issue](workflows/svc-record-issue.md) | 11 | Record an owner-reported issue in the same incident system used for pipeline failures. |
 | [UFC \| svc.resolve_incident](workflows/svc-resolve-incident.md) | 9 | Mark a selected incident resolved with an owner-supplied resolution. |
 | [UFC \| svc.retry_video](workflows/svc-retry-video.md) | 12 | Accept a targeted owner retry for one unfinished active-event video. |

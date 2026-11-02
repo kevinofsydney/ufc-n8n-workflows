@@ -10,7 +10,7 @@ Accept a targeted owner retry for one unfinished active-event video.
 - Published: `True`
 - Published version: `fe8f4023-b2ea-4890-bc97-bf172c246784`
 - Draft version: `fe8f4023-b2ea-4890-bc97-bf172c246784`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 12
 - Timezone: `Australia/Sydney`
 

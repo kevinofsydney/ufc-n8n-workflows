@@ -33,17 +33,6 @@
         ]
       ]
     },
-    "Prepare Diagnosis": {
-      "main": [
-        [
-          {
-            "node": "Save Diagnosis",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Save Diagnosis": {
       "main": [
         [
@@ -78,6 +67,35 @@
         [
           {
             "node": "Return Recorded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Diagnosis": {
+      "main": [
+        [
+          {
+            "node": "Diagnosis Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Diagnosis Valid?": {
+      "main": [
+        [
+          {
+            "node": "Save Diagnosis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Return Rejected",
             "type": "main",
             "index": 0
           }
@@ -189,7 +207,7 @@
         0
       ],
       "parameters": {
-        "jsCode": "// Validates a diagnosis, formats the Telegram message and builds the incident update. The message always\n// goes to the owner's chat with fixed formatting; diagnosers only supply text, which is escaped here.\nconst req=$('When Called').first().json;\nconst text=(v,max)=>String(v??'').trim().slice(0,max);\nconst esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');\nconst key=text(req.incident_key,300);\nconst incident=$('Read Incident').all().map(i=>i.json).find(r=>r.incident_key===key);\nif(!incident)throw new Error('No incident with key '+key+'.');\nconst by=text(req.diagnosed_by,40)||'unknown';\nconst confidence=['high','medium','low'].includes(text(req.confidence,10).toLowerCase())?text(req.confidence,10).toLowerCase():'low';\nconst d={summary:text(req.summary,400),root_cause:text(req.root_cause,1500),evidence:text(req.evidence,1500),affected:text(req.affected,600),\n proposed_fix:text(req.proposed_fix,1500),needs_human:req.needs_human===true||String(req.needs_human).toLowerCase()==='true',human_steps:text(req.human_steps,800),confidence};\nif(!d.summary||!d.root_cause)throw new Error('A diagnosis needs at least a summary and a root cause.');\nconst lines=['<b>Incident diagnosis</b>'+(key.startsWith('test|')?' <i>(TEST)</i>':''),\n '<b>Workflow:</b> '+esc(incident.workflow_name||incident.node_name),\n '<b>Summary:</b> '+esc(d.summary),\n '<b>Root cause</b> ('+confidence+' confidence): '+esc(d.root_cause)];\nif(d.evidence)lines.push('<b>Evidence:</b> '+esc(d.evidence));\nif(d.affected)lines.push('<b>Affected:</b> '+esc(d.affected));\nif(d.proposed_fix)lines.push('<b>Proposed fix:</b> '+esc(d.proposed_fix));\nif(d.needs_human)lines.push('<b>Needs you:</b> '+esc(d.human_steps||'Yes; see the proposed fix.'));\nlines.push('<i>Diagnosed by '+esc(by)+'. Read-only: nothing was changed.</i>');\nlet message=lines.join('\\n');\nif(message.length>3900)message=message.slice(0,3880)+'…';\nreturn [{json:{incident_key:key,update:{diagnosis_status:'done',diagnosis_by:by,diagnosed_at:new Date().toISOString(),diagnosis_summary:d.summary,diagnosis_json:JSON.stringify(d)},\n telegram_message:message,dry_run:req.dry_run===true}}];\n"
+        "jsCode": "\n// Validates a diagnosis, formats the Telegram message and builds the incident update. The message always\n// goes to the owner's chat with fixed formatting; diagnosers only supply text, which is escaped here.\n// A bad call never throws: it returns ok:false with a reason, so a diagnoser can correct itself in the\n// same run instead of the error workflow turning the rejection into another incident.\nconst req=$('When Called').first().json;\nconst text=(v,max)=>String(v??'').trim().slice(0,max);\nconst esc=v=>String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');\nconst key=text(req.incident_key,300);\nconst incident=$('Read Incident').all().map(i=>i.json).find(r=>r.incident_key&&r.incident_key===key);\nconst reject=reason=>[{json:{ok:false,incident_key:key,reason,retry_hint:'Call get_incidents_to_diagnose again to read the incident_key values, then call record_diagnosis with incident_key, summary and root_cause filled in.'}}];\nif(!key)return reject('incident_key is required but was empty.');\nif(!incident)return reject('No incident matches incident_key '+key+'.');\nconst by=text(req.diagnosed_by,40)||'unknown';\nconst confidence=['high','medium','low'].includes(text(req.confidence,10).toLowerCase())?text(req.confidence,10).toLowerCase():'low';\nconst d={summary:text(req.summary,400),root_cause:text(req.root_cause,1500),evidence:text(req.evidence,1500),affected:text(req.affected,600),\n proposed_fix:text(req.proposed_fix,1500),needs_human:req.needs_human===true||String(req.needs_human).toLowerCase()==='true',human_steps:text(req.human_steps,800),confidence};\nif(!d.summary||!d.root_cause)return reject('A diagnosis needs both summary and root_cause.');\nconst lines=['<b>Incident diagnosis</b>'+(key.startsWith('test|')?' <i>(TEST)</i>':''),\n '<b>Workflow:</b> '+esc(incident.workflow_name||incident.node_name),\n '<b>Summary:</b> '+esc(d.summary),\n '<b>Root cause</b> ('+confidence+' confidence): '+esc(d.root_cause)];\nif(d.evidence)lines.push('<b>Evidence:</b> '+esc(d.evidence));\nif(d.affected)lines.push('<b>Affected:</b> '+esc(d.affected));\nif(d.proposed_fix)lines.push('<b>Proposed fix:</b> '+esc(d.proposed_fix));\nif(d.needs_human)lines.push('<b>Needs you:</b> '+esc(d.human_steps||'Yes; see the proposed fix.'));\nlines.push('<i>Diagnosed by '+esc(by)+'. Read-only: nothing was changed.</i>');\nlet message=lines.join('\\n');\nif(message.length>3900)message=message.slice(0,3880)+'…';\nreturn [{json:{ok:true,incident_key:key,update:{diagnosis_status:'done',diagnosis_by:by,diagnosed_at:new Date().toISOString(),diagnosis_summary:d.summary,diagnosis_json:JSON.stringify(d)},\n telegram_message:message,dry_run:req.dry_run===true}}];\n"
       }
     },
     {
@@ -349,6 +367,55 @@
         "jsCode": "const p=$('Prepare Diagnosis').first().json;\nreturn [{json:{recorded:true,incident_key:p.incident_key,telegram_sent:p.dry_run!==true,dry_run:p.dry_run}}];"
       },
       "executeOnce": true
+    },
+    {
+      "id": "c9a0c25d-cb0f-4792-b46b-916b0c0a2100",
+      "name": "Diagnosis Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        672,
+        60
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a1b2c3d4-0001-4000-8000-000000000001",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "9f41d895-2cb9-4019-b858-70176fd20d52",
+      "name": "Return Rejected",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        260
+      ],
+      "parameters": {
+        "jsCode": "// A rejected diagnosis is handed back to the caller to fix. Nothing is written, nothing is messaged.\nreturn [{json:{recorded:false,ok:false,incident_key:$json.incident_key||'',reason:$json.reason||'Diagnosis rejected.',retry_hint:$json.retry_hint||''}}];\n",
+        "mode": "runOnceForAllItems",
+        "language": "javaScript"
+      }
     }
   ],
   "nodeGroups": []

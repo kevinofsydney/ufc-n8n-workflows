@@ -8,9 +8,9 @@ Maintain the event catalogue by scraping the official UFC upcoming-events page.
 
 - Workflow ID: `MWmlPIyBDUKoheXO`
 - Published: `True`
-- Published version: `f3f0c1ec-a566-43a4-867b-0f5db65e2057`
-- Draft version: `f3f0c1ec-a566-43a4-867b-0f5db65e2057`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Published version: `8590a70a-e8e3-400f-8dbe-e403ffb076e3`
+- Draft version: `8590a70a-e8e3-400f-8dbe-e403ffb076e3`
+- Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 12
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 
@@ -22,7 +22,7 @@ Maintain the event catalogue by scraping the official UFC upcoming-events page.
 
 ## Important behavior and limits
 
-The US-region cookie is intentional because the n8n hosting region can otherwise receive another edition. This workflow discovers events; workflow 1 decides which one is active. Scraper selectors and date normalization depend on the current UFC site.
+The US-region cookie is intentional because the n8n hosting region can otherwise receive another edition. This workflow discovers events; workflow 1 decides which one is active. Scraper selectors and date normalization depend on the current UFC site. A renamed event keeps its existing event_key: when a cancelled main event renames the UFC page in place, only the name, date and source reference are updated, so fight-card state, video rows and the spreadsheet stay joined. The key can therefore name the original matchup.
 
 ## Triggers and input contract
 
@@ -63,7 +63,7 @@ Configured error handler: [UFC | svc.alert_failure](svc-alert-failure.md). See [
 | Node | Table | Operation | Written fields |
 | --- | --- | --- | --- |
 | Find Existing UFC Event | ufc_events | get |  |
-| Update Existing UFC Event | ufc_events | update | source_event_id, event_key, event_name, event_datetime_local |
+| Update Existing UFC Event | ufc_events | update | source_event_id, event_name, event_datetime_local |
 | Insert New UFC Event | ufc_events | insert | source_event_id, event_key, event_name, event_datetime_local, active, created_at |
 
 Terminal nodes in the saved graph: `Update Existing UFC Event`, `Telegram — UFC Event Added`. Terminal nodes include notifications and parallel branches; not every terminal is the sub-workflow return contract. Caller wait settings and worker result code determine how outputs are consumed.

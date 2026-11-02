@@ -10,7 +10,7 @@ Capture and analyse one owner-submitted public YouTube video from /addvideo.
 - Published: `True`
 - Published version: `a8f8022e-874f-46e0-80b2-a2b4827a4c0d`
 - Draft version: `a8f8022e-874f-46e0-80b2-a2b4827a4c0d`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 25
 - Timezone: `Australia/Sydney`
 

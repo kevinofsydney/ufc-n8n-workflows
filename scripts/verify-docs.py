@@ -16,7 +16,7 @@ check(len(list((ROOT/'workflows').glob('*.json')))==len(entries),'Extra or missi
 sources=[];node_count=0
 for entry in entries:
  path=ROOT/entry['file'];w=json.loads(path.read_text());node_count+=len(w['nodes'])
- check(hashlib.sha256(path.read_bytes()).hexdigest()==entry['snapshotSha256'],'Snapshot hash differs: '+entry['file'])
+ check(hashlib.sha256(path.read_bytes().replace(b'\r\n',b'\n')).hexdigest()==entry['snapshotSha256'],'Snapshot hash differs: '+entry['file'])
  check(w['id']==entry['id'] and len(w['nodes'])==entry['nodeCount'],'Snapshot metadata differs: '+entry['file'])
  check((ROOT/entry['documentation']).exists(),'Missing workflow guide: '+entry['documentation'])
  names={n['name'] for n in w['nodes']}

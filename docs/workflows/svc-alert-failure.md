@@ -10,7 +10,7 @@ Record production workflow failures as incidents, suppress repeat alerts and ret
 - Published: `True`
 - Published version: `3261adeb-0d54-4f33-8e10-3171809fc582`
 - Draft version: `3261adeb-0d54-4f33-8e10-3171809fc582`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 15
 - Timezone: `Australia/Sydney`
 

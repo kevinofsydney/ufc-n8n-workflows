@@ -376,7 +376,6 @@
           "mappingMode": "defineBelow",
           "value": {
             "source_event_id": "={{ $json.source_event_id }}",
-            "event_key": "={{ $json.event_key }}",
             "event_name": "={{ $json.event_name }}",
             "event_datetime_local": "={{ $json.event_datetime_local }}"
           },

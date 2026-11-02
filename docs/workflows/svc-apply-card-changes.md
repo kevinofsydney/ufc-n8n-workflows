@@ -10,7 +10,7 @@ Apply eligible recorded Fight Card changes and queue affected videos for re-anal
 - Published: `True`
 - Published version: `2f4d44ab-58fa-4345-aec6-74f5a79883d9`
 - Draft version: `2f4d44ab-58fa-4345-aec6-74f5a79883d9`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 26
 - Timezone: `Australia/Sydney`
 

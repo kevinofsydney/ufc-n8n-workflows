@@ -5,7 +5,7 @@ from sanitize import replacements_from_private,sanitize_value,sanitize_text
 ROOT=pathlib.Path(__file__).resolve().parents[1]
 REPLACEMENTS=replacements_from_private()
 def write(path,text):
- p=ROOT/path;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(sanitize_text(text,REPLACEMENTS).rstrip()+'\n')
+ p=ROOT/path;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(sanitize_text(text,REPLACEMENTS).rstrip()+'\n',newline='\n')
 def slug(text):return re.sub(r'[^a-z0-9]+','-',text.lower()).strip('-')
 def clean(value):
  if isinstance(value,list):return [clean(v) for v in value]
@@ -59,7 +59,7 @@ for id,w in sorted(workflows.items(),key=lambda x:x[1]['name']):
  callers=[(otherid,node) for otherid,other in workflows.items() for node,target,wait,typ in calls(other) if target==id]
  terminal=[n['name'] for n in nodes if not any(e[0]==n['name'] and e[1]=='main' for e in edges(w)) and not any(k.startswith('ai_') for k in w.get('connections',{}).get(n['name'],{})) and not n['type'].endswith('.stickyNote')]
  text=f'# {w["name"]}\n\n{purpose}\n\n[Workflow catalogue](../workflows.md) · [Open in n8n](https://N8N_INSTANCE.example/workflow/{id}) · [Sanitized snapshot](../../workflows/{page}.json)\n\n'
- text+=f'## Identity and version\n\n- Workflow ID: `{id}`\n- Published: `{w["active"]}`\n- Published version: `{w["activeVersionId"]}`\n- Draft version: `{w["versionId"]}`\n- Snapshot: 2026-10-30. Published graph matched draft when read.\n- Nodes: {len(nodes)}\n- Timezone: `{w.get("settings",{}).get("timezone","inherits instance timezone; not present in MCP snapshot")}`\n\n'
+ text+=f'## Identity and version\n\n- Workflow ID: `{id}`\n- Published: `{w["active"]}`\n- Published version: `{w["activeVersionId"]}`\n- Draft version: `{w["versionId"]}`\n- Snapshot: 2026-11-02. Published graph matched draft when read.\n- Nodes: {len(nodes)}\n- Timezone: `{w.get("settings",{}).get("timezone","inherits instance timezone; not present in MCP snapshot")}`\n\n'
  text+='## How it works\n\n'+'\n'.join(f'{i+1}. {step}' for i,step in enumerate(steps))+'\n\n## Important behavior and limits\n\n'+caveats+'\n\n'
  text+='## Triggers and input contract\n\n```json\n'+json.dumps(triggers,indent=2,ensure_ascii=False)+'\n```\n\nPassthrough triggers accept caller JSON rather than enforcing a declared field schema. Inspect the linked validation/normalization code and caller mappings for runtime requirements. An omitted schedule field uses its n8n node default; see [schedules](../schedules.md).\n\n'
  text+='## Connections to other workflows\n\n'
@@ -81,8 +81,8 @@ for id,w in sorted(workflows.items(),key=lambda x:x[1]['name']):
  text+='## Code and configuration\n\n'+('\n'.join(f'- `{n}`: [source](../../{p})' for n,p in js) or 'No Code nodes.')+'\n\nFull parameter expressions, sheet ranges, table filters, prompt/schema definitions and credential names are in the sanitized JSON snapshot. Credential IDs and values, webhook IDs, execution data and pinned data are excluded. Rebind credentials and environment-specific resources before importing. [Restore procedure](../operations.md#restore-or-clone).\n'
  write(f'docs/workflows/{page}.md',text)
  manifest.append({'id':id,'name':w['name'],'file':f'workflows/{page}.json','documentation':f'docs/workflows/{page}.md','active':w['active'],'activeVersionId':w['activeVersionId'],'versionId':w['versionId'],'nodeCount':len(nodes),'snapshotSha256':hashlib.sha256((ROOT/f'workflows/{page}.json').read_bytes()).hexdigest()})
-write('inventory/manifest.json',json.dumps({'snapshotDate':'2026-10-30','workflowCount':len(manifest),'workflows':manifest},indent=2))
-index='# Workflow catalogue\n\nAll 28 UFC workflows visible through MCP were read directly from the live instance on 2026-10-30. Every workflow was published and its published graph matched its current draft. This is a point-in-time reference, not automatic synchronization.\n\n'
+write('inventory/manifest.json',json.dumps({'snapshotDate':'2026-11-02','workflowCount':len(manifest),'workflows':manifest},indent=2))
+index='# Workflow catalogue\n\nAll 28 UFC workflows visible through MCP were read directly from the live instance on 2026-11-02. Every workflow was published and its published graph matched its current draft. This is a point-in-time reference, not automatic synchronization.\n\n'
 index+=table([['Workflow','Nodes','Purpose'],['---']*3]+[[link(id,'workflows/'),len(w['nodes']),profiles[id][0]] for id,w in sorted(workflows.items(),key=lambda x:x[1]['name'])])
 write('docs/workflows.md',index)
 schedule='# Schedules\n\nTimes below are configured wall-clock values. An explicit workflow timezone wins; otherwise n8n uses the instance default, which was not supplied in the MCP workflow snapshots. Do not infer Sydney time from workflow names or owner location. Confirm the instance timezone before converting inherited schedules to local time. Weekday numbers: 0 Sunday, 1 Monday, …, 6 Saturday. Missing weekly days default to Sunday; missing minutes default to zero.\n\n'

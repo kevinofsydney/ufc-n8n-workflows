@@ -44,7 +44,7 @@
       "Extract individual event entries, normalize names, URLs, dates and event keys, then filter eligible events.",
       "Compare against ufc_events, update existing event metadata or insert new rows, and send a Telegram notification for newly added events."
     ],
-    "The US-region cookie is intentional because the n8n hosting region can otherwise receive another edition. This workflow discovers events; workflow 1 decides which one is active. Scraper selectors and date normalization depend on the current UFC site."
+    "The US-region cookie is intentional because the n8n hosting region can otherwise receive another edition. This workflow discovers events; workflow 1 decides which one is active. Scraper selectors and date normalization depend on the current UFC site. A renamed event keeps its existing event_key: when a cancelled main event renames the UFC page in place, only the name, date and source reference are updated, so fight-card state, video rows and the spreadsheet stay joined. The key can therefore name the original matchup."
   ],
   "MabSJBF0Vt6sMICp": [
     "Provide the owner-only Telegram command and inline-button entry point for the system.",
@@ -127,7 +127,7 @@
       "Recheck that the destination is still safe, write the card, read it back and verify before recording READY state and event metadata.",
       "Preserve existing cards; a separate verified path can backfill missing weight classes and read them back. Pending/unpublished official cards return the configured pending state."
     ],
-    "UFC supplies official order/names; ESPN is a verification source. This is not the general card-replacement worker: detect_card_changes and apply_card_changes handle subsequent changes. Existing extracted picks must not be silently overwritten."
+    "UFC supplies official order/names; ESPN is a verification source. This is not the general card-replacement worker: detect_card_changes and apply_card_changes handle subsequent changes. Existing extracted picks must not be silently overwritten. When UFC serves an empty data-fmid, bout_id falls back to the two athlete URL slugs. ESPN matching tries full names, then surnames, then a unique match on one fighter for a renamed opponent. That last tier sets the ESPN spelling as an alias, but the later matrix step replaces aliases with verified profile nicknames, so the spelling is not currently saved."
   ],
   "ya1uS9XFsrlhq6e3": [
     "Give bouts stable identities and align spreadsheet references to those identities.",
@@ -137,7 +137,7 @@
       "If already synchronized, return unchanged. Otherwise write only planned identity/reference columns sequentially.",
       "Read all affected tabs back and verify the planned identities before returning status."
     ],
-    "fight_order can change when the card is rearranged; bout_id is the durable association. Keep Fight Card column I available and preserve existing row IDs and identity mappings. A read-back failure stops completion."
+    "fight_order can change when the card is rearranged; bout_id is the durable association. Keep Fight Card column I available and preserve existing row IDs and identity mappings. A read-back failure stops completion. A saved bout_id can change only by upgrade: a name-based card: ID to a ufc: ID, or a slug-based ufc:a--b ID to a numeric UFC ID. Any other difference is refused and stops the run."
   ],
   "UDRrGRyeFPL9Lk3S": [
     "Detect differences between the saved Fight Card and the current official card.",
@@ -147,7 +147,7 @@
       "Compare bouts to identify additions, removals, replacements, order changes, metadata changes and adoption of official UFC bout IDs.",
       "Persist the comparison, fingerprints and pending change details in ufc_fight_card_state and return card-check metadata."
     ],
-    "This workflow records a proposed difference and does not edit the spreadsheet. Removal/replacement safety depends on cross-source confirmation and the apply worker's gates; a changed page alone should not erase predictions."
+    "This workflow records a proposed difference and does not edit the spreadsheet. Removal/replacement safety depends on cross-source confirmation and the apply worker's gates; a changed page alone should not erase predictions. Its card builder is a separate copy of the svc.populate_fight_card code and must be changed with it. A card that cannot be verified returns UNAVAILABLE without failing the execution; analysis continues and no alert is raised."
   ],
   "jWFGMw2faC2zLseh": [
     "Apply eligible recorded Fight Card changes and queue affected videos for re-analysis.",
@@ -261,11 +261,11 @@
   "mOCorio8pJ9qlB8q": [
     "Persist a diagnosis and send the owner a consistently formatted diagnosis message.",
     [
-      "Validate the structured incident diagnosis input and load the corresponding incident.",
+      "Load the corresponding incident and validate the structured diagnosis. A missing incident_key, unknown incident, or missing summary/root cause returns ok:false with a reason and retry hint, without writing or messaging.",
       "Build escaped summary/evidence/proposed-fix/human-action text and update diagnosis metadata on that incident.",
       "Send the fixed-format Telegram message, then return recorded status. Respect the configured dry-run gate."
     ],
-    "Recording a diagnosis does not resolve the incident or apply its proposed fix. Confidence and human_steps describe the investigator's assessment, not verified remediation."
+    "Recording a diagnosis does not resolve the incident or apply its proposed fix. Confidence and human_steps describe the investigator's assessment, not verified remediation. Rejections do not throw, so they do not reach the error workflow or create an incident; the caller must read the returned status."
   ],
   "fZB3SuyzKNXurQyI": [
     "Record an owner-reported issue in the same incident system used for pipeline failures.",

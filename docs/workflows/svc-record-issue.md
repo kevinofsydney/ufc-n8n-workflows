@@ -10,7 +10,7 @@ Record an owner-reported issue in the same incident system used for pipeline fai
 - Published: `True`
 - Published version: `3c7b0dde-46d9-45cc-b5b2-ab7901fee52f`
 - Draft version: `3c7b0dde-46d9-45cc-b5b2-ab7901fee52f`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 11
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 
