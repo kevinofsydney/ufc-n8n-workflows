@@ -125,13 +125,16 @@ const checkedAt=new Date().toISOString();
 // When the card cannot be checked, keep whatever change was pending so its two-check count survives.
 const done=(status,extra)=>[{json:{...request,card_check:{status,checked_at:checkedAt,changes:[],change_count:0,fingerprint:t(state.pending_change_fingerprint),seen_count:Number(state.pending_seen_count||0),first_seen_at:state.pending_first_seen_at||null,pending_change_json:t(state.pending_change_json),official_card_json:t(state.official_card_json),adoptions:0,adopted_source_card_json:null,...extra}}}];
 
+// Consecutive UNAVAILABLE checks are recorded so svc.health_sweep can alert; any verified check clears them.
+const unavailable=reason=>done('UNAVAILABLE',{reason,unavailable_since:state.card_unavailable_since||checkedAt,unavailable_count:Number(state.card_unavailable_count||0)+1,unavailable_reason:t(reason).slice(0,300)});
+
 const rows=$('Read Fight Card').first().json.rows||[];
 const current=rows.slice(1).filter(r=>r.slice(0,8).some(v=>t(v))).map(r=>({fight_order:Number(r[0]),fighter_a:t(r[1]),fighter_b:t(r[2]),bout_type:t(r[5]),scheduled_rounds:Number(r[6]),weight_class:t(r[7]),bout_id:t(r[8])}));
-if(!current.length)return done('UNAVAILABLE',{reason:'Fight Card is empty.'});
+if(!current.length)return unavailable('Fight Card is empty.');
 
 let built;
-try{built=buildOfficial()[0].json;}catch(e){return done('UNAVAILABLE',{reason:'Official card could not be verified: '+e.message});}
-if(built.card_pending)return done('UNAVAILABLE',{reason:built.pending_reason});
+try{built=buildOfficial()[0].json;}catch(e){return unavailable('Official card could not be verified: '+e.message);}
+if(built.card_pending)return unavailable(built.pending_reason);
 const official=built.card;
 // Whether ESPN still lists a bout (not cancelled): removals are only applied once ESPN drops it too.
 const espnEvent=(($input.first().json.body||{}).events||[]).find(e=>String(e.id)===String(built.espn_event_id))||{};
@@ -191,4 +194,4 @@ if(adoptions.length){
  });
 }
 const status=changes.length?'CHANGED':adoptions.length?'ADOPT_IDS':'IN_SYNC';
-return [{json:{...request,card_check:{status,checked_at:checkedAt,changes,change_count:changes.length,fingerprint,seen_count:seen,first_seen_at:firstSeen,pending_change_json:changes.length?JSON.stringify(changes):'',official_card_json:changes.length?JSON.stringify(official):'',adoptions:adoptions.length,adopted_source_card_json:adoptedCard?JSON.stringify(adoptedCard):null,espn_only_bouts:built.espn_only_bouts||[],official_source:built.card_source}}}];
+return [{json:{...request,card_check:{status,checked_at:checkedAt,changes,change_count:changes.length,fingerprint,seen_count:seen,first_seen_at:firstSeen,pending_change_json:changes.length?JSON.stringify(changes):'',official_card_json:changes.length?JSON.stringify(official):'',adoptions:adoptions.length,adopted_source_card_json:adoptedCard?JSON.stringify(adoptedCard):null,espn_only_bouts:built.espn_only_bouts||[],official_source:built.card_source,unavailable_since:null,unavailable_count:0,unavailable_reason:''}}}];

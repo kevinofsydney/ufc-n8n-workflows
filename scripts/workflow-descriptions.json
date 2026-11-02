@@ -127,7 +127,7 @@
       "Recheck that the destination is still safe, write the card, read it back and verify before recording READY state and event metadata.",
       "Preserve existing cards; a separate verified path can backfill missing weight classes and read them back. Pending/unpublished official cards return the configured pending state."
     ],
-    "UFC supplies official order/names; ESPN is a verification source. This is not the general card-replacement worker: detect_card_changes and apply_card_changes handle subsequent changes. Existing extracted picks must not be silently overwritten. When UFC serves an empty data-fmid, bout_id falls back to the two athlete URL slugs. ESPN matching tries full names, then surnames, then a unique match on one fighter for a renamed opponent. That last tier sets the ESPN spelling as an alias, but the later matrix step replaces aliases with verified profile nicknames, so the spelling is not currently saved."
+    "UFC supplies official order/names; ESPN is a verification source. This is not the general card-replacement worker: detect_card_changes and apply_card_changes handle subsequent changes. Existing extracted picks must not be silently overwritten. When UFC serves an empty data-fmid, bout_id falls back to the two athlete URL slugs. ESPN matching tries full names, then surnames, then a unique match on one fighter for a renamed opponent. That last tier sets the ESPN spelling as an alias. The published matrix step replaces it with the verified nickname; the repository source merges both and awaits publication (see docs/card-handling.md)."
   ],
   "ya1uS9XFsrlhq6e3": [
     "Give bouts stable identities and align spreadsheet references to those identities.",
@@ -147,7 +147,7 @@
       "Compare bouts to identify additions, removals, replacements, order changes, metadata changes and adoption of official UFC bout IDs.",
       "Persist the comparison, fingerprints and pending change details in ufc_fight_card_state and return card-check metadata."
     ],
-    "This workflow records a proposed difference and does not edit the spreadsheet. Removal/replacement safety depends on cross-source confirmation and the apply worker's gates; a changed page alone should not erase predictions. Its card builder is a separate copy of the svc.populate_fight_card code and must be changed with it. A card that cannot be verified returns UNAVAILABLE without failing the execution; analysis continues and no alert is raised."
+    "This workflow records a proposed difference and does not edit the spreadsheet. Removal/replacement safety depends on cross-source confirmation and the apply worker's gates; a changed page alone should not erase predictions. Its card builder is a separate copy of the svc.populate_fight_card code and must be changed with it. A card that cannot be verified returns UNAVAILABLE without failing the execution and analysis continues. The published version raises no alert; the repository source records a failure streak for svc.health_sweep and awaits publication (see docs/card-handling.md)."
   ],
   "jWFGMw2faC2zLseh": [
     "Apply eligible recorded Fight Card changes and queue affected videos for re-analysis.",
@@ -217,7 +217,7 @@
       "Upsert health incidents, send new/reopened or daily reminder alerts and resolve health conditions that clear. Resolve suitable error incidents when later success/idle evidence exists; retrying incidents use the configured 45-minute no-further-failure rule.",
       "Dispatch diagnose_incident without waiting to investigate eligible incidents."
     ],
-    "Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence."
+    "Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence. The card_check_unavailable condition is in the repository source and awaits publication (see docs/card-handling.md)."
   ],
   "gfR9qKH6xCTJXzcg": [
     "Close quiet error incidents on a time-based rule.",

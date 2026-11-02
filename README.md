@@ -17,6 +17,7 @@ The system discovers UFC events and YouTube prediction videos, captures English 
 - [Credentials](docs/credentials.md), [dependency graph](docs/dependencies.md) and [verification record](docs/verification.md).
 - [Privacy review](docs/privacy-review.md): redactions, retained configuration and safe restoration.
 - [Shorts exclusion policy](docs/shorts-filter.md): duration checks across capture, analysis and submitted videos.
+- [Fight-card handling changes](docs/card-handling.md): UNAVAILABLE alerting and ESPN alias merge, with the planned live change.
 
 ```mermaid
 flowchart LR
