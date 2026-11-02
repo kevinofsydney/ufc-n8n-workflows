@@ -3435,7 +3435,7 @@
             "workflow_name": "3. Analyse Picker Video Transcripts",
             "event_key": "={{ $('One Active Event Only').first().json.event_key }}",
             "state": "idle",
-            "summary": "={{ $json.shorts_excluded_count ? 'No eligible long-form videos; '+$json.shorts_excluded_count+' Shorts/short clips excluded' : 'No eligible videos awaiting analysis' }}",
+            "summary": "={{ $json.shorts_excluded_count || $json.shorts_unverified_count ? 'No eligible long-form videos'+($json.shorts_unverified_note||'')+'; '+$json.shorts_excluded_count+' Shorts/short clips excluded' : 'No eligible videos awaiting analysis' }}",
             "execution_url": "={{ 'https://N8N_INSTANCE.example/workflow/BvLnPFMwQ2vhPkgv/executions/' + $execution.id }}",
             "finished_at": "={{ $now.toISO() }}"
           },
@@ -3564,7 +3564,7 @@
             "workflow_name": "3. Analyse Picker Video Transcripts",
             "event_key": "={{ $('One Active Event Only').first().json.event_key }}",
             "state": "success",
-            "summary": "={{ $input.all().length + ' video analyses completed' }}",
+            "summary": "={{ $input.all().length + ' video analyses completed' + ($('Exclude Shorts').first().json.shorts_unverified_note || '') }}",
             "execution_url": "={{ 'https://N8N_INSTANCE.example/workflow/BvLnPFMwQ2vhPkgv/executions/' + $execution.id }}",
             "finished_at": "={{ $now.toISO() }}"
           },
@@ -3975,10 +3975,6 @@
             {
               "name": "id",
               "value": "={{ $json.video_ids }}"
-            },
-            {
-              "name": "maxResults",
-              "value": "50"
             }
           ]
         },
@@ -4012,7 +4008,7 @@
       "parameters": {
         "mode": "runOnceForAllItems",
         "language": "javaScript",
-        "jsCode": "function durationSeconds(value) {\n const match=/^P(?:(\\d+(?:\\.\\d+)?)D)?(?:T(?:(\\d+(?:\\.\\d+)?)H)?(?:(\\d+(?:\\.\\d+)?)M)?(?:(\\d+(?:\\.\\d+)?)S)?)?$/.exec(String(value||''));\n if(!match||!match.slice(1).some(v=>v!==undefined))return null;\n const seconds=Number(match[1]||0)*86400+Number(match[2]||0)*3600+Number(match[3]||0)*60+Number(match[4]||0);\n return Number.isFinite(seconds)&&seconds>0?seconds:null;\n}\nconst candidates=$('Prepare Video Duration Batches').all().flatMap(i=>i.json.videos);\nconst metadata=new Map();\nfor(const response of $input.all()){\n if(response.json.error||!Array.isArray(response.json.items))throw new Error('YouTube duration lookup failed; processing blocked to prevent Shorts.');\n for(const video of response.json.items)metadata.set(video.id,video);\n}\nconst kept=[],excluded=[];\nfor(const candidate of candidates){\n const seconds=durationSeconds(metadata.get(candidate.video_id)?.contentDetails?.duration);\n if(seconds===null)throw new Error('YouTube duration unavailable for '+candidate.video_id+'; processing blocked to prevent Shorts.');\n const explicit=/\\/shorts\\//i.test(String(candidate.video_url||''))||/(?:#short\\b|\\bshorts\\b)/i.test(String(candidate.video_title||''));\n if(seconds<=181||explicit){excluded.push({video_id:candidate.video_id,seconds,reason:explicit?'explicit_shorts_marker':'duration_at_most_181_seconds'});continue;}\n kept.push({...candidate,video_duration_seconds:seconds});\n}\nif(kept.length)return kept.map(v=>({json:{...v,shorts_excluded_count:excluded.length}}));\nlet context={...candidates[0]};\ndelete context.video_id;\ntry{context.scan_stats=$('Select Videos To Process').first().json.scan_stats;}catch{}\nreturn [{json:{...context,__no_capture_work:true,__no_analysis_work:true,shorts_excluded_count:excluded.length,shorts_excluded:excluded,capture_run_state:'idle',capture_run_summary:'No eligible long-form videos; '+excluded.length+' Shorts/short clips excluded (three minutes or shorter, or explicit Shorts marker).'}}];"
+        "jsCode": "function durationSeconds(value) {\n const match=/^P(?:(\\d+(?:\\.\\d+)?)D)?(?:T(?:(\\d+(?:\\.\\d+)?)H)?(?:(\\d+(?:\\.\\d+)?)M)?(?:(\\d+(?:\\.\\d+)?)S)?)?$/.exec(String(value||''));\n if(!match||!match.slice(1).some(v=>v!==undefined))return null;\n const seconds=Number(match[1]||0)*86400+Number(match[2]||0)*3600+Number(match[3]||0)*60+Number(match[4]||0);\n return Number.isFinite(seconds)&&seconds>0?seconds:null;\n}\nconst batches=$('Prepare Video Duration Batches').all();\nconst candidates=batches.flatMap(i=>i.json.videos);\nconst responses=$input.all();\nif(responses.length<batches.length)throw new Error('YouTube duration lookup failed; processing blocked to prevent Shorts.');\nconst metadata=new Map();\nfor(const response of responses){\n if(response.json.error||!Array.isArray(response.json.items))throw new Error('YouTube duration lookup failed; processing blocked to prevent Shorts.');\n for(const video of response.json.items)metadata.set(video.id,video);\n}\nconst kept=[],excluded=[],unverified=[];\nfor(const candidate of candidates){\n const video=metadata.get(candidate.video_id);\n const seconds=durationSeconds(video?.contentDetails?.duration);\n if(seconds===null){unverified.push({video_id:candidate.video_id,video_title:candidate.video_title,channel_name:candidate.channel_name,reason:video?'no_usable_duration':'absent_from_api_response'});continue;}\n const explicit=/\\/shorts\\//i.test(String(candidate.video_url||''))||/(?:#short\\b|\\bshorts\\b)/i.test(String(candidate.video_title||''));\n if(seconds<=181||explicit){excluded.push({video_id:candidate.video_id,seconds,reason:explicit?'explicit_shorts_marker':'duration_at_most_181_seconds'});continue;}\n kept.push({...candidate,video_duration_seconds:seconds});\n}\nconst unverifiedNote=unverified.length?'; '+unverified.length+' unverified skipped, no usable duration ('+unverified.slice(0,3).map(v=>v.video_id).join(', ')+(unverified.length>3?', …':'')+')':'';\nconst guard={shorts_excluded_count:excluded.length,shorts_unverified_count:unverified.length,shorts_unverified:unverified,shorts_unverified_note:unverifiedNote};\nif(kept.length)return kept.map(v=>({json:{...v,...guard}}));\nlet context={...candidates[0]};\ndelete context.video_id;\ntry{context.scan_stats=$('Select Videos To Process').first().json.scan_stats;}catch{}\nreturn [{json:{...context,__no_capture_work:true,__no_analysis_work:true,...guard,shorts_excluded:excluded,capture_run_state:'idle',capture_run_summary:'No eligible long-form videos'+unverifiedNote+'; '+excluded.length+' Shorts/short clips excluded (three minutes or shorter, or explicit Shorts marker).'}}];"
       }
     },
     {

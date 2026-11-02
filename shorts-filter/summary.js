@@ -110,8 +110,14 @@ if (gaveUp.length > 0) {
   lines.push('');
 }
 
-let shortsExcluded=0;try{shortsExcluded=Number($('Exclude Shorts').first().json.shorts_excluded_count||0);}catch{}
+let shortsExcluded=0,unverified=[],unverifiedNote='';try{const guard=$('Exclude Shorts').first().json;shortsExcluded=Number(guard.shorts_excluded_count||0);unverified=guard.shorts_unverified||[];unverifiedNote=guard.shorts_unverified_note||'';}catch{}
 if(shortsExcluded)lines.push(shortsExcluded+' Shorts/short clips excluded (three minutes or shorter, or explicit Shorts marker).','');
+if(unverified.length){
+ lines.push('<b>Unverified — skipped, no usable duration ('+unverified.length+'):</b>');
+ for(const video of unverified.slice(0,5))lines.push('• '+escapeHtml(video.channel_name)+' — '+escapeHtml(video.video_title)+' ('+escapeHtml(video.video_id)+')');
+ if(unverified.length>5)lines.push('… and '+(unverified.length-5)+' more.');
+ lines.push('Live, premiere, private or deleted videos are not processed. They are checked again on the next run.','');
+}
 const scan=readCaptureFeedStats();
 if(scan.checked){
  lines.push('YouTube channels checked: '+scan.checked+'/'+scan.expected+'.');
@@ -137,6 +143,8 @@ return [
       spreadsheet_url: spreadsheetUrl,
       capture_run_state: scan.failed_count ? 'error' : 'success',
       feed_failed_count: scan.failed_count,
+      shorts_unverified_count: unverified.length,
+      shorts_unverified_note: unverifiedNote,
       captured_count: captured.length,
       retry_count: retrying.length,
       gave_up_count: gaveUp.length,
