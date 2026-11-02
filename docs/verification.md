@@ -28,7 +28,7 @@ Five workflows changed after the 30 October capture; the other 23 kept the same 
 - Every exported Code node has an exact source file and parses as JavaScript without being executed.
 - Relative Markdown file links resolve locally.
 - Workflow/source scans for common API-key/token patterns, literal authentication secrets, credential IDs/values and prohibited operational/pinned data. A separate pre-publication sweep removes owner identifiers, private resource locators and account-specific URLs; see the privacy review.
-- Private GitHub repository visibility and pushed commit verification.
+- Public GitHub repository visibility and pushed commit verification.
 
 Run `python3 scripts/verify-docs.py` for repeatable local checks. It requires Python 3 and Node.js and does not contact live services. It is a consistency/secret-pattern check, not a guarantee that every future secret format is detectable. Review staged changes before publishing.
 
