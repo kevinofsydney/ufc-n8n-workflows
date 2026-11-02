@@ -1,10 +1,10 @@
 function readCaptureFeedStats() {
- const names=["YouTube — UFC Predictions Tracker","YouTube — The MMA Guru","YouTube — Lucrative James","YouTube — MMA Lock of the Night","YouTube — Kunath MMA","YouTube — TonyHasDiedMMA","YouTube — MMA Husky Hustler","YouTube — Walk the Line MMA","YouTube — Artem MMA","YouTube — BedtimeMMA","YouTube — BetSam","YouTube — JakeGerberMMA","YouTube — Funky Bunch MMA"];
+ const names=["YouTube — UFC Predictions Tracker","YouTube — The MMA Guru","YouTube — Lucrative James","YouTube — MMA Lock of the Night","YouTube — Kunath MMA","YouTube — TonyHasDiedMMA","YouTube — MMA Husky Hustler","YouTube — Walk the Line MMA","YouTube — Artem MMA","YouTube — BedtimeMMA","YouTube — BetSam","YouTube — JakeGerberMMA","YouTube — Funky Bunch MMA","YouTube — DFS by the Numbers"];
  const failed=[];let checked=0;
  let root;
  try {root=$('Get YouTube Upload Playlists').first().json;} catch {return {expected:names.length,checked:0,failed_count:0,loaded:0,failed:[]};}
  const channels=Array.isArray(root.items)?root.items:[];
- const ids=["UCaU2fDiT9fCTABiiotiG2aw","UCIhQvpinmS8Eq6PrQ021DKQ","UCrxm8U7aEu18LW3YRFZSvNg","UClwn3zgkfyne2Ecj36Dl7ZQ","UCxl-gwVZTPPhhCbQ5DKTP6Q","UCAELXX1-cUSA5Lc7aDFMZsw","UCFjXgUzCT23D11yF4bcEl2g","UCk9hwi3iECE1Xs-dpdFhXEA","UCpSQhfFzpZ9COp_WiKSUEkQ","UCQAMRRo7fPbQMzlJWOexlZg","UC7LH9bWIKZd82LpdouIBOLw","UCADS14Ed6epGTSy9I3VLxCg","UCwOnVxzxkqDOYnEhhffNMAA"];
+ const ids=["UCaU2fDiT9fCTABiiotiG2aw","UCIhQvpinmS8Eq6PrQ021DKQ","UCrxm8U7aEu18LW3YRFZSvNg","UClwn3zgkfyne2Ecj36Dl7ZQ","UCxl-gwVZTPPhhCbQ5DKTP6Q","UCAELXX1-cUSA5Lc7aDFMZsw","UCFjXgUzCT23D11yF4bcEl2g","UCk9hwi3iECE1Xs-dpdFhXEA","UCpSQhfFzpZ9COp_WiKSUEkQ","UCQAMRRo7fPbQMzlJWOexlZg","UC7LH9bWIKZd82LpdouIBOLw","UCADS14Ed6epGTSy9I3VLxCg","UCwOnVxzxkqDOYnEhhffNMAA","UCvRRh340tLkmhThrNOSwcuQ"];
  for(let index=0;index<names.length;index++){
   const name=names[index];let rows=[];
   try {rows=$(name).all().map(i=>i.json);} catch {}

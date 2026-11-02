@@ -12,7 +12,7 @@
     "Discover eligible prediction videos for the active event and save English transcript chunks to its spreadsheet.",
     [
       "Load all known events and the active event, ensure its spreadsheet, and write a running pipeline ledger entry.",
-      "Ordinary scans resolve all 13 channel uploads playlists with channels.list and fetch playlistItems.list pages. Each page holds 50 videos; stop on no nextPageToken or an entirely older-than-six-days page, with ten pages maximum per channel.",
+      "Ordinary scans resolve all 14 channel uploads playlists with channels.list and fetch playlistItems.list pages. Each page holds 50 videos; stop on no nextPageToken or an entirely older-than-six-days page, with ten pages maximum per channel.",
       "Normalize video IDs, owners and original publication dates. Keep recent UFC prediction/pick/breakdown titles; reject excluded formats and ambiguous or other-event titles.",
       "Skip previously recorded videos; permit RETRY_LATER below three attempts after a five-hour gap. Process at most ten selected videos per run, with new videos ahead of retries.",
       "Before Supadata, batch video IDs into videos.list requests of at most 50. Require duration over 181 seconds (three minutes plus one second API rounding tolerance), and reject explicit Shorts paths/title markers. Missing or invalid metadata blocks processing. This shared gate also protects targeted capture retries. Report excluded short clips in capture summaries.",
@@ -42,9 +42,9 @@
     [
       "Fetch ufc.com/events with browser headers and STYXKEY_region=USA.US.en.Default to select the US English edition.",
       "Extract individual event entries, normalize names, URLs, dates and event keys, then filter eligible events.",
-      "Compare against ufc_events, update existing event metadata or insert new rows, and send a Telegram notification for newly added events."
+      "Compare against ufc_events, update existing event metadata or insert new rows, and send a Telegram notification for newly added or renamed events."
     ],
-    "The US-region cookie is intentional because the n8n hosting region can otherwise receive another edition. This workflow discovers events; workflow 1 decides which one is active. Scraper selectors and date normalization depend on the current UFC site. A renamed event keeps its existing event_key: when a cancelled main event renames the UFC page in place, only the name, date and source reference are updated, so fight-card state, video rows and the spreadsheet stay joined. The key can therefore name the original matchup."
+    "The US-region cookie is intentional because the n8n hosting region can otherwise receive another edition. This workflow discovers events; workflow 1 decides which one is active. Scraper selectors and date normalization depend on the current UFC site. A renamed event keeps its existing event_key: when a cancelled main event renames the UFC page in place, only the name, date and source reference are updated, so fight-card state, video rows and the spreadsheet stay joined. The key can therefore name the original matchup. It runs daily at 12:00, before Sunday activation, because video matching uses the stored event name; the stored name can still lag a rename by up to a day."
   ],
   "MabSJBF0Vt6sMICp": [
     "Provide the owner-only Telegram command and inline-button entry point for the system.",
@@ -158,7 +158,7 @@
       "Write planned spreadsheet columns sequentially and read the affected tabs back to verify the result.",
       "Record applied/partially applied state, flag relevant captured videos CARD_CHANGED, and send one change summary when configured."
     ],
-    "This worker mutates sheet data. It does not itself run the analysis model; CARD_CHANGED videos are selected by the next analysis pass. Column writes are not atomic, so PARTLY_APPLIED and verification failures need inspection before retrying."
+    "This worker mutates sheet data. It does not itself run the analysis model; CARD_CHANGED videos are selected by the next analysis pass. Column writes are not atomic, so PARTLY_APPLIED and verification failures need inspection before retrying. A main event that is waiting to leave the card stays on as main_card, so its replacement can take fight 1 immediately."
   ],
   "G1EMMFVSzpGE4q3Q": [
     "Accept a targeted owner retry for one unfinished active-event video.",

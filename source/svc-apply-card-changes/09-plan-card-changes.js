@@ -62,7 +62,10 @@ const next=official.map(o=>waitingSwap.has(o.bout_id)?fromCurrent(currentById.ge
 for(const id of waitingRemoved){
  const b=currentById.get(id);
  const before=current.filter(x=>x.fight_order<b.fight_order).reverse().map(x=>x.bout_id).find(x=>next.some(y=>y.bout_id===x));
- next.splice(before?next.findIndex(y=>y.bout_id===before)+1:Math.min(1,next.length),0,fromCurrent(b));
+ // An old main event still waiting to leave stays on the card as a main card bout, so a new main event can take fight 1 now.
+ const kept=fromCurrent(b);
+ if(kept.bout_type==='main_event')kept.bout_type='main_card';
+ next.splice(before?next.findIndex(y=>y.bout_id===before)+1:Math.min(1,next.length),0,kept);
 }
 next.forEach((b,i)=>{b.fight_order=i+1;});
 const matrix=next.map(b=>HEADERS.map(h=>b[h]??''));

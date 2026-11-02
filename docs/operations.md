@@ -26,7 +26,7 @@ The Telegram owner ID is configured in multiple router/service/code locations, n
 
 See [exact schedules](schedules.md). Several core workflows inherit an instance timezone not present in the MCP snapshot. The credit monitor and several services explicitly set Australia/Sydney. Confirm the instance default before interpreting inherited wall-clock times.
 
-YouTube discovery normally needs one channels request plus playlist page requests for each channel. The verified migration scan used 26 reads: one channels request and 25 playlist pages across 13 channels. The configured maximum is 131 requests per scan before HTTP retries. More uploads or missing dates can increase page depth; a safety-cap hit is reported incomplete.
+YouTube discovery normally needs one channels request plus playlist page requests for each channel. The verified migration scan used 26 reads: one channels request and 25 playlist pages across 13 channels. The configured maximum is 141 requests per scan before HTTP retries. More uploads or missing dates can increase page depth; a safety-cap hit is reported incomplete.
 
 YouTube metadata quota, Supadata caption usage and OpenRouter model costs are separate. This repository records observed configuration rather than current vendor prices or guaranteed spend. Analysis logs store model/token/cost information; consensus caches explanations; the video browser reuses saved rows and does not call a model. Diagnosis can also spend OpenRouter/Exa usage independently of prediction analysis.
 
@@ -35,7 +35,7 @@ YouTube metadata quota, Supadata caption usage and OpenRouter model costs are se
 | Symptom | Check first | Next action |
 | --- | --- | --- |
 | Capture acknowledged but no visible result | Worker execution, ufc_pipeline_runs state/finished_at and final Telegram summary | Distinguish async dispatch, idle, incomplete scan and stuck run |
-| Expected video missing | Current title/date/event filters, channel uploads response, ufc_videos row and retry state | `/addvideo URL` for a new matching public video; `/retry` for an unfinished saved one |
+| Expected video missing | Whether the channel is one of the 14 tracked, current title/date/event filters (a title containing "dfs" is excluded), channel uploads response, ufc_videos row and retry state | `/addvideo URL` for a new matching public video; `/retry` for an unfinished saved one |
 | All/partial YouTube channels fail | HTTP execution outputs, stored credential, API enablement/restrictions and quota | Fix the actual API error; handled errors can still yield a successful platform execution |
 | Transcript unavailable | Supadata returned language/content, available languages, attempts and last_error | Allow five-hour automatic retry interval or make a deliberate owner retry |
 | Captured but not analysed | analysis_status, analysis schedule and extraction log | `/analyse` or a targeted unfinished `/retry analyse ID`; capture alone does not chain analysis |

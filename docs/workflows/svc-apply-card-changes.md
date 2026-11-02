@@ -8,8 +8,8 @@ Apply eligible recorded Fight Card changes and queue affected videos for re-anal
 
 - Workflow ID: `jWFGMw2faC2zLseh`
 - Published: `True`
-- Published version: `2f4d44ab-58fa-4345-aec6-74f5a79883d9`
-- Draft version: `2f4d44ab-58fa-4345-aec6-74f5a79883d9`
+- Published version: `4ce8fa6e-0917-438b-ba10-5f246169d4ad`
+- Draft version: `4ce8fa6e-0917-438b-ba10-5f246169d4ad`
 - Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 26
 - Timezone: `Australia/Sydney`
@@ -24,7 +24,7 @@ Apply eligible recorded Fight Card changes and queue affected videos for re-anal
 
 ## Important behavior and limits
 
-This worker mutates sheet data. It does not itself run the analysis model; CARD_CHANGED videos are selected by the next analysis pass. Column writes are not atomic, so PARTLY_APPLIED and verification failures need inspection before retrying.
+This worker mutates sheet data. It does not itself run the analysis model; CARD_CHANGED videos are selected by the next analysis pass. Column writes are not atomic, so PARTLY_APPLIED and verification failures need inspection before retrying. A main event that is waiting to leave the card stays on as main_card, so its replacement can take fight 1 immediately.
 
 ## Triggers and input contract
 

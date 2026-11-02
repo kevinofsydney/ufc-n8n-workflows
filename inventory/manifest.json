@@ -19,10 +19,10 @@
       "file": "workflows/2-extract-picker-video-transcripts.json",
       "documentation": "docs/workflows/2-extract-picker-video-transcripts.md",
       "active": true,
-      "activeVersionId": "50f5245f-619e-4c4a-ab25-b952c48ca0f7",
-      "versionId": "50f5245f-619e-4c4a-ab25-b952c48ca0f7",
-      "nodeCount": 57,
-      "snapshotSha256": "998d67bff4854b9a37c1e423c3782210a4e3c67594f9ac38c896944ff33e8127"
+      "activeVersionId": "31fa9d9b-7d7d-4ea7-bea5-301e6fa6ae5f",
+      "versionId": "31fa9d9b-7d7d-4ea7-bea5-301e6fa6ae5f",
+      "nodeCount": 58,
+      "snapshotSha256": "e1b2e92d7f005724486c2a824bb0828b753e6cf7243db4d9f282a62e3642fda4"
     },
     {
       "id": "BvLnPFMwQ2vhPkgv",
@@ -41,10 +41,10 @@
       "file": "workflows/4-add-new-ufc-events.json",
       "documentation": "docs/workflows/4-add-new-ufc-events.md",
       "active": true,
-      "activeVersionId": "8590a70a-e8e3-400f-8dbe-e403ffb076e3",
-      "versionId": "8590a70a-e8e3-400f-8dbe-e403ffb076e3",
-      "nodeCount": 12,
-      "snapshotSha256": "14dc83b072d934d478b4424afefcd66db9a1b542f675ff63a913cffb9683fcfd"
+      "activeVersionId": "64ddf529-c3c8-477e-b3c5-893aaa6812e7",
+      "versionId": "64ddf529-c3c8-477e-b3c5-893aaa6812e7",
+      "nodeCount": 14,
+      "snapshotSha256": "dc22d654cbeb1ab2c6cf32a419cc6d435d6f7fbea7e9642f3f38a466fd55eab8"
     },
     {
       "id": "MabSJBF0Vt6sMICp",
@@ -129,10 +129,10 @@
       "file": "workflows/svc-apply-card-changes.json",
       "documentation": "docs/workflows/svc-apply-card-changes.md",
       "active": true,
-      "activeVersionId": "2f4d44ab-58fa-4345-aec6-74f5a79883d9",
-      "versionId": "2f4d44ab-58fa-4345-aec6-74f5a79883d9",
+      "activeVersionId": "4ce8fa6e-0917-438b-ba10-5f246169d4ad",
+      "versionId": "4ce8fa6e-0917-438b-ba10-5f246169d4ad",
       "nodeCount": 26,
-      "snapshotSha256": "a6e12b73ca4ef8a6487927b506f3a8100efa0c88a59a3aebe079096dc5108cfa"
+      "snapshotSha256": "f5de4d315056bdc34f2cad85a9dc4267444d8401444684a8eb34988a105bf40c"
     },
     {
       "id": "gfR9qKH6xCTJXzcg",
