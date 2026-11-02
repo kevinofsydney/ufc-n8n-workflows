@@ -3,11 +3,11 @@
 Channel-discovery results use canonical watch URLs, so a `/shorts/` URL check alone does not identify Shorts. Public YouTube Data API metadata exposes duration but has no reliable public `isShort` flag. The pipeline therefore enforces a conservative long-form-only rule.
 
 - Fetch `videos.list(part=contentDetails)` for candidate IDs in batches of at most 50. `maxResults` is not sent because YouTube does not support it with `id`.
-- Reject durations of **181 seconds or less**: the three-minute Shorts ceiling plus one second of tolerance for API/transcoding duration differences.
+- Reject durations of **900 seconds (15 minutes) or less**. Only long full-card breakdowns are analysed; the owner watches shorter pick summaries directly. Video lengths seen from tracked channels run from about 20 minutes (BetSam, as reported by the owner) up, so the limit leaves a buffer.
 - Also reject explicit `/shorts/` URLs and `Shorts`/`#short` title markers, even if metadata is inconsistent.
 - A video with missing, zero (`P0D`, `PT0S`) or malformed duration, or absent from the API response, is set aside and never processed. Valid videos in the same run continue.
 - A bad YouTube response as a whole (`error` present, no `items` array, or a batch with no response) throws and fails the run, because it says nothing about individual videos.
-- This deliberately also excludes short landscape clips; it does not claim that every rejected video is technically categorized as a Short by YouTube.
+- This deliberately also excludes any shorter landscape video, including genuine pick summaries; it does not claim that every rejected video is technically categorized as a Short by YouTube. A full-card breakdown of 15 minutes or less would be excluded too, and `/addvideo` applies the same limit.
 
 The shared capture guard covers scheduled scans, on-demand capture, submitted-video capture and targeted capture retries. Analysis has the same guard before transcript joining/model calls, including existing captured records and targeted analysis retries. `/addvideo` checks duration before reserving a new row and gives an explicit rejection reply for short clips or unverified metadata.
 
@@ -43,7 +43,7 @@ An unverified video no longer fails the run, so it raises no error alert or inci
 
 Live read-only execution 2796 requested metadata for the reported JakeGerberMMA clip `iyeMtl78dZs` and the full breakdown `lMMkQKwfuc0`. The API reported `PT46S` and `PT1H7M2S`, respectively. The filter rejected the clip and retained the 4,022-second breakdown, without invoking transcript capture, model analysis or spreadsheet/table writes. Temporary test nodes were removed before publication.
 
-Full capture validation 2797 completed successfully with all 13 channels checked, no new work and no duplicates. Forty-six fixture tests cover duration boundaries, one-second tolerance, explicit markers, reversed metadata ordering, unverified videos set aside alongside valid ones, malformed/error/missing responses, batches over 50, duplicate IDs, all-excluded and all-unverified completion reporting, separate summary reporting, and add-video rejection/dry-run/duplicate behavior. Those two execution checks predate per-video set-aside, which has only been tested with fixtures.
+Full capture validation 2797 completed successfully with all 13 channels checked, no new work and no duplicates. Forty-eight fixture tests cover duration boundaries, explicit markers, reversed metadata ordering, unverified videos set aside alongside valid ones, malformed/error/missing responses, batches over 50, duplicate IDs, all-excluded and all-unverified completion reporting, separate summary reporting, and add-video rejection/dry-run/duplicate behavior. Those two execution checks predate per-video set-aside, which has only been tested with fixtures.
 
 Run `node --test shorts-filter/shorts.test.mjs`. These tests use synthetic context and public video IDs, never credentials or owner account identifiers.
 

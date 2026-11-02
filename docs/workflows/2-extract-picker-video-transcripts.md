@@ -8,8 +8,8 @@ Discover eligible prediction videos for the active event and save English transc
 
 - Workflow ID: `y20ZZYzBVS6y8kC0`
 - Published: `True`
-- Published version: `3c95b5ee-b352-427e-bbdd-795039d165fb`
-- Draft version: `3c95b5ee-b352-427e-bbdd-795039d165fb`
+- Published version: `58601e8e-2736-4e4b-9e7d-fb44f4a3eda7`
+- Draft version: `58601e8e-2736-4e4b-9e7d-fb44f4a3eda7`
 - Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 58
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
@@ -20,7 +20,7 @@ Discover eligible prediction videos for the active event and save English transc
 2. Ordinary scans resolve all 14 channel uploads playlists with channels.list and fetch playlistItems.list pages. Each page holds 50 videos; stop on no nextPageToken or an entirely older-than-six-days page, with ten pages maximum per channel.
 3. Normalize video IDs, owners and original publication dates. Keep recent UFC prediction/pick/breakdown titles; reject excluded formats and ambiguous or other-event titles.
 4. Skip previously recorded videos; permit RETRY_LATER below three attempts after a five-hour gap. Process at most ten selected videos per run, with new videos ahead of retries.
-5. Before Supadata, batch video IDs into videos.list requests of at most 50. Require duration over 181 seconds (three minutes plus one second API rounding tolerance), and reject explicit Shorts paths/title markers. A video with missing or invalid metadata, or absent from the response, is set aside and rechecked next run while valid videos continue; a bad YouTube response as a whole still fails the run. This shared gate also protects targeted capture retries. Report excluded short clips and unverified videos separately in capture summaries.
+5. Before Supadata, batch video IDs into videos.list requests of at most 50. Require duration over 900 seconds (15 minutes), so only long full-card breakdowns are captured, and reject explicit Shorts paths/title markers. A video with missing or invalid metadata, or absent from the response, is set aside and rechecked next run while valid videos continue; a bad YouTube response as a whole still fails the run. This shared gate also protects targeted capture retries. Report excluded short clips and unverified videos separately in capture summaries.
 6. Fetch English native captions with Supadata. Validate language and content, split at 49,000 characters and upsert transcript chunks by record_id.
 7. Record CAPTURED_AUTO and transcript_appended on success; otherwise record RETRY_LATER or NO_ENGLISH_TRANSCRIPT and attempt/error metadata.
 8. Send one completion summary and finish the run ledger. Empty scans report nothing new; API failures explicitly report an incomplete scan.

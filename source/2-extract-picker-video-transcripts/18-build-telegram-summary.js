@@ -111,7 +111,7 @@ if (gaveUp.length > 0) {
 }
 
 let shortsExcluded=0,unverified=[],unverifiedNote='';try{const guard=$('Exclude Shorts').first().json;shortsExcluded=Number(guard.shorts_excluded_count||0);unverified=guard.shorts_unverified||[];unverifiedNote=guard.shorts_unverified_note||'';}catch{}
-if(shortsExcluded)lines.push(shortsExcluded+' Shorts/short clips excluded (three minutes or shorter, or explicit Shorts marker).','');
+if(shortsExcluded)lines.push(shortsExcluded+' Shorts/short clips excluded (15 minutes or shorter, or explicit Shorts marker).','');
 if(unverified.length){
  lines.push('<b>Unverified — skipped, no usable duration ('+unverified.length+'):</b>');
  for(const video of unverified.slice(0,5))lines.push('• '+escapeHtml(video.channel_name)+' — '+escapeHtml(video.video_title)+' ('+escapeHtml(video.video_id)+')');

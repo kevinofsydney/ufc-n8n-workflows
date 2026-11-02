@@ -11,7 +11,7 @@ if(scan.failed_count===scan.expected&&scan.expected>0){
  lines.push('No new eligible videos to capture. Checked '+scan.checked+' YouTube channels.');
  if(source.already_recorded)lines.push(source.already_recorded+' eligible videos were already recorded.');
 }
-if(source.shorts_excluded_count)lines.push(source.shorts_excluded_count+' Shorts/short clips excluded. Only videos longer than three minutes are eligible.');
+if(source.shorts_excluded_count)lines.push(source.shorts_excluded_count+' Shorts/short clips excluded. Only videos longer than 15 minutes are eligible.');
 const unverified=source.shorts_unverified||[];
 if(unverified.length){
  lines.push('<b>Unverified — skipped, no usable duration ('+unverified.length+'):</b>');

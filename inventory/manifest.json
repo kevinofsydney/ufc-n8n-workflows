@@ -19,10 +19,10 @@
       "file": "workflows/2-extract-picker-video-transcripts.json",
       "documentation": "docs/workflows/2-extract-picker-video-transcripts.md",
       "active": true,
-      "activeVersionId": "3c95b5ee-b352-427e-bbdd-795039d165fb",
-      "versionId": "3c95b5ee-b352-427e-bbdd-795039d165fb",
+      "activeVersionId": "58601e8e-2736-4e4b-9e7d-fb44f4a3eda7",
+      "versionId": "58601e8e-2736-4e4b-9e7d-fb44f4a3eda7",
       "nodeCount": 58,
-      "snapshotSha256": "cae16221b513638a7a21bf1118126044c16841991fedd89f0eab42faa482faf6"
+      "snapshotSha256": "58eeaeae8b8a50d50cd7fbb0a017907dc3c607ebb340c06208bf8b5d401fa959"
     },
     {
       "id": "BvLnPFMwQ2vhPkgv",
@@ -30,10 +30,10 @@
       "file": "workflows/3-analyse-picker-video-transcripts.json",
       "documentation": "docs/workflows/3-analyse-picker-video-transcripts.md",
       "active": true,
-      "activeVersionId": "15109a9b-ed44-48ba-92c6-17dc9b7852be",
-      "versionId": "15109a9b-ed44-48ba-92c6-17dc9b7852be",
+      "activeVersionId": "ced790bd-ce18-4411-8a94-bd7c4b89d795",
+      "versionId": "ced790bd-ce18-4411-8a94-bd7c4b89d795",
       "nodeCount": 69,
-      "snapshotSha256": "a006ce2d13236a374b4a1388dc0488bd6dd9aeab6cb342b90073bc0930c9be61"
+      "snapshotSha256": "d3cd72b04466fa0e9afe3b68ea92cb2ef0aa28fe15d185f442017918866cb811"
     },
     {
       "id": "MWmlPIyBDUKoheXO",
@@ -107,10 +107,10 @@
       "file": "workflows/svc-add-video.json",
       "documentation": "docs/workflows/svc-add-video.md",
       "active": true,
-      "activeVersionId": "a8f8022e-874f-46e0-80b2-a2b4827a4c0d",
-      "versionId": "a8f8022e-874f-46e0-80b2-a2b4827a4c0d",
+      "activeVersionId": "70af4e32-4fd1-4539-b48b-dfeb7a923245",
+      "versionId": "70af4e32-4fd1-4539-b48b-dfeb7a923245",
       "nodeCount": 25,
-      "snapshotSha256": "414e241dc1372b4795348c6da84ec9866ad0345e379c4b15daec81b65247af35"
+      "snapshotSha256": "ef5aa10144a5ed8532c763f148c25ea70c37d765730174ba337a242f1952e7a7"
     },
     {
       "id": "SrL8ScYMIBiJ9Gki",
