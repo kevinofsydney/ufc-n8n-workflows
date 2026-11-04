@@ -293,5 +293,14 @@
       "Set status=resolved, resolved_by=owner and the resolution/version metadata, then confirm in Telegram unless dry_run."
     ],
     "This records that a fix was made; it does not deploy a fix or verify all workflows. A recurring condition can reopen an incident."
+  ],
+  "ID44VEOFRj2lKTuv": [
+    "Check and apply fight-card changes every two hours in the 72 hours before the active event.",
+    [
+      "Every two hours, read the active event and any analysis run still marked running.",
+      "Continue only for exactly one active event whose main card starts within 72 hours and has not started, and when no analysis run started in the last hour is still running.",
+      "Ensure the event spreadsheet and Fight Card, then for a READY or PRESERVED card run svc.detect_card_changes, svc.apply_card_changes and svc.sync_bout_ids, exactly as analysis does."
+    ],
+    "Analysis checks the card only one to three times a day, and a removal needs two checks in a row, so a last-minute change could take most of a day to land. This workflow makes those checks two hours apart in fight week. It writes nothing itself; the card services do, and they send the card-update Telegram message. Detect and apply failures raise their own incidents and stop the run; a sync failure fails the run."
   ]
 }

@@ -10,7 +10,7 @@ Detect silent pipeline problems and maintain health incidents every 30 minutes.
 - Published: `True`
 - Published version: `15d7f541-9759-4689-b695-02c398994aa8`
 - Draft version: `15d7f541-9759-4689-b695-02c398994aa8`
-- Snapshot: 2026-11-02. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 14
 - Timezone: `Australia/Sydney`
 

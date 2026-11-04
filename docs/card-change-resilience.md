@@ -13,6 +13,7 @@ Fight cards change through fight week: opponents are replaced, bouts are added o
 | 1 Nov | Same card | `svc.detect_card_changes` kept an unpatched copy of the builder, so checks would have failed silently | Fixed 2 Nov, before it ran |
 | 2 Nov | Main event replaced by two new fighters (simulated) | Two main events at once, so the change never applied | Fixed 2 Nov |
 | 4 Nov | Main card reshuffled while UFC started sending numeric IDs for 3 bouts | `svc.apply_card_changes` threw on picks still keyed by the old IDs | Fixed 5 Nov |
+| 4 Nov | Bashi's opponent changed from Brennan to Calderon | Not a failure; detected and applied after the fix | Applied 5 Nov |
 
 All of these come from four weaknesses:
 
@@ -30,12 +31,16 @@ All of these come from four weaknesses:
 - Repeated failed card checks raise a `card_check_unavailable` health alert.
 - Renamed events are detected daily and reported on Telegram.
 - Scenario tests cover each change type and the combinations seen so far: `node --test card-handling/card-changes.test.mjs` and `card-handling/card-handling.test.mjs`.
+- **Fight-week card checks.** `UFC | 10. Fight-Week Card Check` runs the card steps every two hours in the 72 hours before the event, so a removal lands within about four hours of UFC and ESPN changing.
+- **Unplaceable rows are set aside.** A Picks, Props or Fight Analysis row whose bout is not on the card is marked `VOID_UNMATCHED` and named in the card update message, instead of stopping every other change. Clear the status to restore it.
+- **Builder drift fails the verifier.** `scripts/verify-docs.py` fails when the card builder in `svc.detect_card_changes` differs from `svc.populate_fight_card`.
+- **Checks run on every pull request.** GitHub Actions runs the verifier and every test suite.
 
 ## Plan
 
-### 1. Test every card change before it reaches the live workflows (next)
+### 1. Test every card change before it reaches the live workflows (partly done)
 
-- **Run all tests on every pull request.** Add a GitHub Actions workflow that runs `scripts/verify-docs.py` and every `node --test` suite. Nothing runs them automatically today.
+- **Run all tests on every pull request.** Done: `.github/workflows/checks.yml`.
 - **Grow the scenario matrix.** Cover each change type alone and combined with an ID switch, a reorder, a rename and ESPN lag:
   - added, removed or cancelled bouts
   - opponent replaced
@@ -48,20 +53,20 @@ All of these come from four weaknesses:
 - **Replay real runs.** When a card check reports `CHANGED` or a card service fails, save its inputs as a sanitized fixture, without transcripts or sheet IDs, and add it to the replay suite. The 4 Nov failure was reproduced this way before fixing.
 - **Replay before publishing.** Before publishing any card workflow, replay the last week's real card-check inputs through the new code and compare the result with what the live run produced. Add this to the publishing checklist in [operations](operations.md).
 
-### 2. Use one definition of a bout (soon)
+### 2. Use one definition of a bout (partly done)
 
 - **Make the fighter pair the identity.** Match on the two fighters' names, with a unique surname match as fallback. Treat the UFC ID as an attribute to adopt when it appears, not as the key.
-- **Keep one copy of the matching rules.** Write the builder and matching rules once in `source/shared/`. Have the verifier fail when a workflow's copy differs, until n8n can share them through a called sub-workflow.
+- **Keep one copy of the matching rules.** The verifier now fails when the two card builders differ. Still to do: give the matching rules in `svc.apply_card_changes` and `svc.sync_bout_ids` the same treatment.
 
-### 3. Apply what is safe instead of failing (soon)
+### 3. Apply what is safe instead of failing (partly done)
 
-- **Isolate the unexpected.** When planning meets something it can't place, such as a row for an unknown bout, set that bout aside instead of throwing. Apply the rest, mark the state `PARTLY_APPLIED` with the reason, and alert once.
+- **Isolate the unexpected.** Done for rows that match no bout. Still to do: the same for `svc.sync_bout_ids`, which still stops analysis on a row it cannot place.
 - **Never edit silently.** Keep every guard that protects saved picks from being overwritten, but turn "stop everything" into "hold this bout and say why".
 - **Report every card update.** Send one Telegram summary per update listing what was applied, what is waiting and why.
 
-### 4. Check the card more often in fight week (soon)
+### 4. Check the card more often in fight week (partly done)
 
-- **Check independently of analysis.** Card checks run only inside analysis, one to three times a day, and a removal needs two checks, so it can take most of a day to land. In the final 72 hours, run the card check every two hours on its own schedule, so changes land before new picks are extracted.
+- **Check independently of analysis.** Done: `UFC | 10. Fight-Week Card Check`.
 - **Don't wait forever for ESPN.** ESPN usually follows within hours, but not always. If UFC has dropped a bout for 12 hours and ESPN still lists it, send a Telegram message with a button to apply the removal, instead of waiting indefinitely.
 
 ### 5. Tell success from luck (later)

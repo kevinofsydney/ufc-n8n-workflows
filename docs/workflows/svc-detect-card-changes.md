@@ -10,7 +10,7 @@ Detect differences between the saved Fight Card and the current official card.
 - Published: `True`
 - Published version: `0786ef94-5229-40f3-b75e-1b8f87cdc40e`
 - Draft version: `0786ef94-5229-40f3-b75e-1b8f87cdc40e`
-- Snapshot: 2026-11-02. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 12
 - Timezone: `Australia/Sydney`
 
@@ -43,7 +43,7 @@ Passthrough triggers accept caller JSON rather than enforcing a declared field s
 
 ## Connections to other workflows
 
-Called by: [UFC | 3. Analyse Picker Video Transcripts](3-analyse-picker-video-transcripts.md) via `Detect Card Changes`
+Called by: [UFC | 3. Analyse Picker Video Transcripts](3-analyse-picker-video-transcripts.md) via `Detect Card Changes`, [UFC | 10. Fight-Week Card Check](10-fight-week-card-check.md) via `Detect Card Changes`
 
 
 Configured error handler: [UFC | svc.alert_failure](svc-alert-failure.md). See [monitoring](../monitoring.md) for production Error Trigger behavior.

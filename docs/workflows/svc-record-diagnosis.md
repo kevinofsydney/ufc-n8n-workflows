@@ -10,7 +10,7 @@ Persist a diagnosis and send the owner a consistently formatted diagnosis messag
 - Published: `True`
 - Published version: `9a2a2636-5888-405c-8691-91939fc21034`
 - Draft version: `9a2a2636-5888-405c-8691-91939fc21034`
-- Snapshot: 2026-11-02. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 9
 - Timezone: `Australia/Sydney`
 

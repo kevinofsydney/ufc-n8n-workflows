@@ -10,7 +10,7 @@ Maintain the event catalogue by scraping the official UFC upcoming-events page.
 - Published: `True`
 - Published version: `64ddf529-c3c8-477e-b3c5-893aaa6812e7`
 - Draft version: `64ddf529-c3c8-477e-b3c5-893aaa6812e7`
-- Snapshot: 2026-11-02. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 14
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 

@@ -5,6 +5,7 @@ Times below are configured wall-clock values. An explicit workflow timezone wins
 | Workflow | Trigger | Configured rule | Timezone |
 | --- | --- | --- | --- |
 | [UFC \| 1. Set Active UFC Event (Sunday nights)](workflows/1-set-active-ufc-event-sunday-nights.md) | Schedule Trigger | {"field": "weeks", "triggerAtHour": 18} | instance default |
+| [UFC \| 10. Fight-Week Card Check](workflows/10-fight-week-card-check.md) | Every 2 Hours | {"field": "hours", "hoursInterval": 2, "triggerAtMinute": 5} | instance default |
 | [UFC \| 2. Extract Picker Video Transcripts](workflows/2-extract-picker-video-transcripts.md) | Schedule Trigger | {"field": "weeks", "triggerAtDay": [1, 2, 3, 4, 5, 6], "triggerAtHour": 18} | instance default |
 | [UFC \| 2. Extract Picker Video Transcripts](workflows/2-extract-picker-video-transcripts.md) | Schedule Trigger | {"field": "weeks", "triggerAtDay": [1, 2, 3, 4, 5, 6], "triggerAtHour": 6} | instance default |
 | [UFC \| 3. Analyse Picker Video Transcripts](workflows/3-analyse-picker-video-transcripts.md) | Schedule Trigger | {"field": "weeks", "triggerAtDay": [2, 3, 4, 5, 6], "triggerAtHour": 6, "triggerAtMinute": 30} | instance default |

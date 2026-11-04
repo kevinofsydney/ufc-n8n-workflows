@@ -10,7 +10,7 @@ Aggregate saved official picks into a weighted consensus and optionally explain 
 - Published: `True`
 - Published version: `898de882-a8ab-44a7-b2cc-494b84dfb1ee`
 - Draft version: `898de882-a8ab-44a7-b2cc-494b84dfb1ee`
-- Snapshot: 2026-11-02. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 16
 - Timezone: `Australia/Melbourne`
 

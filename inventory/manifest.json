@@ -1,6 +1,6 @@
 {
-  "snapshotDate": "2026-11-02",
-  "workflowCount": 28,
+  "snapshotDate": "2026-11-05",
+  "workflowCount": 29,
   "workflows": [
     {
       "id": "mxXosIjmMSiItiYM",
@@ -12,6 +12,17 @@
       "versionId": "18398046-30bf-4c1c-8e9c-229485d1faa8",
       "nodeCount": 10,
       "snapshotSha256": "b1fc2e609ef7ea4bbfeb2a75bb4dcc1e21aa3ad75b99d5776aaae9fb978fb215"
+    },
+    {
+      "id": "ID44VEOFRj2lKTuv",
+      "name": "UFC | 10. Fight-Week Card Check",
+      "file": "workflows/10-fight-week-card-check.json",
+      "documentation": "docs/workflows/10-fight-week-card-check.md",
+      "active": true,
+      "activeVersionId": "3569124a-bab0-4ddc-b43d-aa3f74e1261b",
+      "versionId": "3569124a-bab0-4ddc-b43d-aa3f74e1261b",
+      "nodeCount": 10,
+      "snapshotSha256": "ed37f9f929d903550d3d28988f7d55c149d01cbb30af7c8221fcd4774f492afb"
     },
     {
       "id": "y20ZZYzBVS6y8kC0",
@@ -129,10 +140,10 @@
       "file": "workflows/svc-apply-card-changes.json",
       "documentation": "docs/workflows/svc-apply-card-changes.md",
       "active": true,
-      "activeVersionId": "152bcb7e-da36-4896-894e-42c432f54373",
-      "versionId": "152bcb7e-da36-4896-894e-42c432f54373",
+      "activeVersionId": "8826ea2d-77da-4abe-b2e2-cdfe05ad11bb",
+      "versionId": "8826ea2d-77da-4abe-b2e2-cdfe05ad11bb",
       "nodeCount": 26,
-      "snapshotSha256": "a3db29e717540b24ccd0828d88b74a55fc97a99873ac75ec7f36d0913b8b130e"
+      "snapshotSha256": "89ced5fcca53a324dc8fd1f130b29405cfb99828a8cc319147e41b19c2ed21ca"
     },
     {
       "id": "gfR9qKH6xCTJXzcg",

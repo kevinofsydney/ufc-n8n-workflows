@@ -10,7 +10,7 @@ Select the next future UFC event and make it the single active event used by cap
 - Published: `True`
 - Published version: `18398046-30bf-4c1c-8e9c-229485d1faa8`
 - Draft version: `18398046-30bf-4c1c-8e9c-229485d1faa8`
-- Snapshot: 2026-11-02. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 10
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 

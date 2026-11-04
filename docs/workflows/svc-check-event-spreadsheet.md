@@ -10,7 +10,7 @@ Check the event spreadsheet contract before analysis without changing sheet data
 - Published: `True`
 - Published version: `5c02111d-88df-4cad-a1b9-d8b3d514145d`
 - Draft version: `5c02111d-88df-4cad-a1b9-d8b3d514145d`
-- Snapshot: 2026-11-02. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 10
 - Timezone: `Australia/Sydney`
 

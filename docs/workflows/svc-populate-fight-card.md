@@ -10,7 +10,7 @@ Build a verified Fight Card for an empty event sheet while protecting existing e
 - Published: `True`
 - Published version: `3faf97d8-9f71-4818-9fdf-a4b4f3cd240b`
 - Draft version: `3faf97d8-9f71-4818-9fdf-a4b4f3cd240b`
-- Snapshot: 2026-11-02. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 40
 - Timezone: `Australia/Sydney`
 

@@ -10,7 +10,7 @@ Report the all-time picker leaderboard from saved grades.
 - Published: `True`
 - Published version: `33dc9383-03e7-4535-b937-d7af6fb61bfe`
 - Draft version: `33dc9383-03e7-4535-b937-d7af6fb61bfe`
-- Snapshot: 2026-11-02. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 5
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 

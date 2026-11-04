@@ -2,7 +2,7 @@
 
 ## Scope and provenance
 
-On 2 November 2026, n8n MCP search returned 28 UFC workflows. Full get_workflow_details responses were read for every one. Each was active/published and reported activeVersion.sameAsDraft=true. Ten referenced data-table schemas were exported; unrelated tables were excluded. No operational rows, transcripts, picks, credentials or execution histories are included.
+On 5 November 2026, n8n MCP search returned 29 UFC workflows. Full get_workflow_details responses were read for every one. Each was active/published and reported activeVersion.sameAsDraft=true. Ten referenced data-table schemas were exported; unrelated tables were excluded. No operational rows, transcripts, picks, credentials or execution histories are included.
 
 The per-workflow pages document all **510 nodes**, every main/AI graph edge, direct child-workflow calls and wait settings, data-table reads/writes, credential names and exact trigger definitions. **129 Code-node files** are extracted without executing them. The human explanations cover each workflow's purpose, processing stages, important limits and relationships. The version/hash manifest links each page to its sanitized snapshot.
 
@@ -10,7 +10,7 @@ The original documentation task did not change or execute n8n workflows. The sub
 
 ## Changes since the first capture
 
-Ten workflows changed after the 30 October capture; the other 18 kept the same published versions.
+Ten workflows changed after the 30 October capture and one was added; the other 18 kept the same published versions.
 
 | Workflow | Change | Evidence |
 | --- | --- | --- |
@@ -19,6 +19,8 @@ Ten workflows changed after the 30 October capture; the other 18 kept the same p
 | svc.record_diagnosis | Invalid input returns ok:false instead of throwing | Failing executions 3347, 3350 and 3353, then executions 3369 and 3370 |
 | svc.detect_card_changes | Card builder matches svc.populate_fight_card | Local simulation with inputs captured by execution 3359, then production execution 3556, which verified the card and adopted its 14 bout IDs into an empty sheet column |
 | svc.sync_bout_ids | Slug-based ufc: IDs can upgrade to numeric UFC IDs | Local fixtures for the upgrade, the no-op and refused changes. Production execution 3558 ran successfully, but UFC still served no data-fmid, so the upgrade itself has not run live |
+| 10. Fight-Week Card Check (new) | Runs the card steps every two hours in the 72 hours before the event | Test executions 4313, which correctly stopped outside the window, and 4314 and 4320, which ran detect, apply and sync live on a card in sync |
+| svc.apply_card_changes | A row whose bout is not on the card is set aside as VOID_UNMATCHED instead of stopping the update | Fixture test; live smoke test 4320 after publishing |
 | svc.apply_card_changes | Plans against the sheet's bout IDs when UFC changes IDs mid-week | Execution 4138 failed when UFC switched 3 bouts to numeric IDs during a reshuffle. Replaying its real inputs through the fix produced the same card as the self-healed run 4260. After publishing, executions 4299 and 4306 held and then applied the Bashi opponent change |
 | svc.apply_card_changes | A main event waiting to leave stays on as main_card, so a replacement applies at once | Simulated a full swap with live card data; before the change it threw while the old bout was waiting. No live swap has occurred since |
 | 2. Extract Picker Video Transcripts | Tracks DFS by the Numbers as the fourteenth channel | Production execution 3560 checked all 14 channels and captured its video; analysis execution 3563 completed it |
@@ -29,7 +31,7 @@ Ten workflows changed after the 30 October capture; the other 18 kept the same p
 
 ## Checks performed
 
-- Inventory completeness against all 28 MCP search results, with one guide/snapshot per workflow.
+- Inventory completeness against all 29 MCP search results, with one guide/snapshot per workflow.
 - Snapshot SHA-256 hashes, node counts, valid JSON and matching workflow IDs.
 - Every named graph endpoint exists; static child/tool workflow references resolve within the snapshot set.
 - Every exported Code node has an exact source file and parses as JavaScript without being executed.

@@ -10,7 +10,7 @@ Send a readable list of open and recently resolved incidents.
 - Published: `True`
 - Published version: `d41633b2-ea13-4ec7-b9f5-7b1dfea8a52c`
 - Draft version: `d41633b2-ea13-4ec7-b9f5-7b1dfea8a52c`
-- Snapshot: 2026-11-02. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 5
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 

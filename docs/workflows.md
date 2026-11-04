@@ -1,10 +1,11 @@
 # Workflow catalogue
 
-All 28 UFC workflows visible through MCP were read directly from the live instance on 2026-11-02. Every workflow was published and its published graph matched its current draft. This is a point-in-time reference, not automatic synchronization.
+All 29 UFC workflows visible through MCP were read directly from the live instance on 2026-11-05. Every workflow was published and its published graph matched its current draft. This is a point-in-time reference, not automatic synchronization.
 
 | Workflow | Nodes | Purpose |
 | --- | --- | --- |
 | [UFC \| 1. Set Active UFC Event (Sunday nights)](workflows/1-set-active-ufc-event-sunday-nights.md) | 10 | Select the next future UFC event and make it the single active event used by capture, analysis and Telegram views. |
+| [UFC \| 10. Fight-Week Card Check](workflows/10-fight-week-card-check.md) | 10 | Check and apply fight-card changes every two hours in the 72 hours before the active event. |
 | [UFC \| 2. Extract Picker Video Transcripts](workflows/2-extract-picker-video-transcripts.md) | 58 | Discover eligible prediction videos for the active event and save English transcript chunks to its spreadsheet. |
 | [UFC \| 3. Analyse Picker Video Transcripts](workflows/3-analyse-picker-video-transcripts.md) | 69 | Turn captured transcripts into structured winner picks, props and fight reasoning while preserving event and fight identity. |
 | [UFC \| 4. Add New UFC Events](workflows/4-add-new-ufc-events.md) | 14 | Maintain the event catalogue by scraping the official UFC upcoming-events page. |

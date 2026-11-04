@@ -10,7 +10,7 @@ Choose and claim incidents for diagnosis so concurrent diagnosers can coordinate
 - Published: `True`
 - Published version: `8aabd5af-c46d-44c2-a12e-0d4590900699`
 - Draft version: `8aabd5af-c46d-44c2-a12e-0d4590900699`
-- Snapshot: 2026-11-02. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 7
 - Timezone: `Australia/Sydney`
 

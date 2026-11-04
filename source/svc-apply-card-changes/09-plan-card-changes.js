@@ -4,7 +4,7 @@
 // needs a human. Bouts still waiting stay on the card. Nothing here writes.
 const HEADERS=['fight_order','fighter_a','fighter_b','fighter_a_aliases','fighter_b_aliases','bout_type','scheduled_rounds','weight_class'];
 const TABS=[{sheet:'Picks',node:'Read Picks'},{sheet:'Props',node:'Read Props'},{sheet:'Fight Analysis',node:'Read Fight Analysis'}];
-const VOID='VOID_CARD_CHANGE';
+const VOID='VOID_CARD_CHANGE',UNMATCHED='VOID_UNMATCHED';
 const MAX_REMOVALS=3;
 const text=v=>String(v??'').trim();
 const norm=v=>text(v).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -113,7 +113,7 @@ if(!diff.length)return result('WAITING',{waiting:waiting.map(c=>describe(c)+' ('
 
 // Rows: void picks for bouts that left the card, renumber the rest. Only fight_order and review_status are written.
 const voidIds=new Set([...apply.filter(c=>c.type==='removed').map(c=>c.bout_id),...apply.filter(c=>c.type==='opponent_replaced').map(c=>c.old_bout_id)]);
-const writes=[],expected=[],rowSummary={};
+const writes=[],expected=[],rowSummary={},setAside=[];
 for(const tab of TABS){
  const rows=$(tab.node).first().json.rows||[];
  const h=(rows[0]||[]).map(text);
@@ -126,7 +126,9 @@ for(const tab of TABS){
   const order=r[idx.order]??'',status=text(r[idx.status]),bout=text(r[idx.bout]);
   if(!r.some(v=>text(v))||text(r[idx.event])!==event.event_key||status.startsWith('VOID')){orders.push(order);statuses.push(status);return;}
   if(voidIds.has(bout)){orders.push(order);statuses.push(VOID);voided++;return;}
-  if(!newOrder.has(bout))throw new Error(tab.sheet+' row '+(k+2)+' has bout '+bout+', which is not on the new card.');
+  // A row whose bout is not on the new card, and was not voided by a recorded change, must not block the rest
+  // of the update. Set it aside with its own status: excluded everywhere VOID is, and restored by clearing it.
+  if(!newOrder.has(bout)){orders.push(order);statuses.push(UNMATCHED);setAside.push(tab.sheet+' row '+(k+2)+' ('+(bout||'no bout_id')+')');voided++;return;}
   const o=newOrder.get(bout);if(Number(order)!==o)renumbered++;
   orders.push(o);statuses.push(status);
  });
@@ -177,7 +179,8 @@ const stateUpdate={
 };
 const lines=['<b>Fight card updated</b>','<b>Event:</b> '+event.event_name,'',...diff.map(d=>'• '+d)];
 const voidedTotal=Object.values(rowSummary).reduce((n,r)=>n+r.voided,0);
-if(voidedTotal)lines.push('','Voided '+voidedTotal+' picks/props/analyses for bouts that left the card.');
+if(voidedTotal-setAside.length)lines.push('','Voided '+(voidedTotal-setAside.length)+' picks/props/analyses for bouts that left the card.');
+if(setAside.length)lines.push('','<b>Check these:</b> '+setAside.length+' row'+(setAside.length===1?'':'s')+' matched no bout on the card, so '+(setAside.length===1?'it was':'they were')+' set aside as '+UNMATCHED+'. Clear that status to restore a row.',...setAside.slice(0,10).map(s=>'• '+s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')));
 lines.push(reanalyse.length?'Re-analysing '+reanalyse.length+' video'+(reanalyse.length===1?'':'s')+'.':'No videos need re-analysis.');
 if(waiting.length)lines.push('','<b>Still waiting:</b>',...waiting.map(c=>'• '+describe(c)+' ('+waitWhy(c)+')'));
-return [{json:{event,status:waiting.length?'PARTLY_APPLY':'APPLY',applied:apply,applied_json:appliedJson,waiting,new_card:next,writes,expected,row_summary:rowSummary,videos:reanalyse,state_update:stateUpdate,telegram_message:lines.join('\n'),dry_run:event.dry_run===true,needs_apply:event.dry_run!==true}}];
+return [{json:{event,status:waiting.length?'PARTLY_APPLY':'APPLY',applied:apply,applied_json:appliedJson,waiting,new_card:next,writes,expected,row_summary:rowSummary,rows_set_aside:setAside,videos:reanalyse,state_update:stateUpdate,telegram_message:lines.join('\n'),dry_run:event.dry_run===true,needs_apply:event.dry_run!==true}}];

@@ -59,3 +59,20 @@ test('a main card reshuffle with an added bout and changed ids applies in one ru
  assert.deepEqual(r.new_card.map(b=>b.fighter_a),['Waldo Cortes Acosta','Gabriel Lorenco','Jose Delano','Tatiana Suarez','Austin Bashi']);
  assert.equal(r.row_summary.Picks.voided,0);
 });
+
+test('a row for a bout that is not on the card is set aside instead of stopping the update',()=>{
+ const official=renumber([CARD[0],CARD[2],CARD[1],CARD[3]]);
+ const state={event_key:'k',spreadsheet_id:'s',source_card_json:JSON.stringify(CARD),pending_change_json:JSON.stringify([{type:'reordered',bout_id:CARD[2].bout_id,from:3,to:2}]),official_card_json:JSON.stringify(official),pending_seen_count:1};
+ const picks=tab(CARD);picks.rows.push(['v1|pick|ufc:ghost',9,'OK','ufc:ghost','k','v1','Ghost One','Ghost Two']);
+ const nodes={'When Called':[{event_key:'k',spreadsheet_id:'s',event_name:'Test'}],'Read Fight Card State':[state],'Read Fight Card':[{rows:[[...H,'bout_id'],...CARD.map(b=>[...H.map(h=>b[h]),b.bout_id])]}],'Read Picks':[picks],'Read Props':[tab(CARD)],'Read Fight Analysis':[tab(CARD)],'Read Transcripts':[{rows:[['video_id','transcript_text']]}],'Read Event Videos':[]};
+ const $=n=>({first:()=>({json:(nodes[n]||[{}])[0]}),all:()=>(nodes[n]||[]).map(json=>({json}))});
+ const r=new Function('$',plan)($)[0].json;
+ assert.equal(r.status,'APPLY');
+ assert.deepEqual(r.rows_set_aside,['Picks row 6 (ufc:ghost)']);
+ const status=r.writes.find(w=>w.label==='Picks review_status').rows.map(x=>x[0]);
+ assert.equal(status[5],'VOID_UNMATCHED');
+ assert.equal(status.filter(x=>x==='VOID_UNMATCHED').length,1);
+ assert.match(r.telegram_message,/set aside as VOID_UNMATCHED/);
+ assert.doesNotMatch(r.telegram_message,/Voided/);
+ assert.deepEqual(r.new_card.map(b=>b.fighter_a),['Waldo Cortes Acosta','Gabriel Lorenco','Tatiana Suarez','Austin Bashi']);
+});

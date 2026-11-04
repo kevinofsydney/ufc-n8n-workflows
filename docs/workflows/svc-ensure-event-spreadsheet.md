@@ -10,7 +10,7 @@ Return a valid event spreadsheet, reusing an existing copy before creating a new
 - Published: `True`
 - Published version: `d48fa5ee-96ed-47cb-a0fc-8532a2d3b07a`
 - Draft version: `d48fa5ee-96ed-47cb-a0fc-8532a2d3b07a`
-- Snapshot: 2026-11-02. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 13
 - Timezone: `Australia/Sydney`
 
@@ -43,7 +43,7 @@ Passthrough triggers accept caller JSON rather than enforcing a declared field s
 
 ## Connections to other workflows
 
-Called by: [UFC | 3. Analyse Picker Video Transcripts](3-analyse-picker-video-transcripts.md) via `Ensure UFC Fight Card`, [UFC | 1. Set Active UFC Event (Sunday nights)](1-set-active-ufc-event-sunday-nights.md) via `Ensure UFC Event Spreadsheet`, [UFC | 2. Extract Picker Video Transcripts](2-extract-picker-video-transcripts.md) via `Ensure UFC Event Spreadsheet`
+Called by: [UFC | 3. Analyse Picker Video Transcripts](3-analyse-picker-video-transcripts.md) via `Ensure UFC Fight Card`, [UFC | 10. Fight-Week Card Check](10-fight-week-card-check.md) via `Ensure UFC Fight Card`, [UFC | 1. Set Active UFC Event (Sunday nights)](1-set-active-ufc-event-sunday-nights.md) via `Ensure UFC Event Spreadsheet`, [UFC | 2. Extract Picker Video Transcripts](2-extract-picker-video-transcripts.md) via `Ensure UFC Event Spreadsheet`
 
 - `Populate Empty UFC Fight Card` → [UFC | svc.populate_fight_card](svc-populate-fight-card.md); waitForSubWorkflow=`True`; node type `n8n-nodes-base.executeWorkflow`.
 

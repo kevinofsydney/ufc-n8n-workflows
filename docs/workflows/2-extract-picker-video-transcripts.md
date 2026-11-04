@@ -10,7 +10,7 @@ Discover eligible prediction videos for the active event and save English transc
 - Published: `True`
 - Published version: `58601e8e-2736-4e4b-9e7d-fb44f4a3eda7`
 - Draft version: `58601e8e-2736-4e4b-9e7d-fb44f4a3eda7`
-- Snapshot: 2026-11-02. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 58
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 

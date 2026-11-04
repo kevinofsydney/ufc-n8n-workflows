@@ -8,9 +8,9 @@ Apply eligible recorded Fight Card changes and queue affected videos for re-anal
 
 - Workflow ID: `jWFGMw2faC2zLseh`
 - Published: `True`
-- Published version: `152bcb7e-da36-4896-894e-42c432f54373`
-- Draft version: `152bcb7e-da36-4896-894e-42c432f54373`
-- Snapshot: 2026-11-02. Published graph matched draft when read.
+- Published version: `8826ea2d-77da-4abe-b2e2-cdfe05ad11bb`
+- Draft version: `8826ea2d-77da-4abe-b2e2-cdfe05ad11bb`
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 26
 - Timezone: `Australia/Sydney`
 
@@ -44,7 +44,7 @@ Passthrough triggers accept caller JSON rather than enforcing a declared field s
 
 ## Connections to other workflows
 
-Called by: [UFC | 3. Analyse Picker Video Transcripts](3-analyse-picker-video-transcripts.md) via `Apply Card Changes`
+Called by: [UFC | 3. Analyse Picker Video Transcripts](3-analyse-picker-video-transcripts.md) via `Apply Card Changes`, [UFC | 10. Fight-Week Card Check](10-fight-week-card-check.md) via `Apply Card Changes`
 
 
 Configured error handler: [UFC | svc.alert_failure](svc-alert-failure.md). See [monitoring](../monitoring.md) for production Error Trigger behavior.

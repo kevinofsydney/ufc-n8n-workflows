@@ -10,7 +10,7 @@ def slug(text):return re.sub(r'[^a-z0-9]+','-',text.lower()).strip('-')
 manifest=json.loads((ROOT/'inventory/manifest.json').read_text())
 entries=manifest['workflows'];ids={e['id'] for e in entries}
 profiles=json.loads((ROOT/'scripts/workflow-descriptions.json').read_text())
-check(len(entries)==manifest['workflowCount']==28,'Unexpected workflow inventory count')
+check(len(entries)==manifest['workflowCount']==29,'Unexpected workflow inventory count')
 check(ids==set(profiles),'Narrative workflow profiles do not match inventory')
 check(len(list((ROOT/'workflows').glob('*.json')))==len(entries),'Extra or missing workflow snapshots')
 pending=json.loads((ROOT/'inventory/pending-live.json').read_text())['sources']
@@ -41,6 +41,11 @@ for entry in entries:
     else:check(same,'Code file differs: '+str(source))
  check('pinData' not in w and 'staticData' not in w and 'activeVersion' not in w,'Unexpected operational data: '+str(path))
 check(len(sources)==len(list((ROOT/'source').rglob('*.js'))),'Extra or missing extracted code files')
+# svc.detect_card_changes carries a copy of the svc.populate_fight_card card builder; a fix to one must reach the other.
+detect=(ROOT/'source/svc-detect-card-changes/09-compare-card-changes.js').read_text()
+builder=(ROOT/'source/svc-populate-fight-card/16-build-verified-ufc-card.js').read_text()
+start,end=detect.find('function buildOfficial(){\n'),detect.find('\n}\n\n// ---- Compare the official card')
+check(start>=0 and end>start and detect[start+len('function buildOfficial(){\n'):end].strip()==builder.strip(),'svc.detect_card_changes card builder differs from svc.populate_fight_card Build Verified UFC Card')
 for path in [ROOT/'README.md',*(ROOT/'docs').rglob('*.md')]:
  for target in re.findall(r'\]\(([^)]+)\)',path.read_text()):
   target=target.strip('<>')
