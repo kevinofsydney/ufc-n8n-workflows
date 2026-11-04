@@ -62,7 +62,7 @@ All of these come from four weaknesses:
 
 ### 3. Apply what is safe instead of failing (partly done)
 
-- **Isolate the unexpected.** Done for rows that match no bout. Still to do: the same for `svc.sync_bout_ids`, which still stops analysis on a row it cannot place.
+- **Isolate the unexpected.** Done for rows that match no bout: they are set aside, so `svc.sync_bout_ids` skips them. `svc.sync_bout_ids` itself still stops analysis on a conflict, deliberately. Its checks are about bout identity, and continuing would let new picks be written under conflicting IDs. The chain tests run every known card change through it instead.
 - **Never edit silently.** Keep every guard that protects saved picks from being overwritten, but turn "stop everything" into "hold this bout and say why".
 - **Report every card update.** Send one Telegram summary per update listing what was applied, what is waiting and why.
 
