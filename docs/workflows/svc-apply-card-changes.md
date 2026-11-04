@@ -8,8 +8,8 @@ Apply eligible recorded Fight Card changes and queue affected videos for re-anal
 
 - Workflow ID: `jWFGMw2faC2zLseh`
 - Published: `True`
-- Published version: `4ce8fa6e-0917-438b-ba10-5f246169d4ad`
-- Draft version: `4ce8fa6e-0917-438b-ba10-5f246169d4ad`
+- Published version: `152bcb7e-da36-4896-894e-42c432f54373`
+- Draft version: `152bcb7e-da36-4896-894e-42c432f54373`
 - Snapshot: 2026-11-02. Published graph matched draft when read.
 - Nodes: 26
 - Timezone: `Australia/Sydney`
@@ -24,7 +24,7 @@ Apply eligible recorded Fight Card changes and queue affected videos for re-anal
 
 ## Important behavior and limits
 
-This worker mutates sheet data. It does not itself run the analysis model; CARD_CHANGED videos are selected by the next analysis pass. Column writes are not atomic, so PARTLY_APPLIED and verification failures need inspection before retrying. A main event that is waiting to leave the card stays on as main_card, so its replacement can take fight 1 immediately.
+This worker mutates sheet data. It does not itself run the analysis model; CARD_CHANGED videos are selected by the next analysis pass. Column writes are not atomic, so PARTLY_APPLIED and verification failures need inspection before retrying. A main event that is waiting to leave the card stays on as main_card, so its replacement can take fight 1 immediately. When UFC changes a bout ID mid-week, planning matches the official bout to the sheet by fighters and keeps the sheet ID; svc.sync_bout_ids upgrades it afterwards.
 
 ## Triggers and input contract
 

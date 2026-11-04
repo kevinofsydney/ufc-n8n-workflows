@@ -56,6 +56,8 @@ Validate node configurations, connections and workflow groups. Test transformati
 
 Do not rely on a generic dry_run flag as a universal no-write guarantee. Several services implement it individually. Trace every downstream gate first. Error Trigger behavior also differs between production and manual tests.
 
+For card workflows, also replay recent real card-check inputs through the new code and compare with the live result; see the [card-change resilience plan](card-change-resilience.md). Run every `node --test` suite in `shorts-filter/` and `card-handling/`.
+
 Publish only the intended validated version and verify activeVersionId afterward. Keep the previous snapshot for rollback. A version rollback restores workflow logic; it does not undo sheet/table changes or external messages.
 
 ## Restore or clone

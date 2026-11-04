@@ -53,11 +53,34 @@ let saved=[];try{saved=JSON.parse(state.source_card_json||'[]');}catch(e){saved=
 const savedById=new Map(saved.filter(b=>b.bout_id).map(b=>[b.bout_id,b]));
 const currentById=new Map(current.map(b=>[b.bout_id,b]));
 
+// UFC can start or stop sending numeric bout ids between checks. Plan against the sheet's ids so existing
+// Picks/Props/Fight Analysis rows still match; svc.sync_bout_ids upgrades them afterwards from the saved card.
+const pairKey=b=>[norm(b.fighter_a),norm(b.fighter_b)].sort().join('|');
+const surnameKey=b=>[surname(b.fighter_a),surname(b.fighter_b)].sort().join('|');
+const officialIds=new Set(official.map(o=>o.bout_id));
+const sheetIdFor=o=>{
+ if(currentById.has(o.bout_id))return o.bout_id;
+ const exact=current.filter(c=>pairKey(c)===pairKey(o));
+ const loose=exact.length?exact:current.filter(c=>surnameKey(c)===surnameKey(o));
+ return loose.length===1&&!officialIds.has(loose[0].bout_id)?loose[0].bout_id:o.bout_id;
+};
+const idMap=new Map(official.map(o=>[o.bout_id,sheetIdFor(o)]).filter(([from,to])=>from!==to));
+const targets=[...idMap.values()];
+for(const [from,to] of [...idMap])if(targets.filter(t=>t===to).length>1)idMap.delete(from);
+if(idMap.size){
+ official=official.map(o=>idMap.has(o.bout_id)?{...o,bout_id:idMap.get(o.bout_id)}:o);
+ for(const c of changes)if(idMap.has(c.bout_id))c.bout_id=idMap.get(c.bout_id);
+}
+const savedByPair=new Map(saved.filter(b=>b.bout_id).map(b=>[pairKey(b),b]));
+const savedFor=b=>savedById.get(b.bout_id)||savedByPair.get(pairKey(b))||{};
+// Keep a numeric id the saved card has already adopted, so svc.sync_bout_ids can still upgrade the sheet to it.
+const savedIdFor=b=>{const s=savedByPair.get(pairKey(b));return s&&s.bout_id!==b.bout_id&&/^ufc:[0-9]+$/.test(s.bout_id)?s.bout_id:b.bout_id;};
+
 // Build the new card: the official card, with waiting removals kept in place and waiting replacements not yet swapped.
 const waitingRemoved=waiting.filter(c=>c.type==='removed').map(c=>c.bout_id);
 const waitingSwap=new Map(waiting.filter(c=>c.type==='opponent_replaced').map(c=>[c.bout_id,c.old_bout_id]));
-const fromOfficial=o=>{const cur=currentById.get(o.bout_id)||{};return {...(savedById.get(o.bout_id)||{}),...o,fighter_a_aliases:cur.fighter_a_aliases||'',fighter_b_aliases:cur.fighter_b_aliases||''};};
-const fromCurrent=b=>({...(savedById.get(b.bout_id)||{}),...b});
+const fromOfficial=o=>{const cur=currentById.get(o.bout_id)||{};return {...savedFor(o),...o,fighter_a_aliases:cur.fighter_a_aliases||'',fighter_b_aliases:cur.fighter_b_aliases||''};};
+const fromCurrent=b=>({...savedFor(b),...b});
 const next=official.map(o=>waitingSwap.has(o.bout_id)?fromCurrent(currentById.get(waitingSwap.get(o.bout_id))):fromOfficial(o));
 for(const id of waitingRemoved){
  const b=currentById.get(id);
@@ -145,7 +168,7 @@ const appliedJson=JSON.stringify(apply);
 const stateUpdate={
  status:'READY',
  card_fingerprint:fingerprint(matrix),
- source_card_json:JSON.stringify(next),
+ source_card_json:JSON.stringify(next.map(b=>({...b,bout_id:savedIdFor(b)}))),
  change_status:waiting.length?'PARTLY_APPLIED':'APPLIED',
  pending_change_json:waiting.length?JSON.stringify(waiting):'',
  pending_change_fingerprint:'',pending_seen_count:0,pending_first_seen_at:null,
