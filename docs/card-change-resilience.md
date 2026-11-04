@@ -35,6 +35,8 @@ All of these come from four weaknesses:
 - **Unplaceable rows are set aside.** A Picks, Props or Fight Analysis row whose bout is not on the card is marked `VOID_UNMATCHED` and named in the card update message, instead of stopping every other change. Clear the status to restore it.
 - **Builder drift fails the verifier.** `scripts/verify-docs.py` fails when the card builder in `svc.detect_card_changes` differs from `svc.populate_fight_card`.
 - **Checks run on every pull request.** GitHub Actions runs the verifier and every test suite.
+- **Waiting changes alert sooner in fight week.** Within two days of the event, a card change still waiting, usually for ESPN, raises `card_change_waiting` after 6 hours instead of 24.
+- **The whole chain is tested.** `card-handling/card-chain.test.mjs` runs each change through the card update and then `svc.sync_bout_ids` on the resulting sheet, because a sync failure would still stop analysis.
 
 ## Plan
 
@@ -67,7 +69,7 @@ All of these come from four weaknesses:
 ### 4. Check the card more often in fight week (partly done)
 
 - **Check independently of analysis.** Done: `UFC | 10. Fight-Week Card Check`.
-- **Don't wait forever for ESPN.** ESPN usually follows within hours, but not always. If UFC has dropped a bout for 12 hours and ESPN still lists it, send a Telegram message with a button to apply the removal, instead of waiting indefinitely.
+- **Don't wait forever for ESPN.** The 6-hour fight-week alert now flags a removal ESPN hasn't confirmed. Still to do: a Telegram button to apply it from the alert.
 
 ### 5. Tell success from luck (later)
 

@@ -76,3 +76,9 @@ test('a change_status overwritten by svc.apply_card_changes does not hide the st
 test('a continuing incident stays quiet within a day',()=>{const r=runSweep({state:failing(3,10),incidents:[openIncident(2)]});assert.equal(r.telegram_message,'');assert.equal(r.updates[0].occurrences,5);assert.equal(r.updates[0].last_alerted_at,iso(2));});
 test('a continuing incident reminds after a day',()=>{const r=runSweep({state:failing(3,30),incidents:[openIncident(25)]});assert.match(r.telegram_message,/still open/);});
 test('the incident resolves when a check succeeds',()=>{const r=runSweep({state:{change_status:'IN_SYNC',card_unavailable_since:null,card_unavailable_count:0},incidents:[openIncident(2)]});assert.deepEqual(r.problems,[]);assert.equal(r.updates[0].status,'resolved');assert.equal(r.updates[0].resolution,'Condition cleared');assert.match(r.telegram_message,/Resolved/);});
+
+const WAIT='health|card_change_waiting|'+EVENT.event_key;
+const waiting=hoursAgo=>({change_status:'CHANGED',pending_first_seen_at:iso(hoursAgo),pending_change_json:'[{"type":"removed"}]'});
+test('a waiting card change alerts after 6 hours in the last two days',()=>assert.deepEqual(runSweep({state:waiting(7),daysOut:1.5}).problems,[WAIT]));
+test('a waiting card change stays quiet for 5 hours in the last two days',()=>assert.deepEqual(runSweep({state:waiting(5),daysOut:1.5}).problems,[]));
+test('earlier in the week a waiting card change still waits 24 hours',()=>{assert.deepEqual(runSweep({state:waiting(7),daysOut:3}).problems,[]);assert.deepEqual(runSweep({state:waiting(25),daysOut:3}).problems,[WAIT]);});

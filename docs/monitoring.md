@@ -24,7 +24,7 @@ Automatic retry starts the selected worker with empty input. It is not guarantee
 | Missing event spreadsheet | Invalid/empty spreadsheet ID |
 | Card not ready | Within five days before start and card state not READY/PRESERVED |
 | Card review required | change_status is NEEDS_REVIEW |
-| Card changes waiting | CHANGED/PARTLY_APPLIED for more than 24 hours before start |
+| Card changes waiting | CHANGED/PARTLY_APPLIED for more than 24 hours before start, or more than 6 hours within two days of it |
 | Card check unavailable (see [card handling](card-handling.md)) | READY/PRESERVED card within five days before start, with two UNAVAILABLE checks in a row or a streak at least 12 hours old |
 | Stuck video | analysis_status PROCESSING for more than three hours |
 | Re-analysis waiting | CARD_CHANGED for more than 13 hours |

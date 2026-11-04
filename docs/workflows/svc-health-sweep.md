@@ -8,8 +8,8 @@ Detect silent pipeline problems and maintain health incidents every 30 minutes.
 
 - Workflow ID: `oC1PuXuYb1pdeO0J`
 - Published: `True`
-- Published version: `15d7f541-9759-4689-b695-02c398994aa8`
-- Draft version: `15d7f541-9759-4689-b695-02c398994aa8`
+- Published version: `44cfa33e-83aa-44d6-a963-5906a5c004af`
+- Draft version: `44cfa33e-83aa-44d6-a963-5906a5c004af`
 - Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 14
 - Timezone: `Australia/Sydney`
