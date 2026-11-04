@@ -79,5 +79,4 @@ All of these come from four weaknesses:
 ## Known gaps
 
 - Changes made after the event starts are not applied; the card is locked.
-- `svc.apply_card_changes` still writes blank aliases for bouts it adds or re-identifies.
 - A card check that never records a result, such as `SKIPPED`, still raises no alert.

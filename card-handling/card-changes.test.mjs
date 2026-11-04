@@ -76,3 +76,10 @@ test('a row for a bout that is not on the card is set aside instead of stopping 
  assert.doesNotMatch(r.telegram_message,/Voided/);
  assert.deepEqual(r.new_card.map(b=>b.fighter_a),['Waldo Cortes Acosta','Gabriel Lorenco','Tatiana Suarez','Austin Bashi']);
 });
+
+test('a bout added mid-week keeps the ESPN spelling the official card carries as an alias',()=>{
+ const added={...bout(5,'Jonny Parsons','Jose Souza','prelim',slug('Jonny Parsons','Jose Souza')),fighter_b_aliases:'Jose Henrique'};
+ const r=run({official:[...CARD,added],changes:[{type:'added',bout_id:added.bout_id,fight:'Jonny Parsons vs Jose Souza',fight_order:5,bout_type:'prelim'}],seen:1});
+ assert.equal(r.new_card[4].fighter_b_aliases,'Jose Henrique');
+ assert.equal(r.new_card[0].fighter_a_aliases,'','existing bouts keep the sheet value');
+});

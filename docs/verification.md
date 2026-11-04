@@ -19,6 +19,7 @@ Ten workflows changed after the 30 October capture and one was added; the other 
 | svc.record_diagnosis | Invalid input returns ok:false instead of throwing | Failing executions 3347, 3350 and 3353, then executions 3369 and 3370 |
 | svc.detect_card_changes | Card builder matches svc.populate_fight_card | Local simulation with inputs captured by execution 3359, then production execution 3556, which verified the card and adopted its 14 bout IDs into an empty sheet column |
 | svc.sync_bout_ids | Slug-based ufc: IDs can upgrade to numeric UFC IDs | Local fixtures for the upgrade, the no-op and refused changes. Production execution 3558 ran successfully, but UFC still served no data-fmid, so the upgrade itself has not run live |
+| svc.apply_card_changes | A bout added mid-week keeps the official card's aliases, such as an ESPN spelling | Fixture test; live smoke test after publishing |
 | svc.health_sweep | A card change still waiting alerts after 6 hours within two days of the event | Fixture tests; production sweep 4326 after publishing |
 | 10. Fight-Week Card Check (new) | Runs the card steps every two hours in the 72 hours before the event | Test executions 4313, which correctly stopped outside the window, and 4314 and 4320, which ran detect, apply and sync live on a card in sync |
 | svc.apply_card_changes | A row whose bout is not on the card is set aside as VOID_UNMATCHED instead of stopping the update | Fixture test; live smoke test 4320 after publishing |
@@ -60,5 +61,4 @@ Those historical tests substantiate the recent ingestion change; they do not cer
 - svc.detect_card_changes keeps its own copy of the svc.populate_fight_card card builder; a change to one must be applied to the other.
 - A card check that never records a result (SKIPPED, or an error analysis continues past) raises no incident.
 - A failed card check overwrites change_status with UNAVAILABLE, so an open card_change_waiting incident resolves while the change is still pending.
-- svc.apply_card_changes writes blank aliases for a bout it adds or re-identifies, so an ESPN spelling is not carried through that path.
 - Separate first-class n8n Agent artifacts, actual credentials, template/data files, instance settings and historical executions are not backed up here.

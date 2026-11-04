@@ -70,4 +70,3 @@ These are also recorded in the [known limits](verification.md#known-limits-recor
 
 - A check that never records anything raises no `card_check_unavailable` incident. That covers `SKIPPED` checks, for example a READY card with no official UFC URL, and an error that analysis continues past through `Continue Without Card Check`.
 - A failed check overwrites `change_status` with `UNAVAILABLE`, so an open `card_change_waiting` incident resolves while the pending change is still waiting. The pending change itself is kept, and the new condition alerts in its place once its threshold is met.
-- `svc.apply_card_changes` writes blank aliases for a bout it adds, and for a bout whose `bout_id` changes, so an ESPN spelling on the official card is not carried through that path.

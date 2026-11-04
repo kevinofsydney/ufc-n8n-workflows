@@ -79,7 +79,8 @@ const savedIdFor=b=>{const s=savedByPair.get(pairKey(b));return s&&s.bout_id!==b
 // Build the new card: the official card, with waiting removals kept in place and waiting replacements not yet swapped.
 const waitingRemoved=waiting.filter(c=>c.type==='removed').map(c=>c.bout_id);
 const waitingSwap=new Map(waiting.filter(c=>c.type==='opponent_replaced').map(c=>[c.bout_id,c.old_bout_id]));
-const fromOfficial=o=>{const cur=currentById.get(o.bout_id)||{};return {...savedFor(o),...o,fighter_a_aliases:cur.fighter_a_aliases||'',fighter_b_aliases:cur.fighter_b_aliases||''};};
+// Keep the sheet's aliases; a bout new to the sheet takes the official card's, such as an ESPN spelling.
+const fromOfficial=o=>{const cur=currentById.get(o.bout_id)||{};return {...savedFor(o),...o,fighter_a_aliases:cur.fighter_a_aliases||o.fighter_a_aliases||'',fighter_b_aliases:cur.fighter_b_aliases||o.fighter_b_aliases||''};};
 const fromCurrent=b=>({...savedFor(b),...b});
 const next=official.map(o=>waitingSwap.has(o.bout_id)?fromCurrent(currentById.get(waitingSwap.get(o.bout_id))):fromOfficial(o));
 for(const id of waitingRemoved){
