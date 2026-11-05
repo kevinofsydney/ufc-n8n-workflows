@@ -131,3 +131,19 @@ test('a bout UFC dropped but ESPN still lists is a removal ESPN still lists',()=
  const removed=c.changes.find(x=>x.type==='removed');
  assert.equal(removed.fight,'Austin Bashi vs Carlos Calderon');assert.equal(removed.espn_listed,true);
 });
+test('a waiting held bout is recorded with when it started waiting',()=>{
+ const c=check({},{fight:withHeld});
+ assert.equal(c.held_bouts_waiting_text,'Austin Bashi vs Carlos Calderon');assert.equal(c.held_waiting_since,c.checked_at);
+ const again=check({held_bouts_waiting:'Austin Bashi vs Carlos Calderon',held_waiting_since:iso(5)},{fight:withHeld});
+ assert.equal(again.held_waiting_since,iso(5));
+ assert.equal(check({held_bouts_waiting:'Austin Bashi vs Carlos Calderon',held_waiting_since:iso(5)}).held_waiting_since,null,'cleared once nothing waits');
+ assert.equal(check({held_bouts_waiting:'x',held_waiting_since:iso(5)},{fight:broken}).held_waiting_since,iso(5),'kept through a failed check');
+});
+const HELD='health|card_bout_held|'+EVENT.event_key;
+test('a bout ESPN has not listed alerts after 6 hours in the last two days',()=>{
+ const held=h=>({held_bouts_waiting:'Austin Bashi vs Carlos Calderon',held_waiting_since:iso(h)});
+ assert.deepEqual(runSweep({state:held(5),daysOut:1.5}).problems,[]);
+ const r=runSweep({state:held(7),daysOut:1.5});assert.deepEqual(r.problems,[HELD]);assert.match(r.telegram_message,/gets no picks: Austin Bashi vs Carlos Calderon/);
+ assert.deepEqual(runSweep({state:held(7),daysOut:3}).problems,[]);
+ assert.deepEqual(runSweep({state:{held_bouts_waiting:'',held_waiting_since:null}}).problems,[]);
+});

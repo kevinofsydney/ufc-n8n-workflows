@@ -131,7 +131,7 @@ const request=$('Prepare UFC Card Request').first().json;
 const state=$('Read Fight Card State').all().map(i=>i.json).find(s=>s.event_key===request.event_key&&s.spreadsheet_id===request.spreadsheet_id)||{};
 const checkedAt=new Date().toISOString();
 // When the card cannot be checked, keep whatever change was pending so its two-check count survives.
-const done=(status,extra)=>[{json:{...request,card_check:{status,checked_at:checkedAt,changes:[],change_count:0,fingerprint:t(state.pending_change_fingerprint),seen_count:Number(state.pending_seen_count||0),first_seen_at:state.pending_first_seen_at||null,pending_change_json:t(state.pending_change_json),official_card_json:t(state.official_card_json),adoptions:0,adopted_source_card_json:null,...extra}}}];
+const done=(status,extra)=>[{json:{...request,card_check:{status,checked_at:checkedAt,changes:[],change_count:0,fingerprint:t(state.pending_change_fingerprint),seen_count:Number(state.pending_seen_count||0),first_seen_at:state.pending_first_seen_at||null,pending_change_json:t(state.pending_change_json),official_card_json:t(state.official_card_json),adoptions:0,adopted_source_card_json:null,held_bouts_waiting_text:t(state.held_bouts_waiting),held_waiting_since:state.held_waiting_since||null,...extra}}}];
 
 // Consecutive UNAVAILABLE checks are recorded so svc.health_sweep can alert; any verified check clears them.
 const unavailable=reason=>done('UNAVAILABLE',{reason,unavailable_since:state.card_unavailable_since||checkedAt,unavailable_count:Number(state.card_unavailable_count||0)+1,unavailable_reason:t(reason).slice(0,300)});
@@ -214,5 +214,8 @@ if(adoptions.length){
   return {...s,...rest,...(c.bout_id?{bout_id:c.bout_id}:{}),...ids};
  });
 }
+// UFC bouts still waiting for ESPN are recorded with when they started waiting, so svc.health_sweep can alert.
+const waitingText=heldWaiting.join('; ');
+const heldSince=!waitingText?null:(t(state.held_bouts_waiting)===waitingText&&state.held_waiting_since?state.held_waiting_since:checkedAt);
 const status=changes.length?'CHANGED':adoptions.length?'ADOPT_IDS':'IN_SYNC';
-return [{json:{...request,card_check:{status,checked_at:checkedAt,changes,change_count:changes.length,fingerprint,seen_count:seen,first_seen_at:firstSeen,pending_change_json:changes.length?JSON.stringify(changes):'',official_card_json:changes.length?JSON.stringify(official):'',adoptions:adoptions.length,adopted_source_card_json:adoptedCard?JSON.stringify(adoptedCard):null,espn_only_bouts:built.espn_only_bouts||[],held_bouts_kept:heldKept,held_bouts_waiting:heldWaiting,official_source:built.card_source,unavailable_since:null,unavailable_count:0,unavailable_reason:''}}}];
+return [{json:{...request,card_check:{status,checked_at:checkedAt,changes,change_count:changes.length,fingerprint,seen_count:seen,first_seen_at:firstSeen,pending_change_json:changes.length?JSON.stringify(changes):'',official_card_json:changes.length?JSON.stringify(official):'',adoptions:adoptions.length,adopted_source_card_json:adoptedCard?JSON.stringify(adoptedCard):null,espn_only_bouts:built.espn_only_bouts||[],held_bouts_kept:heldKept,held_bouts_waiting:heldWaiting,held_bouts_waiting_text:waitingText,held_waiting_since:heldSince,official_source:built.card_source,unavailable_since:null,unavailable_count:0,unavailable_reason:''}}}];

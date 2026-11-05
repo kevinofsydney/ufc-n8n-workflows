@@ -67,7 +67,7 @@ All of these come from four weaknesses:
 ### 3. Apply what is safe instead of failing (partly done)
 
 - **Isolate the unexpected.** Done for rows that match no bout: they are set aside, so `svc.sync_bout_ids` skips them. `svc.sync_bout_ids` itself still stops analysis on a conflict, deliberately. Its checks are about bout identity, and continuing would let new picks be written under conflicting IDs. The chain tests run every known card change through it instead.
-- **Hold a bout ESPN doesn't list.** Done 5 Nov: the card builder no longer requires UFC and ESPN to list the same number of bouts. A UFC bout ESPN does not list at all is held out of the verified card, never the main event and at most three, instead of stopping the check. One already in the sheet stays where UFC places it, with the sheet's details; one new to the sheet is added once ESPN lists it. A bout ESPN still lists after UFC dropped it now reaches the removal rule instead of failing the check.
+- **Hold a bout ESPN doesn't list.** Done 5 Nov: the card builder no longer requires UFC and ESPN to list the same number of bouts. A UFC bout ESPN does not list at all is held out of the verified card, never the main event and at most three, instead of stopping the check. One already in the sheet stays where UFC places it, with the sheet's details; one new to the sheet is added once ESPN lists it. If ESPN has not listed it after 6 hours within two days of the event (24 hours earlier), `svc.health_sweep` alerts `card_bout_held` so it can be added by hand. A bout ESPN still lists after UFC dropped it now reaches the removal rule instead of failing the check.
 - **Never edit silently.** Keep every guard that protects saved picks from being overwritten, but turn "stop everything" into "hold this bout and say why".
 - **Report every card update.** Send one Telegram summary per update listing what was applied, what is waiting and why.
 
@@ -83,5 +83,4 @@ All of these come from four weaknesses:
 
 ## Known gaps
 
-- A bout UFC adds but ESPN never lists is never added, so it gets no picks. The card check output names it under `held_bouts_waiting`, but nothing alerts on it yet.
 - Changes made after the event starts are not applied; the card is locked.
