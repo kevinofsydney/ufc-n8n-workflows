@@ -66,11 +66,16 @@ const options=(response.body?.events||[]).filter(e=>Math.abs(Date.parse(e.date)-
 if(options.length!==1)throw new Error('Could not uniquely verify this UFC event and its main event on ESPN.');
 const espn=options[0];
 const competitions=(espn.competitions||[]).filter(c=>!/cancel|postpon/i.test(String(c.status?.type?.name||'')));
-if(!unsplit&&competitions.length!==card.length)throw new Error('UFC and ESPN list different bout counts ('+card.length+' vs '+competitions.length+'). Review the card before populating it.');
+// ESPN can lag UFC either way. A UFC bout ESPN does not list at all (never the main event) is held out rather than
+// stopping the whole card: it has no verified rounds or weight class yet. More than MAX_HELD such bouts still stops it.
+const MAX_HELD=3;
+const held=[];
 const used=new Set();
+card.forEach((b,i)=>{b.ufc_index=i;});
 for(const bout of card){
  const found=findCompsBasic(competitions,bout.fighter_a,bout.fighter_b);
  const matches=found.comps;
+ if(!matches.length&&bout!==card[0]){held.push(bout);continue;}
  if(matches.length!==1||used.has(matches[0].id))throw new Error('Could not verify pairing and rounds for '+bout.fighter_a+' vs '+bout.fighter_b+'.');
  const comp=matches[0];used.add(comp.id);
  if(found.tier==='alias'){
@@ -87,6 +92,9 @@ for(const bout of card){
  Object.assign(bout,{scheduled_rounds:rounds,weight_class:weightClass,espn_competition_id:String(comp.id),espn_start:Date.parse(comp.date),fighter_a_aliases:bout.fighter_a_aliases||'',fighter_b_aliases:bout.fighter_b_aliases||''});
  for(const key of ['fighter_a_url','fighter_b_url'])if(!/^https:\/\/www\.ufc\.com\/athlete\/[a-z0-9-]+$/.test(bout[key]))throw new Error('Invalid official athlete URL.');
 }
+if(held.length>MAX_HELD)throw new Error('ESPN does not list '+held.length+' UFC bouts ('+held.map(b=>b.fighter_a+' vs '+b.fighter_b).join('; ')+'). Review the card before populating it.');
+for(const b of held)card.splice(card.indexOf(b),1);
+const heldBouts=held.map(b=>({bout_id:b.bout_id,fighter_a:b.fighter_a,fighter_b:b.fighter_b,fighter_a_url:b.fighter_a_url,fighter_b_url:b.fighter_b_url,ufc_index:b.ufc_index}));
 // ESPN bouts UFC does not list are left off the card (UFC is the source of truth) and reported.
 const espnOnly=competitions.filter(c=>!used.has(c.id)&&c.competitors?.length===2).map(c=>names(c).join(' vs '));
 if(unsplit){
@@ -103,4 +111,4 @@ if(unsplit){
 card.forEach((b,i)=>{b.fight_order=i+1;delete b.espn_start;});
 const rows=card.map(b=>HEADERS.map(h=>b[h]));
 checkCard([HEADERS,...rows]);
-return [{json:{...event,card,espn_event_id:String(espn.id),card_source:unsplit?'ufc-unsplit+espn-segments':'ufc-sections',espn_only_bouts:espnOnly,source_fingerprint:fingerprint(rows),parser_version:'ufc-fight-card-v2',checked_at:new Date().toISOString()}}];
+return [{json:{...event,card,espn_event_id:String(espn.id),card_source:unsplit?'ufc-unsplit+espn-segments':'ufc-sections',espn_only_bouts:espnOnly,held_bouts:heldBouts,source_fingerprint:fingerprint(rows),parser_version:'ufc-fight-card-v2',checked_at:new Date().toISOString()}}];

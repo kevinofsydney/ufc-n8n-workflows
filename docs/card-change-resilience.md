@@ -14,6 +14,7 @@ Fight cards change through fight week: opponents are replaced, bouts are added o
 | 2 Nov | Main event replaced by two new fighters (simulated) | Two main events at once, so the change never applied | Fixed 2 Nov |
 | 4 Nov | Main card reshuffled while UFC started sending numeric IDs for 3 bouts | `svc.apply_card_changes` threw on picks still keyed by the old IDs | Fixed 5 Nov |
 | 4 Nov | Bashi's opponent changed from Brennan to Calderon | Not a failure; detected and applied after the fix | Applied 5 Nov |
+| 5 Nov | ESPN dropped Bashi vs Calderon while UFC still listed it | Every card check failed on a bout-count mismatch (14 vs 13), freezing all other card changes | Fixed 5 Nov |
 
 All of these come from four weaknesses:
 
@@ -66,6 +67,7 @@ All of these come from four weaknesses:
 ### 3. Apply what is safe instead of failing (partly done)
 
 - **Isolate the unexpected.** Done for rows that match no bout: they are set aside, so `svc.sync_bout_ids` skips them. `svc.sync_bout_ids` itself still stops analysis on a conflict, deliberately. Its checks are about bout identity, and continuing would let new picks be written under conflicting IDs. The chain tests run every known card change through it instead.
+- **Hold a bout ESPN doesn't list.** Done 5 Nov: the card builder no longer requires UFC and ESPN to list the same number of bouts. A UFC bout ESPN does not list at all is held out of the verified card, never the main event and at most three, instead of stopping the check. One already in the sheet stays where UFC places it, with the sheet's details; one new to the sheet is added once ESPN lists it. A bout ESPN still lists after UFC dropped it now reaches the removal rule instead of failing the check.
 - **Never edit silently.** Keep every guard that protects saved picks from being overwritten, but turn "stop everything" into "hold this bout and say why".
 - **Report every card update.** Send one Telegram summary per update listing what was applied, what is waiting and why.
 
@@ -81,4 +83,5 @@ All of these come from four weaknesses:
 
 ## Known gaps
 
+- A bout UFC adds but ESPN never lists is never added, so it gets no picks. The card check output names it under `held_bouts_waiting`, but nothing alerts on it yet.
 - Changes made after the event starts are not applied; the card is locked.
