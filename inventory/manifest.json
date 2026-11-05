@@ -140,10 +140,10 @@
       "file": "workflows/svc-apply-card-changes.json",
       "documentation": "docs/workflows/svc-apply-card-changes.md",
       "active": true,
-      "activeVersionId": "0d0da8d6-4e15-4aea-824e-b595646c5676",
-      "versionId": "0d0da8d6-4e15-4aea-824e-b595646c5676",
+      "activeVersionId": "9f8ab3a1-3a6b-4e56-96b0-a738f9fbfc12",
+      "versionId": "9f8ab3a1-3a6b-4e56-96b0-a738f9fbfc12",
       "nodeCount": 26,
-      "snapshotSha256": "b578156b44b2f156be812aa5064530d9a8d849646a16c48c4843af0e15d124d7"
+      "snapshotSha256": "a86e79f99737290cd749209e8985eff14fbd39a756ef92cc4b2ffaded4803c17"
     },
     {
       "id": "gfR9qKH6xCTJXzcg",
