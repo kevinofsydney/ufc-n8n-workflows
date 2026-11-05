@@ -1,13 +1,14 @@
 # Workflow catalogue
 
-All 28 UFC workflows visible through MCP were read directly from the live instance on 2026-10-30. Every workflow was published and its published graph matched its current draft. This is a point-in-time reference, not automatic synchronization.
+All 29 UFC workflows visible through MCP were read directly from the live instance on 2026-11-05. Every workflow was published and its published graph matched its current draft. This is a point-in-time reference, not automatic synchronization.
 
 | Workflow | Nodes | Purpose |
 | --- | --- | --- |
 | [UFC \| 1. Set Active UFC Event (Sunday nights)](workflows/1-set-active-ufc-event-sunday-nights.md) | 10 | Select the next future UFC event and make it the single active event used by capture, analysis and Telegram views. |
-| [UFC \| 2. Extract Picker Video Transcripts](workflows/2-extract-picker-video-transcripts.md) | 57 | Discover eligible prediction videos for the active event and save English transcript chunks to its spreadsheet. |
+| [UFC \| 10. Fight-Week Card Check](workflows/10-fight-week-card-check.md) | 10 | Check and apply fight-card changes every two hours in the 72 hours before the active event. |
+| [UFC \| 2. Extract Picker Video Transcripts](workflows/2-extract-picker-video-transcripts.md) | 58 | Discover eligible prediction videos for the active event and save English transcript chunks to its spreadsheet. |
 | [UFC \| 3. Analyse Picker Video Transcripts](workflows/3-analyse-picker-video-transcripts.md) | 69 | Turn captured transcripts into structured winner picks, props and fight reasoning while preserving event and fight identity. |
-| [UFC \| 4. Add New UFC Events](workflows/4-add-new-ufc-events.md) | 12 | Maintain the event catalogue by scraping the official UFC upcoming-events page. |
+| [UFC \| 4. Add New UFC Events](workflows/4-add-new-ufc-events.md) | 14 | Maintain the event catalogue by scraping the official UFC upcoming-events page. |
 | [UFC \| 5. Telegram Command Router](workflows/5-telegram-command-router.md) | 29 | Provide the owner-only Telegram command and inline-button entry point for the system. |
 | [UFC \| 6. UFC Consensus Picks (weighted)](workflows/6-ufc-consensus-picks-weighted.md) | 16 | Aggregate saved official picks into a weighted consensus and optionally explain each bout. |
 | [UFC \| 7. Grade Picks](workflows/7-grade-picks.md) | 24 | Grade saved predictions against completed ESPN fight results and persist the historical record. |
@@ -27,7 +28,7 @@ All 28 UFC workflows visible through MCP were read directly from the live instan
 | [UFC \| svc.list_issues](workflows/svc-list-issues.md) | 5 | Send a readable list of open and recently resolved incidents. |
 | [UFC \| svc.populate_fight_card](workflows/svc-populate-fight-card.md) | 40 | Build a verified Fight Card for an empty event sheet while protecting existing extraction. |
 | [UFC \| svc.read_execution](workflows/svc-read-execution.md) | 3 | Return compact read-only execution evidence for diagnosers. |
-| [UFC \| svc.record_diagnosis](workflows/svc-record-diagnosis.md) | 7 | Persist a diagnosis and send the owner a consistently formatted diagnosis message. |
+| [UFC \| svc.record_diagnosis](workflows/svc-record-diagnosis.md) | 9 | Persist a diagnosis and send the owner a consistently formatted diagnosis message. |
 | [UFC \| svc.record_issue](workflows/svc-record-issue.md) | 11 | Record an owner-reported issue in the same incident system used for pipeline failures. |
 | [UFC \| svc.resolve_incident](workflows/svc-resolve-incident.md) | 9 | Mark a selected incident resolved with an owner-supplied resolution. |
 | [UFC \| svc.retry_video](workflows/svc-retry-video.md) | 12 | Accept a targeted owner retry for one unfinished active-event video. |

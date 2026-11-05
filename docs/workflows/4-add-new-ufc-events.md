@@ -8,21 +8,21 @@ Maintain the event catalogue by scraping the official UFC upcoming-events page.
 
 - Workflow ID: `MWmlPIyBDUKoheXO`
 - Published: `True`
-- Published version: `f3f0c1ec-a566-43a4-867b-0f5db65e2057`
-- Draft version: `f3f0c1ec-a566-43a4-867b-0f5db65e2057`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
-- Nodes: 12
+- Published version: `64ddf529-c3c8-477e-b3c5-893aaa6812e7`
+- Draft version: `64ddf529-c3c8-477e-b3c5-893aaa6812e7`
+- Snapshot: 2026-11-05. Published graph matched draft when read.
+- Nodes: 14
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 
 ## How it works
 
 1. Fetch ufc.com/events with browser headers and STYXKEY_region=USA.US.en.Default to select the US English edition.
 2. Extract individual event entries, normalize names, URLs, dates and event keys, then filter eligible events.
-3. Compare against ufc_events, update existing event metadata or insert new rows, and send a Telegram notification for newly added events.
+3. Compare against ufc_events, update existing event metadata or insert new rows, and send a Telegram notification for newly added or renamed events.
 
 ## Important behavior and limits
 
-The US-region cookie is intentional because the n8n hosting region can otherwise receive another edition. This workflow discovers events; workflow 1 decides which one is active. Scraper selectors and date normalization depend on the current UFC site.
+The US-region cookie is intentional because the n8n hosting region can otherwise receive another edition. This workflow discovers events; workflow 1 decides which one is active. Scraper selectors and date normalization depend on the current UFC site. A renamed event keeps its existing event_key: when a cancelled main event renames the UFC page in place, only the name, date and source reference are updated, so fight-card state, video rows and the spreadsheet stay joined. The key can therefore name the original matchup. It runs daily at 12:00, before Sunday activation, because video matching uses the stored event name; the stored name can still lag a rename by up to a day.
 
 ## Triggers and input contract
 
@@ -35,12 +35,10 @@ The US-region cookie is intentional because the n8n hosting region can otherwise
       "rule": {
         "interval": [
           {
-            "field": "weeks",
-            "triggerAtDay": [
-              1,
-              4
-            ],
-            "triggerAtHour": 12
+            "field": "days",
+            "daysInterval": 1,
+            "triggerAtHour": 12,
+            "triggerAtMinute": 0
           }
         ]
       }
@@ -63,10 +61,10 @@ Configured error handler: [UFC | svc.alert_failure](svc-alert-failure.md). See [
 | Node | Table | Operation | Written fields |
 | --- | --- | --- | --- |
 | Find Existing UFC Event | ufc_events | get |  |
-| Update Existing UFC Event | ufc_events | update | source_event_id, event_key, event_name, event_datetime_local |
+| Update Existing UFC Event | ufc_events | update | source_event_id, event_name, event_datetime_local |
 | Insert New UFC Event | ufc_events | insert | source_event_id, event_key, event_name, event_datetime_local, active, created_at |
 
-Terminal nodes in the saved graph: `Update Existing UFC Event`, `Telegram — UFC Event Added`. Terminal nodes include notifications and parallel branches; not every terminal is the sub-workflow return contract. Caller wait settings and worker result code determine how outputs are consumed.
+Terminal nodes in the saved graph: `Update Existing UFC Event`, `Telegram — UFC Event Added`, `Telegram — UFC Event Renamed`. Terminal nodes include notifications and parallel branches; not every terminal is the sub-workflow return contract. Caller wait settings and worker result code determine how outputs are consumed.
 
 ## Node reference
 
@@ -84,6 +82,8 @@ Terminal nodes in the saved graph: `Update Existing UFC Event`, `Telegram — UF
 | 10 | Telegram — UFC Event Added | telegram | Telegram sendMessage |  |
 | 11 | Classify UFC Events | code | [JavaScript](../../source/4-add-new-ufc-events/11-classify-ufc-events.js) |  |
 | 12 | Insert New UFC Event | dataTable | insert ufc_events |  |
+| 13 | Event Renamed? | if |  |  |
+| 14 | Telegram — UFC Event Renamed | telegram | Telegram sendMessage |  |
 
 ## Exact graph edges
 
@@ -99,9 +99,11 @@ Main output indexes are zero-based. If outputs 0/1 mean true/false for an If nod
 | Normalise and Filter UFC Events | main | 0 | Find Existing UFC Event | 0 |
 | Find Existing UFC Event | main | 0 | Classify UFC Events | 0 |
 | Event Already Exists? | main | 0 | Update Existing UFC Event | 0 |
+| Event Already Exists? | main | 0 | Event Renamed? | 0 |
 | Event Already Exists? | main | 1 | Insert New UFC Event | 0 |
 | Classify UFC Events | main | 0 | Event Already Exists? | 0 |
 | Insert New UFC Event | main | 0 | Telegram — UFC Event Added | 0 |
+| Event Renamed? | main | 0 | Telegram — UFC Event Renamed | 0 |
 
 ## Code and configuration
 

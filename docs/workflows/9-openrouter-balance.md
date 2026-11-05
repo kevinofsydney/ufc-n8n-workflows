@@ -10,7 +10,7 @@ Answer credit-balance requests and monitor OpenRouter credit availability.
 - Published: `True`
 - Published version: `e962135f-653e-44e7-bb88-36345cffb380`
 - Draft version: `e962135f-653e-44e7-bb88-36345cffb380`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 12
 - Timezone: `Australia/Sydney`
 

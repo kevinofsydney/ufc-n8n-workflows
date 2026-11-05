@@ -8,9 +8,9 @@ Turn captured transcripts into structured winner picks, props and fight reasonin
 
 - Workflow ID: `BvLnPFMwQ2vhPkgv`
 - Published: `True`
-- Published version: `70512820-84f9-49ab-b49f-e65bfb8bda3c`
-- Draft version: `70512820-84f9-49ab-b49f-e65bfb8bda3c`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Published version: `ced790bd-ce18-4411-8a94-bd7c4b89d795`
+- Draft version: `ced790bd-ce18-4411-8a94-bd7c4b89d795`
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 69
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 
@@ -18,7 +18,7 @@ Turn captured transcripts into structured winner picks, props and fight reasonin
 
 1. Load the active event, ensure its card and spreadsheet, validate the sheet contract, synchronize bout IDs, detect official card changes and apply eligible changes before extraction.
 2. Select captured videos for this event with no analysis, retryable FAILED/RETRY state, stale PROCESSING state, explicit targeted retry or CARD_CHANGED. Automatic analysis normally caps attempts at three; PROCESSING becomes stale after one hour.
-3. Before joining transcripts or invoking any model, verify selected video durations with the same fail-closed guard. Exclude Shorts/short clips, including existing captured rows and targeted analysis retries; all-excluded work finishes idle.
+3. Before joining transcripts or invoking any model, verify selected video durations with the same guard. Exclude Shorts/short clips and set aside videos with no usable duration, including existing captured rows and targeted analysis retries, without changing their status or attempt count; valid videos continue, a bad YouTube response fails the run, and work with nothing left finishes idle. Unverified videos appear in the run record summary only.
 4. Reassemble transcript parts in order, build official-card context and mark each selected video PROCESSING, incrementing the analysis attempt count.
 5. Request strict JSON extraction through OpenRouter using openai/gpt-6-luna-pro with deepseek/deepseek-v4.1-flash-1017 fallback, maximum 20,000 output tokens and configured provider output-price ceiling 0.66 USD per million tokens.
 6. Parse and validate extracted fighters, fight order, confidence, props and reasoning. When a non-bingo card of at least five bouts yields fewer than three winner picks and under 30% coverage, make one diversity retry with DeepSeek.

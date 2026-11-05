@@ -8,9 +8,9 @@ Detect differences between the saved Fight Card and the current official card.
 
 - Workflow ID: `UDRrGRyeFPL9Lk3S`
 - Published: `True`
-- Published version: `b3cb0ce1-ad25-421a-9e0e-64073ee3ad23`
-- Draft version: `b3cb0ce1-ad25-421a-9e0e-64073ee3ad23`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Published version: `0786ef94-5229-40f3-b75e-1b8f87cdc40e`
+- Draft version: `0786ef94-5229-40f3-b75e-1b8f87cdc40e`
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 12
 - Timezone: `Australia/Sydney`
 
@@ -23,7 +23,7 @@ Detect differences between the saved Fight Card and the current official card.
 
 ## Important behavior and limits
 
-This workflow records a proposed difference and does not edit the spreadsheet. Removal/replacement safety depends on cross-source confirmation and the apply worker's gates; a changed page alone should not erase predictions.
+This workflow records a proposed difference and does not edit the spreadsheet. Removal/replacement safety depends on cross-source confirmation and the apply worker's gates; a changed page alone should not erase predictions. Its card builder is a separate copy of the svc.populate_fight_card code and must be changed with it. A card that cannot be verified returns UNAVAILABLE without failing the execution and analysis continues. The published version raises no alert; the repository source records a failure streak for svc.health_sweep and awaits publication (see docs/card-handling.md).
 
 ## Triggers and input contract
 
@@ -43,7 +43,7 @@ Passthrough triggers accept caller JSON rather than enforcing a declared field s
 
 ## Connections to other workflows
 
-Called by: [UFC | 3. Analyse Picker Video Transcripts](3-analyse-picker-video-transcripts.md) via `Detect Card Changes`
+Called by: [UFC | 3. Analyse Picker Video Transcripts](3-analyse-picker-video-transcripts.md) via `Detect Card Changes`, [UFC | 10. Fight-Week Card Check](10-fight-week-card-check.md) via `Detect Card Changes`
 
 
 Configured error handler: [UFC | svc.alert_failure](svc-alert-failure.md). See [monitoring](../monitoring.md) for production Error Trigger behavior.
@@ -53,7 +53,7 @@ Configured error handler: [UFC | svc.alert_failure](svc-alert-failure.md). See [
 | Node | Table | Operation | Written fields |
 | --- | --- | --- | --- |
 | Read Fight Card State | ufc_fight_card_state | get |  |
-| Record Card Check | ufc_fight_card_state | update | change_status, change_checked_at, pending_change_json, pending_change_fingerprint, pending_seen_count, pending_first_seen_at, source_card_json, official_card_json |
+| Record Card Check | ufc_fight_card_state | update | change_status, change_checked_at, pending_change_json, pending_change_fingerprint, pending_seen_count, pending_first_seen_at, source_card_json, official_card_json, card_unavailable_since, card_unavailable_count, card_unavailable_reason |
 
 Terminal nodes in the saved graph: `Return Card Check`. Terminal nodes include notifications and parallel branches; not every terminal is the sub-workflow return contract. Caller wait settings and worker result code determine how outputs are consumed.
 

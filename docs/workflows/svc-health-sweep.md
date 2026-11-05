@@ -8,9 +8,9 @@ Detect silent pipeline problems and maintain health incidents every 30 minutes.
 
 - Workflow ID: `oC1PuXuYb1pdeO0J`
 - Published: `True`
-- Published version: `6e12f3be-467e-434e-a818-4994158e8dff`
-- Draft version: `6e12f3be-467e-434e-a818-4994158e8dff`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Published version: `44cfa33e-83aa-44d6-a963-5906a5c004af`
+- Draft version: `44cfa33e-83aa-44d6-a963-5906a5c004af`
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 14
 - Timezone: `Australia/Sydney`
 
@@ -25,7 +25,7 @@ Detect silent pipeline problems and maintain health incidents every 30 minutes.
 
 ## Important behavior and limits
 
-Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence.
+Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence. The card_check_unavailable condition is in the repository source and awaits publication (see docs/card-handling.md).
 
 ## Triggers and input contract
 

@@ -93,6 +93,11 @@
             "node": "Update Existing UFC Event",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Event Renamed?",
+            "type": "main",
+            "index": 0
           }
         ],
         [
@@ -125,6 +130,17 @@
           }
         ]
       ]
+    },
+    "Event Renamed?": {
+      "main": [
+        [
+          {
+            "node": "Telegram — UFC Event Renamed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "nodes": [
@@ -133,12 +149,10 @@
         "rule": {
           "interval": [
             {
-              "field": "weeks",
-              "triggerAtDay": [
-                1,
-                4
-              ],
-              "triggerAtHour": 12
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 12,
+              "triggerAtMinute": 0
             }
           ]
         }
@@ -376,7 +390,6 @@
           "mappingMode": "defineBelow",
           "value": {
             "source_event_id": "={{ $json.source_event_id }}",
-            "event_key": "={{ $json.event_key }}",
             "event_name": "={{ $json.event_name }}",
             "event_datetime_local": "={{ $json.event_datetime_local }}"
           },
@@ -665,6 +678,60 @@
       ],
       "id": "4e33de3a-7eb4-456f-b76c-eb36b5044f6a",
       "name": "Insert New UFC Event"
+    },
+    {
+      "id": "62052a8b-adfd-4f2a-9bf0-91180045ca4a",
+      "name": "Event Renamed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1920,
+        -208
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b23d9992-9a46-4ee6-97ad-4a3f9f50cabb",
+              "leftValue": "={{ !!$json.existing_event_name && $json.existing_event_name !== $json.event_name }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "b45547f5-6478-4d54-9163-0971fb17317b",
+      "name": "Telegram — UFC Event Renamed",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2144,
+        -208
+      ],
+      "parameters": {
+        "chatId": "0",
+        "text": "=🥊 UFC event renamed\n\nWas: {{ $json.existing_event_name }}\nNow: {{ $json.event_name }}\n\nMain card time:\n{{ $json.event_datetime_local }}\n\nCheck the fight card and any videos titled with the old matchup.\n\nSource:\n{{ $json.source_url }}",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "name": "telegramApi credential"
+        }
+      }
     }
   ],
   "nodeGroups": []

@@ -8,9 +8,9 @@ Apply eligible recorded Fight Card changes and queue affected videos for re-anal
 
 - Workflow ID: `jWFGMw2faC2zLseh`
 - Published: `True`
-- Published version: `2f4d44ab-58fa-4345-aec6-74f5a79883d9`
-- Draft version: `2f4d44ab-58fa-4345-aec6-74f5a79883d9`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Published version: `0d0da8d6-4e15-4aea-824e-b595646c5676`
+- Draft version: `0d0da8d6-4e15-4aea-824e-b595646c5676`
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 26
 - Timezone: `Australia/Sydney`
 
@@ -24,7 +24,7 @@ Apply eligible recorded Fight Card changes and queue affected videos for re-anal
 
 ## Important behavior and limits
 
-This worker mutates sheet data. It does not itself run the analysis model; CARD_CHANGED videos are selected by the next analysis pass. Column writes are not atomic, so PARTLY_APPLIED and verification failures need inspection before retrying.
+This worker mutates sheet data. It does not itself run the analysis model; CARD_CHANGED videos are selected by the next analysis pass. Column writes are not atomic, so PARTLY_APPLIED and verification failures need inspection before retrying. A main event that is waiting to leave the card stays on as main_card, so its replacement can take fight 1 immediately. When UFC changes a bout ID mid-week, planning matches the official bout to the sheet by fighters and keeps the sheet ID; svc.sync_bout_ids upgrades it afterwards.
 
 ## Triggers and input contract
 
@@ -44,7 +44,7 @@ Passthrough triggers accept caller JSON rather than enforcing a declared field s
 
 ## Connections to other workflows
 
-Called by: [UFC | 3. Analyse Picker Video Transcripts](3-analyse-picker-video-transcripts.md) via `Apply Card Changes`
+Called by: [UFC | 3. Analyse Picker Video Transcripts](3-analyse-picker-video-transcripts.md) via `Apply Card Changes`, [UFC | 10. Fight-Week Card Check](10-fight-week-card-check.md) via `Apply Card Changes`
 
 
 Configured error handler: [UFC | svc.alert_failure](svc-alert-failure.md). See [monitoring](../monitoring.md) for production Error Trigger behavior.

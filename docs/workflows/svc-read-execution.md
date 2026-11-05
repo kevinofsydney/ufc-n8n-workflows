@@ -10,7 +10,7 @@ Return compact read-only execution evidence for diagnosers.
 - Published: `True`
 - Published version: `b6a49a90-8732-4966-af9d-108e01dc45c1`
 - Draft version: `b6a49a90-8732-4966-af9d-108e01dc45c1`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 3
 - Timezone: `Australia/Sydney`
 

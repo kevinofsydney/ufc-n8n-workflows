@@ -1,6 +1,6 @@
 # Pre-publication privacy review
 
-The publication candidate was reviewed before the first Git commit or push. The repository is private as an additional access control; sanitization does not depend on that visibility.
+The publication candidate was reviewed before the first Git commit or push. The repository is public, so sanitization is the only protection for its contents. Review every change on that basis before pushing.
 
 ## Removed or replaced
 

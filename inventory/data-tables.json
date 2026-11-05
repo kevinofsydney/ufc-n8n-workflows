@@ -76,6 +76,24 @@
         "index": 6
       },
       {
+        "id": "Jnv00SCzZrphWLAf",
+        "name": "card_unavailable_count",
+        "type": "number",
+        "index": 20
+      },
+      {
+        "id": "JjQcwkqymA5wDLRq",
+        "name": "card_unavailable_reason",
+        "type": "string",
+        "index": 21
+      },
+      {
+        "id": "hF43HglFTzZFvnDt",
+        "name": "card_unavailable_since",
+        "type": "date",
+        "index": 19
+      },
+      {
         "id": "cZD3P9XRdNOI2RdS",
         "name": "change_checked_at",
         "type": "date",

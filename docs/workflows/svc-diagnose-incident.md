@@ -10,7 +10,7 @@ Investigate eligible incidents using a bounded AI diagnosis workflow and save th
 - Published: `True`
 - Published version: `d0256f3b-b428-468d-82b8-cb2876d5aa32`
 - Draft version: `d0256f3b-b428-468d-82b8-cb2876d5aa32`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 12
 - Timezone: `Australia/Sydney`
 

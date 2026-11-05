@@ -4,7 +4,7 @@
 // needs a human. Bouts still waiting stay on the card. Nothing here writes.
 const HEADERS=['fight_order','fighter_a','fighter_b','fighter_a_aliases','fighter_b_aliases','bout_type','scheduled_rounds','weight_class'];
 const TABS=[{sheet:'Picks',node:'Read Picks'},{sheet:'Props',node:'Read Props'},{sheet:'Fight Analysis',node:'Read Fight Analysis'}];
-const VOID='VOID_CARD_CHANGE';
+const VOID='VOID_CARD_CHANGE',UNMATCHED='VOID_UNMATCHED';
 const MAX_REMOVALS=3;
 const text=v=>String(v??'').trim();
 const norm=v=>text(v).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
@@ -53,16 +53,43 @@ let saved=[];try{saved=JSON.parse(state.source_card_json||'[]');}catch(e){saved=
 const savedById=new Map(saved.filter(b=>b.bout_id).map(b=>[b.bout_id,b]));
 const currentById=new Map(current.map(b=>[b.bout_id,b]));
 
+// UFC can start or stop sending numeric bout ids between checks. Plan against the sheet's ids so existing
+// Picks/Props/Fight Analysis rows still match; svc.sync_bout_ids upgrades them afterwards from the saved card.
+const pairKey=b=>[norm(b.fighter_a),norm(b.fighter_b)].sort().join('|');
+const surnameKey=b=>[surname(b.fighter_a),surname(b.fighter_b)].sort().join('|');
+const officialIds=new Set(official.map(o=>o.bout_id));
+const sheetIdFor=o=>{
+ if(currentById.has(o.bout_id))return o.bout_id;
+ const exact=current.filter(c=>pairKey(c)===pairKey(o));
+ const loose=exact.length?exact:current.filter(c=>surnameKey(c)===surnameKey(o));
+ return loose.length===1&&!officialIds.has(loose[0].bout_id)?loose[0].bout_id:o.bout_id;
+};
+const idMap=new Map(official.map(o=>[o.bout_id,sheetIdFor(o)]).filter(([from,to])=>from!==to));
+const targets=[...idMap.values()];
+for(const [from,to] of [...idMap])if(targets.filter(t=>t===to).length>1)idMap.delete(from);
+if(idMap.size){
+ official=official.map(o=>idMap.has(o.bout_id)?{...o,bout_id:idMap.get(o.bout_id)}:o);
+ for(const c of changes)if(idMap.has(c.bout_id))c.bout_id=idMap.get(c.bout_id);
+}
+const savedByPair=new Map(saved.filter(b=>b.bout_id).map(b=>[pairKey(b),b]));
+const savedFor=b=>savedById.get(b.bout_id)||savedByPair.get(pairKey(b))||{};
+// Keep a numeric id the saved card has already adopted, so svc.sync_bout_ids can still upgrade the sheet to it.
+const savedIdFor=b=>{const s=savedByPair.get(pairKey(b));return s&&s.bout_id!==b.bout_id&&/^ufc:[0-9]+$/.test(s.bout_id)?s.bout_id:b.bout_id;};
+
 // Build the new card: the official card, with waiting removals kept in place and waiting replacements not yet swapped.
 const waitingRemoved=waiting.filter(c=>c.type==='removed').map(c=>c.bout_id);
 const waitingSwap=new Map(waiting.filter(c=>c.type==='opponent_replaced').map(c=>[c.bout_id,c.old_bout_id]));
-const fromOfficial=o=>{const cur=currentById.get(o.bout_id)||{};return {...(savedById.get(o.bout_id)||{}),...o,fighter_a_aliases:cur.fighter_a_aliases||'',fighter_b_aliases:cur.fighter_b_aliases||''};};
-const fromCurrent=b=>({...(savedById.get(b.bout_id)||{}),...b});
+// Keep the sheet's aliases; a bout new to the sheet takes the official card's, such as an ESPN spelling.
+const fromOfficial=o=>{const cur=currentById.get(o.bout_id)||{};return {...savedFor(o),...o,fighter_a_aliases:cur.fighter_a_aliases||o.fighter_a_aliases||'',fighter_b_aliases:cur.fighter_b_aliases||o.fighter_b_aliases||''};};
+const fromCurrent=b=>({...savedFor(b),...b});
 const next=official.map(o=>waitingSwap.has(o.bout_id)?fromCurrent(currentById.get(waitingSwap.get(o.bout_id))):fromOfficial(o));
 for(const id of waitingRemoved){
  const b=currentById.get(id);
  const before=current.filter(x=>x.fight_order<b.fight_order).reverse().map(x=>x.bout_id).find(x=>next.some(y=>y.bout_id===x));
- next.splice(before?next.findIndex(y=>y.bout_id===before)+1:Math.min(1,next.length),0,fromCurrent(b));
+ // An old main event still waiting to leave stays on the card as a main card bout, so a new main event can take fight 1 now.
+ const kept=fromCurrent(b);
+ if(kept.bout_type==='main_event')kept.bout_type='main_card';
+ next.splice(before?next.findIndex(y=>y.bout_id===before)+1:Math.min(1,next.length),0,kept);
 }
 next.forEach((b,i)=>{b.fight_order=i+1;});
 const matrix=next.map(b=>HEADERS.map(h=>b[h]??''));
@@ -87,7 +114,7 @@ if(!diff.length)return result('WAITING',{waiting:waiting.map(c=>describe(c)+' ('
 
 // Rows: void picks for bouts that left the card, renumber the rest. Only fight_order and review_status are written.
 const voidIds=new Set([...apply.filter(c=>c.type==='removed').map(c=>c.bout_id),...apply.filter(c=>c.type==='opponent_replaced').map(c=>c.old_bout_id)]);
-const writes=[],expected=[],rowSummary={};
+const writes=[],expected=[],rowSummary={},setAside=[];
 for(const tab of TABS){
  const rows=$(tab.node).first().json.rows||[];
  const h=(rows[0]||[]).map(text);
@@ -100,7 +127,9 @@ for(const tab of TABS){
   const order=r[idx.order]??'',status=text(r[idx.status]),bout=text(r[idx.bout]);
   if(!r.some(v=>text(v))||text(r[idx.event])!==event.event_key||status.startsWith('VOID')){orders.push(order);statuses.push(status);return;}
   if(voidIds.has(bout)){orders.push(order);statuses.push(VOID);voided++;return;}
-  if(!newOrder.has(bout))throw new Error(tab.sheet+' row '+(k+2)+' has bout '+bout+', which is not on the new card.');
+  // A row whose bout is not on the new card, and was not voided by a recorded change, must not block the rest
+  // of the update. Set it aside with its own status: excluded everywhere VOID is, and restored by clearing it.
+  if(!newOrder.has(bout)){orders.push(order);statuses.push(UNMATCHED);setAside.push(tab.sheet+' row '+(k+2)+' ('+(bout||'no bout_id')+')');voided++;return;}
   const o=newOrder.get(bout);if(Number(order)!==o)renumbered++;
   orders.push(o);statuses.push(status);
  });
@@ -142,7 +171,7 @@ const appliedJson=JSON.stringify(apply);
 const stateUpdate={
  status:'READY',
  card_fingerprint:fingerprint(matrix),
- source_card_json:JSON.stringify(next),
+ source_card_json:JSON.stringify(next.map(b=>({...b,bout_id:savedIdFor(b)}))),
  change_status:waiting.length?'PARTLY_APPLIED':'APPLIED',
  pending_change_json:waiting.length?JSON.stringify(waiting):'',
  pending_change_fingerprint:'',pending_seen_count:0,pending_first_seen_at:null,
@@ -151,7 +180,8 @@ const stateUpdate={
 };
 const lines=['<b>Fight card updated</b>','<b>Event:</b> '+event.event_name,'',...diff.map(d=>'• '+d)];
 const voidedTotal=Object.values(rowSummary).reduce((n,r)=>n+r.voided,0);
-if(voidedTotal)lines.push('','Voided '+voidedTotal+' picks/props/analyses for bouts that left the card.');
+if(voidedTotal-setAside.length)lines.push('','Voided '+(voidedTotal-setAside.length)+' picks/props/analyses for bouts that left the card.');
+if(setAside.length)lines.push('','<b>Check these:</b> '+setAside.length+' row'+(setAside.length===1?'':'s')+' matched no bout on the card, so '+(setAside.length===1?'it was':'they were')+' set aside as '+UNMATCHED+'. Clear that status to restore a row.',...setAside.slice(0,10).map(s=>'• '+s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')));
 lines.push(reanalyse.length?'Re-analysing '+reanalyse.length+' video'+(reanalyse.length===1?'':'s')+'.':'No videos need re-analysis.');
 if(waiting.length)lines.push('','<b>Still waiting:</b>',...waiting.map(c=>'• '+describe(c)+' ('+waitWhy(c)+')'));
-return [{json:{event,status:waiting.length?'PARTLY_APPLY':'APPLY',applied:apply,applied_json:appliedJson,waiting,new_card:next,writes,expected,row_summary:rowSummary,videos:reanalyse,state_update:stateUpdate,telegram_message:lines.join('\n'),dry_run:event.dry_run===true,needs_apply:event.dry_run!==true}}];
+return [{json:{event,status:waiting.length?'PARTLY_APPLY':'APPLY',applied:apply,applied_json:appliedJson,waiting,new_card:next,writes,expected,row_summary:rowSummary,rows_set_aside:setAside,videos:reanalyse,state_update:stateUpdate,telegram_message:lines.join('\n'),dry_run:event.dry_run===true,needs_apply:event.dry_run!==true}}];

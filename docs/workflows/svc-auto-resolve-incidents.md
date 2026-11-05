@@ -10,7 +10,7 @@ Close quiet error incidents on a time-based rule.
 - Published: `True`
 - Published version: `e48d373f-40e7-4f96-99fb-5d46bdf80dc7`
 - Draft version: `e48d373f-40e7-4f96-99fb-5d46bdf80dc7`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 6
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 

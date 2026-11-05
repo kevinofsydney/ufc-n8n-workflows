@@ -10,7 +10,7 @@ Browse captured event videos and reopen saved analysis summaries in Telegram.
 - Published: `True`
 - Published version: `66e79413-f39f-43fe-8ef3-25351c6e3673`
 - Draft version: `66e79413-f39f-43fe-8ef3-25351c6e3673`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 26
 - Timezone: `Australia/Sydney`
 

@@ -12,10 +12,10 @@
     "Discover eligible prediction videos for the active event and save English transcript chunks to its spreadsheet.",
     [
       "Load all known events and the active event, ensure its spreadsheet, and write a running pipeline ledger entry.",
-      "Ordinary scans resolve all 13 channel uploads playlists with channels.list and fetch playlistItems.list pages. Each page holds 50 videos; stop on no nextPageToken or an entirely older-than-six-days page, with ten pages maximum per channel.",
+      "Ordinary scans resolve all 14 channel uploads playlists with channels.list and fetch playlistItems.list pages. Each page holds 50 videos; stop on no nextPageToken or an entirely older-than-six-days page, with ten pages maximum per channel.",
       "Normalize video IDs, owners and original publication dates. Keep recent UFC prediction/pick/breakdown titles; reject excluded formats and ambiguous or other-event titles.",
       "Skip previously recorded videos; permit RETRY_LATER below three attempts after a five-hour gap. Process at most ten selected videos per run, with new videos ahead of retries.",
-      "Before Supadata, batch video IDs into videos.list requests of at most 50. Require duration over 181 seconds (three minutes plus one second API rounding tolerance), and reject explicit Shorts paths/title markers. Missing or invalid metadata blocks processing. This shared gate also protects targeted capture retries. Report excluded short clips in capture summaries.",
+      "Before Supadata, batch video IDs into videos.list requests of at most 50. Require duration over 900 seconds (15 minutes), so only long full-card breakdowns are captured, and reject explicit Shorts paths/title markers. A video with missing or invalid metadata, or absent from the response, is set aside and rechecked next run while valid videos continue; a bad YouTube response as a whole still fails the run. This shared gate also protects targeted capture retries. Report excluded short clips and unverified videos separately in capture summaries.",
       "Fetch English native captions with Supadata. Validate language and content, split at 49,000 characters and upsert transcript chunks by record_id.",
       "Record CAPTURED_AUTO and transcript_appended on success; otherwise record RETRY_LATER or NO_ENGLISH_TRANSCRIPT and attempt/error metadata.",
       "Send one completion summary and finish the run ledger. Empty scans report nothing new; API failures explicitly report an incomplete scan.",
@@ -28,7 +28,7 @@
     [
       "Load the active event, ensure its card and spreadsheet, validate the sheet contract, synchronize bout IDs, detect official card changes and apply eligible changes before extraction.",
       "Select captured videos for this event with no analysis, retryable FAILED/RETRY state, stale PROCESSING state, explicit targeted retry or CARD_CHANGED. Automatic analysis normally caps attempts at three; PROCESSING becomes stale after one hour.",
-      "Before joining transcripts or invoking any model, verify selected video durations with the same fail-closed guard. Exclude Shorts/short clips, including existing captured rows and targeted analysis retries; all-excluded work finishes idle.",
+      "Before joining transcripts or invoking any model, verify selected video durations with the same guard. Exclude Shorts/short clips and set aside videos with no usable duration, including existing captured rows and targeted analysis retries, without changing their status or attempt count; valid videos continue, a bad YouTube response fails the run, and work with nothing left finishes idle. Unverified videos appear in the run record summary only.",
       "Reassemble transcript parts in order, build official-card context and mark each selected video PROCESSING, incrementing the analysis attempt count.",
       "Request strict JSON extraction through OpenRouter using openai/gpt-6-luna-pro with deepseek/deepseek-v4.1-flash-1017 fallback, maximum 20,000 output tokens and configured provider output-price ceiling 0.66 USD per million tokens.",
       "Parse and validate extracted fighters, fight order, confidence, props and reasoning. When a non-bingo card of at least five bouts yields fewer than three winner picks and under 30% coverage, make one diversity retry with DeepSeek.",
@@ -42,9 +42,9 @@
     [
       "Fetch ufc.com/events with browser headers and STYXKEY_region=USA.US.en.Default to select the US English edition.",
       "Extract individual event entries, normalize names, URLs, dates and event keys, then filter eligible events.",
-      "Compare against ufc_events, update existing event metadata or insert new rows, and send a Telegram notification for newly added events."
+      "Compare against ufc_events, update existing event metadata or insert new rows, and send a Telegram notification for newly added or renamed events."
     ],
-    "The US-region cookie is intentional because the n8n hosting region can otherwise receive another edition. This workflow discovers events; workflow 1 decides which one is active. Scraper selectors and date normalization depend on the current UFC site."
+    "The US-region cookie is intentional because the n8n hosting region can otherwise receive another edition. This workflow discovers events; workflow 1 decides which one is active. Scraper selectors and date normalization depend on the current UFC site. A renamed event keeps its existing event_key: when a cancelled main event renames the UFC page in place, only the name, date and source reference are updated, so fight-card state, video rows and the spreadsheet stay joined. The key can therefore name the original matchup. It runs daily at 12:00, before Sunday activation, because video matching uses the stored event name; the stored name can still lag a rename by up to a day."
   ],
   "MabSJBF0Vt6sMICp": [
     "Provide the owner-only Telegram command and inline-button entry point for the system.",
@@ -127,7 +127,7 @@
       "Recheck that the destination is still safe, write the card, read it back and verify before recording READY state and event metadata.",
       "Preserve existing cards; a separate verified path can backfill missing weight classes and read them back. Pending/unpublished official cards return the configured pending state."
     ],
-    "UFC supplies official order/names; ESPN is a verification source. This is not the general card-replacement worker: detect_card_changes and apply_card_changes handle subsequent changes. Existing extracted picks must not be silently overwritten."
+    "UFC supplies official order/names; ESPN is a verification source. This is not the general card-replacement worker: detect_card_changes and apply_card_changes handle subsequent changes. Existing extracted picks must not be silently overwritten. When UFC serves an empty data-fmid, bout_id falls back to the two athlete URL slugs. ESPN matching tries full names, then surnames, then a unique match on one fighter for a renamed opponent. That last tier sets the ESPN spelling as an alias. The published matrix step replaces it with the verified nickname; the repository source merges both and awaits publication (see docs/card-handling.md)."
   ],
   "ya1uS9XFsrlhq6e3": [
     "Give bouts stable identities and align spreadsheet references to those identities.",
@@ -137,7 +137,7 @@
       "If already synchronized, return unchanged. Otherwise write only planned identity/reference columns sequentially.",
       "Read all affected tabs back and verify the planned identities before returning status."
     ],
-    "fight_order can change when the card is rearranged; bout_id is the durable association. Keep Fight Card column I available and preserve existing row IDs and identity mappings. A read-back failure stops completion."
+    "fight_order can change when the card is rearranged; bout_id is the durable association. Keep Fight Card column I available and preserve existing row IDs and identity mappings. A read-back failure stops completion. A saved bout_id can change only by upgrade: a name-based card: ID to a ufc: ID, or a slug-based ufc:a--b ID to a numeric UFC ID. Any other difference is refused and stops the run."
   ],
   "UDRrGRyeFPL9Lk3S": [
     "Detect differences between the saved Fight Card and the current official card.",
@@ -147,7 +147,7 @@
       "Compare bouts to identify additions, removals, replacements, order changes, metadata changes and adoption of official UFC bout IDs.",
       "Persist the comparison, fingerprints and pending change details in ufc_fight_card_state and return card-check metadata."
     ],
-    "This workflow records a proposed difference and does not edit the spreadsheet. Removal/replacement safety depends on cross-source confirmation and the apply worker's gates; a changed page alone should not erase predictions."
+    "This workflow records a proposed difference and does not edit the spreadsheet. Removal/replacement safety depends on cross-source confirmation and the apply worker's gates; a changed page alone should not erase predictions. Its card builder is a separate copy of the svc.populate_fight_card code and must be changed with it. A card that cannot be verified returns UNAVAILABLE without failing the execution and analysis continues. The published version raises no alert; the repository source records a failure streak for svc.health_sweep and awaits publication (see docs/card-handling.md)."
   ],
   "jWFGMw2faC2zLseh": [
     "Apply eligible recorded Fight Card changes and queue affected videos for re-analysis.",
@@ -158,7 +158,7 @@
       "Write planned spreadsheet columns sequentially and read the affected tabs back to verify the result.",
       "Record applied/partially applied state, flag relevant captured videos CARD_CHANGED, and send one change summary when configured."
     ],
-    "This worker mutates sheet data. It does not itself run the analysis model; CARD_CHANGED videos are selected by the next analysis pass. Column writes are not atomic, so PARTLY_APPLIED and verification failures need inspection before retrying."
+    "This worker mutates sheet data. It does not itself run the analysis model; CARD_CHANGED videos are selected by the next analysis pass. Column writes are not atomic, so PARTLY_APPLIED and verification failures need inspection before retrying. A main event that is waiting to leave the card stays on as main_card, so its replacement can take fight 1 immediately. When UFC changes a bout ID mid-week, planning matches the official bout to the sheet by fighters and keeps the sheet ID; svc.sync_bout_ids upgrades it afterwards."
   ],
   "G1EMMFVSzpGE4q3Q": [
     "Accept a targeted owner retry for one unfinished active-event video.",
@@ -217,7 +217,7 @@
       "Upsert health incidents, send new/reopened or daily reminder alerts and resolve health conditions that clear. Resolve suitable error incidents when later success/idle evidence exists; retrying incidents use the configured 45-minute no-further-failure rule.",
       "Dispatch diagnose_incident without waiting to investigate eligible incidents."
     ],
-    "Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence."
+    "Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence. The card_check_unavailable condition is in the repository source and awaits publication (see docs/card-handling.md)."
   ],
   "gfR9qKH6xCTJXzcg": [
     "Close quiet error incidents on a time-based rule.",
@@ -261,11 +261,11 @@
   "mOCorio8pJ9qlB8q": [
     "Persist a diagnosis and send the owner a consistently formatted diagnosis message.",
     [
-      "Validate the structured incident diagnosis input and load the corresponding incident.",
+      "Load the corresponding incident and validate the structured diagnosis. A missing incident_key, unknown incident, or missing summary/root cause returns ok:false with a reason and retry hint, without writing or messaging.",
       "Build escaped summary/evidence/proposed-fix/human-action text and update diagnosis metadata on that incident.",
       "Send the fixed-format Telegram message, then return recorded status. Respect the configured dry-run gate."
     ],
-    "Recording a diagnosis does not resolve the incident or apply its proposed fix. Confidence and human_steps describe the investigator's assessment, not verified remediation."
+    "Recording a diagnosis does not resolve the incident or apply its proposed fix. Confidence and human_steps describe the investigator's assessment, not verified remediation. Rejections do not throw, so they do not reach the error workflow or create an incident; the caller must read the returned status."
   ],
   "fZB3SuyzKNXurQyI": [
     "Record an owner-reported issue in the same incident system used for pipeline failures.",
@@ -293,5 +293,14 @@
       "Set status=resolved, resolved_by=owner and the resolution/version metadata, then confirm in Telegram unless dry_run."
     ],
     "This records that a fix was made; it does not deploy a fix or verify all workflows. A recurring condition can reopen an incident."
+  ],
+  "ID44VEOFRj2lKTuv": [
+    "Check and apply fight-card changes every two hours in the 72 hours before the active event.",
+    [
+      "Every two hours, read the active event and any analysis run still marked running.",
+      "Continue only for exactly one active event whose main card starts within 72 hours and has not started, and when no analysis run started in the last hour is still running.",
+      "Ensure the event spreadsheet and Fight Card, then for a READY or PRESERVED card run svc.detect_card_changes, svc.apply_card_changes and svc.sync_bout_ids, exactly as analysis does."
+    ],
+    "Analysis checks the card only one to three times a day, and a removal needs two checks in a row, so a last-minute change could take most of a day to land. This workflow makes those checks two hours apart in fight week. It writes nothing itself; the card services do, and they send the card-update Telegram message. Detect and apply failures raise their own incidents and stop the run; a sync failure fails the run."
   ]
 }

@@ -8,9 +8,9 @@ Build a verified Fight Card for an empty event sheet while protecting existing e
 
 - Workflow ID: `SBBK0hOGx2uPYpm4`
 - Published: `True`
-- Published version: `552df8ec-ee31-4838-82d1-c139c3c4bce4`
-- Draft version: `552df8ec-ee31-4838-82d1-c139c3c4bce4`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Published version: `3faf97d8-9f71-4818-9fdf-a4b4f3cd240b`
+- Draft version: `3faf97d8-9f71-4818-9fdf-a4b4f3cd240b`
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 40
 - Timezone: `Australia/Sydney`
 
@@ -25,7 +25,7 @@ Build a verified Fight Card for an empty event sheet while protecting existing e
 
 ## Important behavior and limits
 
-UFC supplies official order/names; ESPN is a verification source. This is not the general card-replacement worker: detect_card_changes and apply_card_changes handle subsequent changes. Existing extracted picks must not be silently overwritten.
+UFC supplies official order/names; ESPN is a verification source. This is not the general card-replacement worker: detect_card_changes and apply_card_changes handle subsequent changes. Existing extracted picks must not be silently overwritten. When UFC serves an empty data-fmid, bout_id falls back to the two athlete URL slugs. ESPN matching tries full names, then surnames, then a unique match on one fighter for a renamed opponent. That last tier sets the ESPN spelling as an alias. The published matrix step replaces it with the verified nickname; the repository source merges both and awaits publication (see docs/card-handling.md).
 
 ## Triggers and input contract
 

@@ -10,13 +10,14 @@ def slug(text):return re.sub(r'[^a-z0-9]+','-',text.lower()).strip('-')
 manifest=json.loads((ROOT/'inventory/manifest.json').read_text())
 entries=manifest['workflows'];ids={e['id'] for e in entries}
 profiles=json.loads((ROOT/'scripts/workflow-descriptions.json').read_text())
-check(len(entries)==manifest['workflowCount']==28,'Unexpected workflow inventory count')
+check(len(entries)==manifest['workflowCount']==29,'Unexpected workflow inventory count')
 check(ids==set(profiles),'Narrative workflow profiles do not match inventory')
 check(len(list((ROOT/'workflows').glob('*.json')))==len(entries),'Extra or missing workflow snapshots')
+pending=json.loads((ROOT/'inventory/pending-live.json').read_text())['sources']
 sources=[];node_count=0
 for entry in entries:
  path=ROOT/entry['file'];w=json.loads(path.read_text());node_count+=len(w['nodes'])
- check(hashlib.sha256(path.read_bytes()).hexdigest()==entry['snapshotSha256'],'Snapshot hash differs: '+entry['file'])
+ check(hashlib.sha256(path.read_bytes().replace(b'\r\n',b'\n')).hexdigest()==entry['snapshotSha256'],'Snapshot hash differs: '+entry['file'])
  check(w['id']==entry['id'] and len(w['nodes'])==entry['nodeCount'],'Snapshot metadata differs: '+entry['file'])
  check((ROOT/entry['documentation']).exists(),'Missing workflow guide: '+entry['documentation'])
  names={n['name'] for n in w['nodes']}
@@ -33,9 +34,18 @@ for entry in entries:
   if n['type'].endswith('.code'):
    source=ROOT/'source'/path.stem/(f'{i+1:02d}-'+slug(n['name'])+'.js');sources.append(str(source))
    check(source.exists(),'Missing code file: '+str(source))
-   if source.exists():check(source.read_text().rstrip()==p.get('jsCode','').rstrip(),'Code file differs: '+str(source))
+   if source.exists():
+    same=source.read_text().rstrip()==p.get('jsCode','').rstrip()
+    # Source awaiting publication may differ from the live snapshot, and must be delisted once it matches.
+    if source.relative_to(ROOT).as_posix() in pending:check(not same,'Listed as pending but matches its snapshot: '+str(source))
+    else:check(same,'Code file differs: '+str(source))
  check('pinData' not in w and 'staticData' not in w and 'activeVersion' not in w,'Unexpected operational data: '+str(path))
 check(len(sources)==len(list((ROOT/'source').rglob('*.js'))),'Extra or missing extracted code files')
+# svc.detect_card_changes carries a copy of the svc.populate_fight_card card builder; a fix to one must reach the other.
+detect=(ROOT/'source/svc-detect-card-changes/09-compare-card-changes.js').read_text()
+builder=(ROOT/'source/svc-populate-fight-card/16-build-verified-ufc-card.js').read_text()
+start,end=detect.find('function buildOfficial(){\n'),detect.find('\n}\n\n// ---- Compare the official card')
+check(start>=0 and end>start and detect[start+len('function buildOfficial(){\n'):end].strip()==builder.strip(),'svc.detect_card_changes card builder differs from svc.populate_fight_card Build Verified UFC Card')
 for path in [ROOT/'README.md',*(ROOT/'docs').rglob('*.md')]:
  for target in re.findall(r'\]\(([^)]+)\)',path.read_text()):
   target=target.strip('<>')
@@ -43,7 +53,7 @@ for path in [ROOT/'README.md',*(ROOT/'docs').rglob('*.md')]:
   target=urllib.parse.unquote(target.split('#')[0])
   check((path.parent/target).exists(),f'Broken link in {path.relative_to(ROOT)}: {target}')
 patterns=[r'gh[pousr]_[A-Za-z0-9_]{20,}',r'sk-[A-Za-z0-9_-]{20,}',r'AIza[A-Za-z0-9_-]{30,}',r'eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}',r'Bearer [A-Za-z0-9._-]{15,}',r'-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----']
-paths=[ROOT/'README.md',*(ROOT/'workflows').rglob('*.json'),*(ROOT/'source').rglob('*.js'),*(ROOT/'docs').rglob('*'),*(ROOT/'inventory').glob('*.json'),*(ROOT/'scripts').glob('*.py'),*(ROOT/'scripts').glob('*.json'),*(ROOT/'shorts-filter').glob('*.js'),*(ROOT/'shorts-filter').glob('*.mjs')]
+paths=[ROOT/'README.md',*(ROOT/'workflows').rglob('*.json'),*(ROOT/'source').rglob('*.js'),*(ROOT/'docs').rglob('*'),*(ROOT/'inventory').glob('*.json'),*(ROOT/'scripts').glob('*.py'),*(ROOT/'scripts').glob('*.json'),*(ROOT/'shorts-filter').glob('*.js'),*(ROOT/'shorts-filter').glob('*.mjs'),*(ROOT/'card-handling').glob('*.mjs')]
 private_identifiers={old for old,new in replacements_from_private().items() if new=='0' or new.startswith('YOUR_')}
 for path in paths:
  if not path.is_file():continue
@@ -67,4 +77,4 @@ syntax=subprocess.run(['node','-e',node_check],input=json.dumps(sources),capture
 check(syntax.returncode==0,'JavaScript syntax check failed: '+syntax.stderr)
 if errors:
  print('\n'.join(errors));sys.exit(1)
-print(f'PASS: {len(entries)} workflow guides/snapshots, {node_count} nodes, {len(sources)} source files; hashes, graph references, links, syntax and secret-pattern checks.')
+print(f'PASS: {len(entries)} workflow guides/snapshots, {node_count} nodes, {len(sources)} source files ({len(pending)} awaiting publication); hashes, graph references, links, syntax and secret-pattern checks.')

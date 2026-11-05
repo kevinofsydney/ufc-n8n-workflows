@@ -54,7 +54,7 @@ if(response.error||(response.statusCode&&response.statusCode!==200)||!metadata.t
 const durationResponse=$input.first().json;
 const seconds=durationSeconds(durationResponse.items?.find(v=>v.id===request.video_id)?.contentDetails?.duration);
 if(durationResponse.error||seconds===null)return fail('duration_unavailable','Video not added: its duration could not be verified. Try again later; unverified clips are blocked.');
-if(seconds<=181||/\bshorts\b|#short\b/i.test(String(metadata.title||'')))return fail('short_excluded','Video not added: Shorts and clips three minutes or shorter are excluded. Please submit the full breakdown instead.');
+if(seconds<=900||/\bshorts\b|#short\b/i.test(String(metadata.title||'')))return fail('short_excluded','Video not added: Shorts and clips 15 minutes or shorter are excluded. Please submit the full breakdown instead.');
 const video_title=String(metadata.title).trim(),channel_name=String(metadata.author_name).trim();
 const match=classifyUfcVideo(video_title,event,events);
 if(match.event_match_status!=='MATCHED')return fail('event_mismatch','Video not added: '+match.event_match_reason+'. Active event: '+event.event_name+'.',{video_title,channel_name,...match});

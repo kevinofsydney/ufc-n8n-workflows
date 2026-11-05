@@ -19,7 +19,7 @@ The durable application state is split between ten n8n data tables and one Googl
 
 ## Keys and relationships
 
-`event_key` joins the catalogue, video rows, event sheet extraction, grades, card state and consensus cache. `spreadsheet_id` identifies the event's external storage and also appears in card state. Do not move a saved video to a new event merely because the active event changed.
+`event_key` joins the catalogue, video rows, event sheet extraction, grades, card state and consensus cache. It stays fixed when UFC renames an event in place, so it can name the original matchup; use event_name for display. `spreadsheet_id` identifies the event's external storage and also appears in card state. Do not move a saved video to a new event merely because the active event changed.
 
 `video_id` is the canonical YouTube ID. Capture upserts by that ID; saved transcript records additionally identify each chunk. `part_number` and `part_count` reconstruct complete transcripts in order. An incomplete/missing set of chunks is different from a transcript being successfully captured.
 
@@ -33,7 +33,7 @@ The durable application state is split between ten n8n data tables and one Googl
 
 | Tab | Contents and important fields |
 | --- | --- |
-| `Fight Card` | A:H: fight_order, fighter_a, fighter_b, fighter_a_aliases, fighter_b_aliases, bout_type, scheduled_rounds, weight_class; I holds bout_id after synchronization |
+| `Fight Card` | A:H: fight_order, fighter_a, fighter_b, fighter_a_aliases, fighter_b_aliases, bout_type, scheduled_rounds, weight_class; I holds bout_id after synchronization. Alias cells are free text passed to the analysis prompt, comma-separated when there is more than one |
 | `Transcripts` | Chunk records with record_id, channel/video metadata, part_number, part_count, transcript_text and capture metadata |
 | `Picks` | pick_id, event/video/channel, bout/order/fighters, picked_fighter, confidence, official-pick marker, evidence, reasoning and review/model metadata |
 | `Props` | prop_id, event/video/channel, bout/order/fighters, market, selection, method/round/duration details, stake/confidence/recommendation strength, evidence and reasoning |

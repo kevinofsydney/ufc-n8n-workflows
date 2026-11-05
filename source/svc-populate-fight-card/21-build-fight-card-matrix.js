@@ -32,7 +32,9 @@ lookups.forEach((item,index)=>{
  if(request.profile_status===200&&norm(profileName)===norm(request.fighter_name)&&nickname&&nickname.length<=120&&!/^n\/?a$/i.test(nickname))verified.set(request.profile_url,nickname);
  else warnings.push(request.fighter_name+': nickname unavailable or profile name did not match');
 });
-const card=candidate.card.map(b=>({...b,fighter_a_aliases:verified.get(b.fighter_a_url)||'',fighter_b_aliases:verified.get(b.fighter_b_url)||''}));
+// Keep the ESPN spelling set for a renamed opponent alongside the verified nickname: 'Jose Henrique, Canela'.
+const mergeAliases=(...values)=>{const seen=new Set();return values.map(text).filter(v=>{const key=norm(v);if(!key||seen.has(key))return false;seen.add(key);return true;}).join(', ');};
+const card=candidate.card.map(b=>({...b,fighter_a_aliases:mergeAliases(b.fighter_a_aliases,verified.get(b.fighter_a_url)),fighter_b_aliases:mergeAliases(b.fighter_b_aliases,verified.get(b.fighter_b_url))}));
 const matrix=card.map(b=>HEADERS.map(h=>b[h]));
 checkCard([HEADERS,...matrix]);
 return [{json:{...candidate,card,matrix,card_fingerprint:fingerprint(matrix),alias_warnings:warnings,fight_card_count:card.length,fight_card_status:candidate.dry_run?'PREVIEW':'WRITING'}}];

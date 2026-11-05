@@ -58,6 +58,9 @@ ID: `oCOZ7hzgZ2htYL9F`.
 | pending_seen_count | number |
 | pending_first_seen_at | date |
 | official_card_json | string |
+| card_unavailable_since | date |
+| card_unavailable_count | number |
+| card_unavailable_reason | string |
 
 ## ufc_fight_results
 

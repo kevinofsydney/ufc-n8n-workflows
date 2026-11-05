@@ -11,7 +11,14 @@ if(scan.failed_count===scan.expected&&scan.expected>0){
  lines.push('No new eligible videos to capture. Checked '+scan.checked+' YouTube channels.');
  if(source.already_recorded)lines.push(source.already_recorded+' eligible videos were already recorded.');
 }
-if(source.shorts_excluded_count)lines.push(source.shorts_excluded_count+' Shorts/short clips excluded. Only videos longer than three minutes are eligible.');
+if(source.shorts_excluded_count)lines.push(source.shorts_excluded_count+' Shorts/short clips excluded. Only videos longer than 15 minutes are eligible.');
+const unverified=source.shorts_unverified||[];
+if(unverified.length){
+ lines.push('<b>Unverified — skipped, no usable duration ('+unverified.length+'):</b>');
+ for(const video of unverified.slice(0,5))lines.push('• '+esc(video.channel_name)+' — '+esc(video.video_title)+' ('+esc(video.video_id)+')');
+ if(unverified.length>5)lines.push('… and '+(unverified.length-5)+' more.');
+ lines.push('Live, premiere, private or deleted videos are not processed. They are checked again on the next run.');
+}
 if(source.waiting_retries)lines.push(source.waiting_retries+' transcript retries are waiting for the five-hour retry interval.');
 if(source.exhausted_retries)lines.push(source.exhausted_retries+' videos have reached the transcript attempt limit.');
 if(scan.failed_count){

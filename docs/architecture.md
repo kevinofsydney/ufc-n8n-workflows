@@ -8,11 +8,11 @@
 
 ## Capture and analysis are distinct stages
 
-Workflow 2 resolves uploads playlists for 13 tracked YouTube channels through YouTube Data API v3. It reads recent playlist pages, filters video titles against the active and known events, excludes formats such as reactions/DFS/early predictions and checks the video ledger. Supadata supplies English native captions. Successful transcripts are split into spreadsheet-safe parts and stored in `Transcripts`; `ufc_videos` tracks capture status and attempts.
+Workflow 2 resolves uploads playlists for 14 tracked YouTube channels through YouTube Data API v3. It reads recent playlist pages, filters video titles against the active and known events, excludes formats such as reactions/DFS/early predictions and checks the video ledger. Supadata supplies English native captions. Successful transcripts are split into spreadsheet-safe parts and stored in `Transcripts`; `ufc_videos` tracks capture status and attempts.
 
 Workflow 3 subsequently reads captured videos needing analysis. It reconstructs transcript parts, supplies the official Fight Card to OpenRouter, validates structured extraction and writes Picks, Props, Fight Analysis and Extraction Log. Completed/failed processing and model metadata are recorded in `ufc_videos`; run outcomes are recorded in `ufc_pipeline_runs`.
 
-Both capture and analysis verify video duration before paid extraction/model work. Videos at or below 181 seconds (three minutes plus API rounding tolerance), explicit Shorts markers and unverified duration are blocked. `/addvideo` applies the same policy before reservation. This conservative rule also excludes short landscape clips. See the [Shorts policy](shorts-filter.md) for tests and treatment of previously saved data.
+Both capture and analysis verify video duration before paid extraction/model work. Videos of 15 minutes or less, explicit Shorts markers and unverified duration are blocked per video; a bad YouTube response as a whole fails the run. `/addvideo` applies the same policy before reservation. This rule also excludes shorter pick-summary videos, because only long full-card breakdowns are analysed. See the [Shorts policy](shorts-filter.md) for tests and treatment of previously saved data.
 
 Neither a Telegram dispatch acknowledgement nor a successful API discovery request proves extraction finished. Capture and analysis have independent completion paths. Ordinary Capture does not invoke analysis; the analysis schedule or `/analyse` does. A failed API channel can also be handled without failing the entire n8n execution, so the application ledger and final summary carry essential meaning.
 

@@ -1,0 +1,4 @@
+{
+  "description": "Source files changed in this repository but not yet published to n8n, so they intentionally differ from their snapshot. See docs/card-handling.md. Empty this list when the snapshots are refreshed after publishing.",
+  "sources": []
+}

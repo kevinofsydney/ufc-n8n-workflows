@@ -1,0 +1,373 @@
+{
+  "id": "ID44VEOFRj2lKTuv",
+  "name": "UFC | 10. Fight-Week Card Check",
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": true,
+    "errorWorkflow": "SrL8ScYMIBiJ9Gki"
+  },
+  "tags": [],
+  "description": "Checks and applies UFC fight-card changes every two hours in the 72 hours before the active event.",
+  "connections": {
+    "Every 2 Hours": {
+      "main": [
+        [
+          {
+            "node": "Get Active UFC Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Active UFC Event": {
+      "main": [
+        [
+          {
+            "node": "Get Running Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Running Analysis": {
+      "main": [
+        [
+          {
+            "node": "Fight Week Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fight Week Only": {
+      "main": [
+        [
+          {
+            "node": "Ensure UFC Fight Card",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ensure UFC Fight Card": {
+      "main": [
+        [
+          {
+            "node": "Fight Card Ready?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fight Card Ready?": {
+      "main": [
+        [
+          {
+            "node": "Detect Card Changes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Card Changes": {
+      "main": [
+        [
+          {
+            "node": "Apply Card Changes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Apply Card Changes": {
+      "main": [
+        [
+          {
+            "node": "Sync Bout IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "nodes": [
+    {
+      "id": "9afdaffc-9334-4be8-a5d9-03ded2bdca24",
+      "name": "Every 2 Hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 2,
+              "triggerAtMinute": 5
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "a787d08d-2739-4540-b3ae-069777aca24d",
+      "name": "Get Active UFC Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "WTTpdZSDVOxOB3Ex",
+          "cachedResultName": "ufc_events"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "active",
+              "condition": "isTrue"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true
+    },
+    {
+      "id": "0c737a2f-3410-4ca8-8457-17201f7c3eb9",
+      "name": "Get Running Analysis",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        300
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Tb9mpsswwq6uJvr6",
+          "cachedResultName": "ufc_pipeline_runs"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "workflow_id",
+              "condition": "eq",
+              "keyValue": "BvLnPFMwQ2vhPkgv"
+            },
+            {
+              "keyName": "state",
+              "condition": "eq",
+              "keyValue": "running"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "6e1273e0-89ee-451e-978b-f285986ac908",
+      "name": "Fight Week Only",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        300
+      ],
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "language": "javaScript",
+        "jsCode": "// Check the card every two hours in the 72 hours before the event, so last-minute changes land before\n// new picks are extracted. Skip while an analysis run is checking the same card.\nconst events=$('Get Active UFC Event').all().map(i=>i.json).filter(e=>e.event_key);\nif(events.length!==1)return [];\nconst event=events[0];\nconst now=Date.now(),start=Date.parse(event.event_datetime_local);\nif(!Number.isFinite(start)||start<=now||start-now>72*3600e3)return [];\nconst busy=$('Get Running Analysis').all().map(i=>i.json).some(r=>r.state==='running'&&now-Date.parse(r.started_at)<3600e3);\nif(busy)return [];\nreturn [{json:event}];"
+      }
+    },
+    {
+      "id": "6e74a864-55e6-41c2-ab12-2a76cada1022",
+      "name": "Ensure UFC Fight Card",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        960,
+        300
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "LuALxCWYzByUY2Iq",
+          "cachedResultName": "UFC | svc.ensure_event_spreadsheet"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "22b282a1-7aa3-40c9-81ab-e6b8dded231d",
+      "name": "Fight Card Ready?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1200,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ ['READY','PRESERVED'].includes($json.fight_card_status) && Number($json.fight_card_count) > 0 }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "92279004-9590-4c0a-8074-f08744c67411",
+      "name": "Detect Card Changes",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        1440,
+        200
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "UDRrGRyeFPL9Lk3S",
+          "cachedResultName": "UFC | svc.detect_card_changes"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "98be122e-9593-4c50-a597-5dee2153f915",
+      "name": "Apply Card Changes",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        1680,
+        200
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "jWFGMw2faC2zLseh",
+          "cachedResultName": "UFC | svc.apply_card_changes"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      },
+      "onError": "continueErrorOutput"
+    },
+    {
+      "id": "948fefe1-928a-4e88-9741-ba67d889faef",
+      "name": "Sync Bout IDs",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.4,
+      "position": [
+        1920,
+        200
+      ],
+      "parameters": {
+        "source": "database",
+        "workflowId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "ya1uS9XFsrlhq6e3",
+          "cachedResultName": "UFC | svc.sync_bout_ids"
+        },
+        "mode": "once",
+        "options": {
+          "waitForSubWorkflow": true
+        }
+      }
+    },
+    {
+      "id": "7c7a10e8-6037-40ef-9611-c4436ac61e60",
+      "name": "Sticky Note 2bc237c7",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        208
+      ],
+      "parameters": {
+        "content": "## Fight-week card check\nRuns the same card steps as analysis (detect, apply, sync) every two hours in the 72 hours before the active event. Skips outside that window and while an analysis run is in progress. Card-step errors raise their own incidents and stop here.",
+        "color": 7,
+        "width": 880,
+        "height": 224
+      }
+    }
+  ],
+  "nodeGroups": [
+    {
+      "id": "23347f11-35dc-4638-ae7f-bdcde295db88",
+      "name": "Fight-week gate",
+      "nodeNames": [
+        "Get Active UFC Event",
+        "Get Running Analysis",
+        "Fight Week Only"
+      ],
+      "description": "Continues only for one active event within 72 hours of its start, and when no analysis run is checking the card."
+    },
+    {
+      "id": "f947b03f-5ac1-41b8-bce7-518409565f4a",
+      "name": "Card update",
+      "nodeNames": [
+        "Ensure UFC Fight Card",
+        "Fight Card Ready?",
+        "Detect Card Changes",
+        "Apply Card Changes",
+        "Sync Bout IDs"
+      ],
+      "description": "Same card steps as analysis: ensure the card, detect changes, apply them, then sync bout IDs."
+    }
+  ]
+}

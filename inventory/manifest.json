@@ -1,6 +1,6 @@
 {
-  "snapshotDate": "2026-10-30",
-  "workflowCount": 28,
+  "snapshotDate": "2026-11-05",
+  "workflowCount": 29,
   "workflows": [
     {
       "id": "mxXosIjmMSiItiYM",
@@ -14,15 +14,26 @@
       "snapshotSha256": "b1fc2e609ef7ea4bbfeb2a75bb4dcc1e21aa3ad75b99d5776aaae9fb978fb215"
     },
     {
+      "id": "ID44VEOFRj2lKTuv",
+      "name": "UFC | 10. Fight-Week Card Check",
+      "file": "workflows/10-fight-week-card-check.json",
+      "documentation": "docs/workflows/10-fight-week-card-check.md",
+      "active": true,
+      "activeVersionId": "3569124a-bab0-4ddc-b43d-aa3f74e1261b",
+      "versionId": "3569124a-bab0-4ddc-b43d-aa3f74e1261b",
+      "nodeCount": 10,
+      "snapshotSha256": "ed37f9f929d903550d3d28988f7d55c149d01cbb30af7c8221fcd4774f492afb"
+    },
+    {
       "id": "y20ZZYzBVS6y8kC0",
       "name": "UFC | 2. Extract Picker Video Transcripts",
       "file": "workflows/2-extract-picker-video-transcripts.json",
       "documentation": "docs/workflows/2-extract-picker-video-transcripts.md",
       "active": true,
-      "activeVersionId": "50f5245f-619e-4c4a-ab25-b952c48ca0f7",
-      "versionId": "50f5245f-619e-4c4a-ab25-b952c48ca0f7",
-      "nodeCount": 57,
-      "snapshotSha256": "998d67bff4854b9a37c1e423c3782210a4e3c67594f9ac38c896944ff33e8127"
+      "activeVersionId": "58601e8e-2736-4e4b-9e7d-fb44f4a3eda7",
+      "versionId": "58601e8e-2736-4e4b-9e7d-fb44f4a3eda7",
+      "nodeCount": 58,
+      "snapshotSha256": "58eeaeae8b8a50d50cd7fbb0a017907dc3c607ebb340c06208bf8b5d401fa959"
     },
     {
       "id": "BvLnPFMwQ2vhPkgv",
@@ -30,10 +41,10 @@
       "file": "workflows/3-analyse-picker-video-transcripts.json",
       "documentation": "docs/workflows/3-analyse-picker-video-transcripts.md",
       "active": true,
-      "activeVersionId": "70512820-84f9-49ab-b49f-e65bfb8bda3c",
-      "versionId": "70512820-84f9-49ab-b49f-e65bfb8bda3c",
+      "activeVersionId": "ced790bd-ce18-4411-8a94-bd7c4b89d795",
+      "versionId": "ced790bd-ce18-4411-8a94-bd7c4b89d795",
       "nodeCount": 69,
-      "snapshotSha256": "045f368fbec4b5f05f5f25f2b59cd461f92c6a891ff7cd1ed1c61f5051d59f77"
+      "snapshotSha256": "d3cd72b04466fa0e9afe3b68ea92cb2ef0aa28fe15d185f442017918866cb811"
     },
     {
       "id": "MWmlPIyBDUKoheXO",
@@ -41,10 +52,10 @@
       "file": "workflows/4-add-new-ufc-events.json",
       "documentation": "docs/workflows/4-add-new-ufc-events.md",
       "active": true,
-      "activeVersionId": "f3f0c1ec-a566-43a4-867b-0f5db65e2057",
-      "versionId": "f3f0c1ec-a566-43a4-867b-0f5db65e2057",
-      "nodeCount": 12,
-      "snapshotSha256": "c38adff235aa841d1a53691f2198399f6aaa22838c30f70b6157763124a21d74"
+      "activeVersionId": "64ddf529-c3c8-477e-b3c5-893aaa6812e7",
+      "versionId": "64ddf529-c3c8-477e-b3c5-893aaa6812e7",
+      "nodeCount": 14,
+      "snapshotSha256": "dc22d654cbeb1ab2c6cf32a419cc6d435d6f7fbea7e9642f3f38a466fd55eab8"
     },
     {
       "id": "MabSJBF0Vt6sMICp",
@@ -107,10 +118,10 @@
       "file": "workflows/svc-add-video.json",
       "documentation": "docs/workflows/svc-add-video.md",
       "active": true,
-      "activeVersionId": "a8f8022e-874f-46e0-80b2-a2b4827a4c0d",
-      "versionId": "a8f8022e-874f-46e0-80b2-a2b4827a4c0d",
+      "activeVersionId": "70af4e32-4fd1-4539-b48b-dfeb7a923245",
+      "versionId": "70af4e32-4fd1-4539-b48b-dfeb7a923245",
       "nodeCount": 25,
-      "snapshotSha256": "414e241dc1372b4795348c6da84ec9866ad0345e379c4b15daec81b65247af35"
+      "snapshotSha256": "ef5aa10144a5ed8532c763f148c25ea70c37d765730174ba337a242f1952e7a7"
     },
     {
       "id": "SrL8ScYMIBiJ9Gki",
@@ -129,10 +140,10 @@
       "file": "workflows/svc-apply-card-changes.json",
       "documentation": "docs/workflows/svc-apply-card-changes.md",
       "active": true,
-      "activeVersionId": "2f4d44ab-58fa-4345-aec6-74f5a79883d9",
-      "versionId": "2f4d44ab-58fa-4345-aec6-74f5a79883d9",
+      "activeVersionId": "0d0da8d6-4e15-4aea-824e-b595646c5676",
+      "versionId": "0d0da8d6-4e15-4aea-824e-b595646c5676",
       "nodeCount": 26,
-      "snapshotSha256": "a6e12b73ca4ef8a6487927b506f3a8100efa0c88a59a3aebe079096dc5108cfa"
+      "snapshotSha256": "b578156b44b2f156be812aa5064530d9a8d849646a16c48c4843af0e15d124d7"
     },
     {
       "id": "gfR9qKH6xCTJXzcg",
@@ -173,10 +184,10 @@
       "file": "workflows/svc-detect-card-changes.json",
       "documentation": "docs/workflows/svc-detect-card-changes.md",
       "active": true,
-      "activeVersionId": "b3cb0ce1-ad25-421a-9e0e-64073ee3ad23",
-      "versionId": "b3cb0ce1-ad25-421a-9e0e-64073ee3ad23",
+      "activeVersionId": "0786ef94-5229-40f3-b75e-1b8f87cdc40e",
+      "versionId": "0786ef94-5229-40f3-b75e-1b8f87cdc40e",
       "nodeCount": 12,
-      "snapshotSha256": "33fa840bd2b4acd962bc17797d81f3778be1b1fcf30eaefb4e5d3cc91967ad14"
+      "snapshotSha256": "4371cfb56f1a876b09531c213f6575cf6740c4abd2c032477a8b53daaa1ddba7"
     },
     {
       "id": "UB711gFJFn9OuZwb",
@@ -206,10 +217,10 @@
       "file": "workflows/svc-health-sweep.json",
       "documentation": "docs/workflows/svc-health-sweep.md",
       "active": true,
-      "activeVersionId": "6e12f3be-467e-434e-a818-4994158e8dff",
-      "versionId": "6e12f3be-467e-434e-a818-4994158e8dff",
+      "activeVersionId": "44cfa33e-83aa-44d6-a963-5906a5c004af",
+      "versionId": "44cfa33e-83aa-44d6-a963-5906a5c004af",
       "nodeCount": 14,
-      "snapshotSha256": "b593033104c75a64e5fe15ade743d50ebbd3dd25f8eebcfa6cf3144995f63e3e"
+      "snapshotSha256": "f5c4b135ded2e269c15c9f9d9217dbca3f635786b1ae55b7dc7011a28c2b1e56"
     },
     {
       "id": "neIv7kEoopd67GLj",
@@ -239,10 +250,10 @@
       "file": "workflows/svc-populate-fight-card.json",
       "documentation": "docs/workflows/svc-populate-fight-card.md",
       "active": true,
-      "activeVersionId": "552df8ec-ee31-4838-82d1-c139c3c4bce4",
-      "versionId": "552df8ec-ee31-4838-82d1-c139c3c4bce4",
+      "activeVersionId": "3faf97d8-9f71-4818-9fdf-a4b4f3cd240b",
+      "versionId": "3faf97d8-9f71-4818-9fdf-a4b4f3cd240b",
       "nodeCount": 40,
-      "snapshotSha256": "cf4db237ae8c6ef6cfc5ad225a7372db28e6f42798a59150dd7be6d48865a18d"
+      "snapshotSha256": "c007685ec37765a5536cbf9f598081d0c6afb4d9e7baa4b16b8e833f1866ad9a"
     },
     {
       "id": "pHQCLT93NxqScBgQ",
@@ -261,10 +272,10 @@
       "file": "workflows/svc-record-diagnosis.json",
       "documentation": "docs/workflows/svc-record-diagnosis.md",
       "active": true,
-      "activeVersionId": "2b2bca4a-af82-4ce5-85e0-7cfe2cd58680",
-      "versionId": "2b2bca4a-af82-4ce5-85e0-7cfe2cd58680",
-      "nodeCount": 7,
-      "snapshotSha256": "7b5de47986de9019c2f19f76749ff46bbe76b17217d63573bd9e90a3788f157f"
+      "activeVersionId": "9a2a2636-5888-405c-8691-91939fc21034",
+      "versionId": "9a2a2636-5888-405c-8691-91939fc21034",
+      "nodeCount": 9,
+      "snapshotSha256": "3704d096b5762fde32b57bab9f64df0e530e6708b08e72ab8f43c56b9ccc9a26"
     },
     {
       "id": "fZB3SuyzKNXurQyI",
@@ -305,10 +316,10 @@
       "file": "workflows/svc-sync-bout-ids.json",
       "documentation": "docs/workflows/svc-sync-bout-ids.md",
       "active": true,
-      "activeVersionId": "cefcc33c-e278-4535-9fa9-ec7553d25483",
-      "versionId": "cefcc33c-e278-4535-9fa9-ec7553d25483",
+      "activeVersionId": "2ca9c66f-5ea0-4d83-8e16-b0770ea3b45d",
+      "versionId": "2ca9c66f-5ea0-4d83-8e16-b0770ea3b45d",
       "nodeCount": 18,
-      "snapshotSha256": "0fd4a51cf191c237c70e52b663af3491749fdeeae92979b47cc42cd158a1ec5b"
+      "snapshotSha256": "37c3daf352e600af27455ff957138d94b8975449e33f203143de3d1c75613477"
     }
   ]
 }

@@ -10,7 +10,7 @@ Mark a selected incident resolved with an owner-supplied resolution.
 - Published: `True`
 - Published version: `d18954d6-e5e5-4c6f-bc5f-ed3fe278cc5d`
 - Draft version: `d18954d6-e5e5-4c6f-bc5f-ed3fe278cc5d`
-- Snapshot: 2026-10-30. Published graph matched draft when read.
+- Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 9
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 
