@@ -68,5 +68,5 @@ The tests do not run the `Record Card Check` mappings, which exist only in the w
 
 These are also recorded in the [known limits](verification.md#known-limits-recorded-from-the-source):
 
-- A check that never records anything raises no `card_check_unavailable` incident. That covers `SKIPPED` checks, for example a READY card with no official UFC URL, and an error that analysis continues past through `Continue Without Card Check`.
+- A check that never records anything raises no `card_check_unavailable` incident. That covers `SKIPPED` checks, for example a READY card with no official UFC URL, and an error that analysis continues past through `Continue Without Card Check`. Within 72 hours of the event, `card_check_stale` catches both after 8 hours without a recorded check; earlier in the week they still raise nothing.
 - A failed check overwrites `change_status` with `UNAVAILABLE`, so an open `card_change_waiting` incident resolves while the pending change is still waiting. The pending change itself is kept, and the new condition alerts in its place once its threshold is met.

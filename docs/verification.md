@@ -24,6 +24,7 @@ Ten workflows changed after the 30 October capture and one was added; the other 
 | 10. Fight-Week Card Check (new) | Runs the card steps every two hours in the 72 hours before the event | Test executions 4313, which correctly stopped outside the window, and 4314 and 4320, which ran detect, apply and sync live on a card in sync. First scheduled run inside the window, 4349 at 01:05 UTC on 5 November, ran the full chain without errors |
 | svc.apply_card_changes | A removal ESPN still lists applies after UFC has shown it for 12 hours over three checks | Fixture test; published 5 Nov as 7c56e054 |
 | svc.apply_card_changes | Surnames match exactly as in detect and sync, enforced by the verifier | Full test suite; published 5 Nov as 9f8ab3a1 |
+| svc.health_sweep | Alerts `card_check_stale` when no card check is recorded for 8 hours in the 72 hours before the event | Fixture tests; published 5 Nov as c632196b |
 | svc.auto_resolve_incidents | Card incidents close only after a later card check succeeded, or after 72 quiet hours with a warning | Fixture tests; published 5 Nov as 7b1f4b23 |
 | svc.apply_card_changes | A row whose bout is not on the card is set aside as VOID_UNMATCHED instead of stopping the update | Fixture test; live smoke test 4320 after publishing |
 | svc.apply_card_changes | Plans against the sheet's bout IDs when UFC changes IDs mid-week | Execution 4138 failed when UFC switched 3 bouts to numeric IDs during a reshuffle. Replaying its real inputs through the fix produced the same card as the self-healed run 4260. After publishing, executions 4299 and 4306 held and then applied the Bashi opponent change |
@@ -62,6 +63,6 @@ Those historical tests substantiate the recent ingestion change; they do not cer
 - Quiet/error retry resolution includes time-based inferences; diagnosis does not apply fixes.
 - Claim/reservation mechanisms reduce duplication, but a global transaction/lock across all workers is not established.
 - svc.detect_card_changes keeps its own copy of the svc.populate_fight_card card builder; a change to one must be applied to the other.
-- A card check that never records a result (SKIPPED, or an error analysis continues past) raises no incident.
+- A card check that never records a result (SKIPPED, or an error analysis continues past) raises no incident until the last 72 hours, when `card_check_stale` alerts after 8 hours.
 - A failed card check overwrites change_status with UNAVAILABLE, so an open card_change_waiting incident resolves while the change is still pending.
 - Separate first-class n8n Agent artifacts, actual credentials, template/data files, instance settings and historical executions are not backed up here.

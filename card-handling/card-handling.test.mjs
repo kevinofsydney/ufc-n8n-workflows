@@ -58,7 +58,7 @@ const hoursAhead=h=>new Date(NOW+h*3600e3).toISOString();
 const KEY='health|card_check_unavailable|'+EVENT.event_key;
 function runSweep({state={},daysOut=3,incidents=[]}={}){
  const runs=[{id:1,workflow_id:'y20ZZYzBVS6y8kC0',state:'success',started_at:iso(1)},{id:2,workflow_id:'BvLnPFMwQ2vhPkgv',state:'success',started_at:iso(1)}];
- return run(sweep,[{}],{'Read Pipeline Runs':runs,'Read Events':[{id:1,active:true,...EVENT,event_datetime_local:hoursAhead(daysOut*24)}],'Read Card States':[{id:1,event_key:EVENT.event_key,spreadsheet_id:EVENT.spreadsheet_id,status:'READY',...state}],'Read Videos':[],'Read Incidents':incidents})[0].json;
+ return run(sweep,[{}],{'Read Pipeline Runs':runs,'Read Events':[{id:1,active:true,...EVENT,event_datetime_local:hoursAhead(daysOut*24)}],'Read Card States':[{id:1,event_key:EVENT.event_key,spreadsheet_id:EVENT.spreadsheet_id,status:'READY',change_checked_at:iso(1),...state}],'Read Videos':[],'Read Incidents':incidents})[0].json;
 }
 const failing=(count,hoursAgo,reason='Official card could not be verified: UFC <page> changed')=>({change_status:'UNAVAILABLE',card_unavailable_since:iso(hoursAgo),card_unavailable_count:count,card_unavailable_reason:reason});
 const openIncident=(alertedHoursAgo)=>({id:9,incident_key:KEY,source:'health',status:'open',occurrences:4,first_seen_at:iso(30),last_alerted_at:iso(alertedHoursAgo),last_message:'old'});
@@ -82,3 +82,9 @@ const waiting=hoursAgo=>({change_status:'CHANGED',pending_first_seen_at:iso(hour
 test('a waiting card change alerts after 6 hours in the last two days',()=>assert.deepEqual(runSweep({state:waiting(7),daysOut:1.5}).problems,[WAIT]));
 test('a waiting card change stays quiet for 5 hours in the last two days',()=>assert.deepEqual(runSweep({state:waiting(5),daysOut:1.5}).problems,[]));
 test('earlier in the week a waiting card change still waits 24 hours',()=>{assert.deepEqual(runSweep({state:waiting(7),daysOut:3}).problems,[]);assert.deepEqual(runSweep({state:waiting(25),daysOut:3}).problems,[WAIT]);});
+
+const STALE='health|card_check_stale|'+EVENT.event_key;
+test('no card check recorded for 8 hours in the last three days alerts',()=>{const r=runSweep({state:{change_checked_at:iso(9)},daysOut:2});assert.deepEqual(r.problems,[STALE]);assert.match(r.telegram_message,/No card check has been recorded/);});
+test('a card never checked in the last three days alerts',()=>assert.deepEqual(runSweep({state:{change_checked_at:null},daysOut:1}).problems,[STALE]));
+test('a recent card check, or an earlier week, stays quiet',()=>{assert.deepEqual(runSweep({state:{change_checked_at:iso(7)},daysOut:2}).problems,[]);assert.deepEqual(runSweep({state:{change_checked_at:iso(30)},daysOut:4}).problems,[]);});
+test('an unavailable streak keeps its own alert instead',()=>assert.deepEqual(runSweep({state:{...failing(2,9),change_checked_at:iso(9)},daysOut:2}).problems,[KEY]));

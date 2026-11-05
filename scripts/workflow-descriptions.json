@@ -212,12 +212,13 @@
     [
       "Read events, videos, Fight Card state, pipeline runs and incidents.",
       "Check capture/analysis run gaps over 38 hours, running ledger entries older than two hours, and whether exactly one event is active.",
-      "Check missing event spreadsheets, cards not READY/PRESERVED within five days of start, NEEDS_REVIEW card changes and changes pending more than 24 hours.",
+      "Check missing event spreadsheets, cards not READY/PRESERVED within five days of start, NEEDS_REVIEW card changes, and changes pending more than 24 hours (6 hours within two days of the event).",
+      "Check card checks: two UNAVAILABLE checks in a row or a 12-hour streak within five days of start (card_check_unavailable), and no recorded check for 8 hours within 72 hours of start (card_check_stale).",
       "Check active-event videos PROCESSING over three hours and CARD_CHANGED re-analysis waiting over 13 hours.",
       "Upsert health incidents, send new/reopened or daily reminder alerts and resolve health conditions that clear. Resolve suitable error incidents when later success/idle evidence exists; retrying incidents use the configured 45-minute no-further-failure rule.",
       "Dispatch diagnose_incident without waiting to investigate eligible incidents."
     ],
-    "Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence. The card_check_unavailable condition is in the repository source and awaits publication (see docs/card-handling.md)."
+    "Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence."
   ],
   "gfR9qKH6xCTJXzcg": [
     "Close quiet error incidents, and card incidents only once a later card check succeeded.",

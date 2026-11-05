@@ -26,6 +26,7 @@ Automatic retry starts the selected worker with empty input. It is not guarantee
 | Card review required | change_status is NEEDS_REVIEW |
 | Card changes waiting | CHANGED/PARTLY_APPLIED for more than 24 hours before start, or more than 6 hours within two days of it |
 | Card check unavailable (see [card handling](card-handling.md)) | READY/PRESERVED card within five days before start, with two UNAVAILABLE checks in a row or a streak at least 12 hours old |
+| Card check stale | READY/PRESERVED card within 72 hours of start, not in an unavailable streak, with no recorded card check for 8 hours. Covers skipped checks and a fight-week check that is not running |
 | Stuck video | analysis_status PROCESSING for more than three hours |
 | Re-analysis waiting | CARD_CHANGED for more than 13 hours |
 | Health reminder | New/reopened condition, or at least 24 hours since alert |

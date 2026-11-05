@@ -30,6 +30,7 @@ All of these come from four weaknesses:
 - Planning uses the sheet's bout IDs, matching changed IDs by fighter names, and `svc.sync_bout_ids` upgrades the IDs afterwards.
 - Repeated failed card checks raise a `card_check_unavailable` health alert.
 - Renamed events are detected daily and reported on Telegram.
+- **Silent card checks alert.** Within 72 hours of the event, a READY card with no recorded card check for 8 hours raises `card_check_stale`, whether checks are skipped or not running.
 - Card incidents close on evidence, not on quiet time alone (`card-handling/auto-resolve.test.mjs`).
 - The card services share one fighter-name matching rule, enforced by the verifier.
 - Scenario tests cover each change type and the combinations seen so far: `node --test card-handling/card-changes.test.mjs` and `card-handling/card-handling.test.mjs`.
@@ -81,4 +82,3 @@ All of these come from four weaknesses:
 ## Known gaps
 
 - Changes made after the event starts are not applied; the card is locked.
-- A card check that never records a result, such as `SKIPPED`, still raises no alert.

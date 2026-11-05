@@ -217,10 +217,10 @@
       "file": "workflows/svc-health-sweep.json",
       "documentation": "docs/workflows/svc-health-sweep.md",
       "active": true,
-      "activeVersionId": "44cfa33e-83aa-44d6-a963-5906a5c004af",
-      "versionId": "44cfa33e-83aa-44d6-a963-5906a5c004af",
+      "activeVersionId": "c632196b-939c-4ec4-ad63-1f4f88936bee",
+      "versionId": "c632196b-939c-4ec4-ad63-1f4f88936bee",
       "nodeCount": 14,
-      "snapshotSha256": "f5c4b135ded2e269c15c9f9d9217dbca3f635786b1ae55b7dc7011a28c2b1e56"
+      "snapshotSha256": "8f27e5f00c52d61a9a3e647f46defb0e62a0e9ea46c7a5dff96ae25af4c623a2"
     },
     {
       "id": "neIv7kEoopd67GLj",
