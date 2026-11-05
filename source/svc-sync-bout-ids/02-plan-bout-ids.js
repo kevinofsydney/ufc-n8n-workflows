@@ -40,8 +40,11 @@ const bouts=fcData.slice(0,fcCount).map((r,i)=>{
  // Cards entered by hand have no UFC id; derive a stable one from the fighters.
  const boutId=text(s.bout_id)||('card:'+[norm(r[1]),norm(r[2])].sort().join('-'));
  const current=text(r[8]);
- // A name-based or slug-based id is upgraded once the saved card learns the bout's numeric UFC id; any other change is refused.
- const upgrade=(current.startsWith('card:')&&boutId.startsWith('ufc:'))||(/^ufc:[a-z0-9-]+--[a-z0-9-]+$/.test(current)&&/^ufc:[0-9]+$/.test(boutId));
+ // The saved card's id is adopted when it changes for the same fighters at the same fight order (checked above):
+ // a name-based id gaining a UFC id, a slug id gaining a numeric id, or a slug id after UFC changed an athlete URL
+ // (5 Nov: jose-henrique became jose-souza). A numeric id is never replaced by a slug, and any other change is refused.
+ const slugId=/^ufc:[a-z0-9-]+--[a-z0-9-]+$/;
+ const upgrade=current!==boutId&&((current.startsWith('card:')&&boutId.startsWith('ufc:'))||(slugId.test(current)&&(/^ufc:[0-9]+$/.test(boutId)||slugId.test(boutId))));
  if(current&&current!==boutId&&!upgrade)throw new Error('Fight Card fight '+order+' has bout_id '+current+' but the saved card says '+boutId+'.');
  return {order,fighter_a:text(r[1]),fighter_b:text(r[2]),bout_id:boutId,current,old_id:upgrade?current:null};
 });

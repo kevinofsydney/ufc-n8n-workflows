@@ -15,6 +15,7 @@ Fight cards change through fight week: opponents are replaced, bouts are added o
 | 4 Nov | Main card reshuffled while UFC started sending numeric IDs for 3 bouts | `svc.apply_card_changes` threw on picks still keyed by the old IDs | Fixed 5 Nov |
 | 4 Nov | Bashi's opponent changed from Brennan to Calderon | Not a failure; detected and applied after the fix | Applied 5 Nov |
 | 5 Nov | ESPN dropped Bashi vs Calderon while UFC still listed it | Every card check failed on a bout-count mismatch (14 vs 13), freezing all other card changes | Fixed 5 Nov |
+| 5 Nov | UFC moved José Souza's athlete URL from `jose-henrique` to `jose-souza` | Detect adopted the new slug bout ID, and `svc.sync_bout_ids` refused it, failing fight-week run 4650 | Fixed 5 Nov, 9 minutes later |
 
 All of these come from four weaknesses:
 

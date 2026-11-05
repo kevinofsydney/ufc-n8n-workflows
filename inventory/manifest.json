@@ -184,10 +184,10 @@
       "file": "workflows/svc-detect-card-changes.json",
       "documentation": "docs/workflows/svc-detect-card-changes.md",
       "active": true,
-      "activeVersionId": "4738a11a-4673-485f-b935-4021e89e34b6",
-      "versionId": "4738a11a-4673-485f-b935-4021e89e34b6",
+      "activeVersionId": "19d94de3-6914-4222-b4f0-d98ba7a9d537",
+      "versionId": "19d94de3-6914-4222-b4f0-d98ba7a9d537",
       "nodeCount": 12,
-      "snapshotSha256": "455baae06a0cee48f0ba4d0c680a906abba1554a916a001348770ddb7b77f20e"
+      "snapshotSha256": "6799f3436f4384091851de6ff77935e075e748f4c3bf0cab543493ae633d8699"
     },
     {
       "id": "UB711gFJFn9OuZwb",
@@ -316,10 +316,10 @@
       "file": "workflows/svc-sync-bout-ids.json",
       "documentation": "docs/workflows/svc-sync-bout-ids.md",
       "active": true,
-      "activeVersionId": "2ca9c66f-5ea0-4d83-8e16-b0770ea3b45d",
-      "versionId": "2ca9c66f-5ea0-4d83-8e16-b0770ea3b45d",
+      "activeVersionId": "f8d22363-c257-43e0-a9c2-203637095080",
+      "versionId": "f8d22363-c257-43e0-a9c2-203637095080",
       "nodeCount": 18,
-      "snapshotSha256": "37c3daf352e600af27455ff957138d94b8975449e33f203143de3d1c75613477"
+      "snapshotSha256": "aad3865d82d99b3f99157346aa821cdc20355d2b42b4a474b6198e512e51ecd9"
     }
   ]
 }

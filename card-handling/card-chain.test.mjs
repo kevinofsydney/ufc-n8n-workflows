@@ -78,3 +78,20 @@ test('an unplaceable row is set aside, and sync then skips it',()=>{
  const synced=new Function('$',sync)(ctx(nodes()))[0].json;
  assert.ok(synced);
 });
+
+test('UFC changes an athlete URL: sync adopts the new slug id and rekeys the rows',()=>{
+ // 5 Nov: José Souza's UFC URL moved from jose-henrique to jose-souza, so detect adopted a new slug id.
+ const card=[...CARD.slice(0,3),bout(4,'Jonny Parsons','José Souza','prelim','ufc:jonny-parsons--jose-henrique')];
+ const saved=card.map(b=>b.fight_order===4?{...b,bout_id:'ufc:jonny-parsons--jose-souza'}:b);
+ const {synced,sheet}=chain({card,saved,official:saved,changes:[]});
+ assert.equal(synced.summary.ufc_ids_adopted,1);
+ assert.ok(sheet['Fight Card'].some(r=>r[8]==='ufc:jonny-parsons--jose-souza'));
+ assert.ok(sheet.Picks.some(r=>r[0]==='v1|pick|ufc:jonny-parsons--jose-souza'));
+});
+
+test('sync still refuses a numeric id replaced by a slug, or a different bout at the same order',()=>{
+ const card=[...CARD.slice(0,3),{...CARD[3],bout_id:'ufc:4600'}];
+ assert.throws(()=>chain({card,saved:CARD,official:CARD,changes:[]}),/has bout_id ufc:4600 but the saved card says/);
+ const other=[...CARD.slice(0,3),{...CARD[3],fighter_b:'Somebody Else'}];
+ assert.throws(()=>chain({card:CARD,saved:other,official:other,changes:[]}),/does not match the saved card/);
+});

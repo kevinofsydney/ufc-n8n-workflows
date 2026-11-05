@@ -181,7 +181,8 @@ const changes=[];
 const adoptions=[];
 for(const {c,o} of matched){
  const bout={bout_id:o.bout_id,fight:label(o)};
- if(c.bout_id!==o.bout_id)adoptions.push({type:'adopt_ufc_id',...bout,from:c.bout_id||null,to:o.bout_id,fight_order:c.fight_order});
+ // Never trade a numeric UFC id for a slug one: UFC sometimes drops data-fmid, and svc.sync_bout_ids refuses the downgrade.
+ if(c.bout_id!==o.bout_id&&!(/^ufc:[0-9]+$/.test(c.bout_id)&&!/^ufc:[0-9]+$/.test(o.bout_id)))adoptions.push({type:'adopt_ufc_id',...bout,from:c.bout_id||null,to:o.bout_id,fight_order:c.fight_order});
  if(pairOf(c.fighter_a,c.fighter_b)!==pairOf(o.fighter_a,o.fighter_b))changes.push({type:'renamed',...bout,from:label(c),to:label(o)});
  if(c.fight_order!==o.fight_order)changes.push({type:'reordered',...bout,from:c.fight_order,to:o.fight_order});
  if(c.bout_type!==o.bout_type)changes.push({type:'segment_changed',...bout,from:c.bout_type,to:o.bout_type});
