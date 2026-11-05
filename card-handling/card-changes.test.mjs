@@ -9,8 +9,8 @@ const bout=(order,a,b,type,id)=>({fight_order:order,fighter_a:a,fighter_b:b,figh
 const slug=(a,b)=>'ufc:'+[a,b].map(n=>n.toLowerCase().replace(/[^a-z]+/g,'-')).join('--');
 const CARD=[['Waldo Cortes Acosta','Johnny Walker','main_event'],['Tatiana Suarez','Virna Jandiroba','main_card'],['Gabriel Lorenco','Thomas Petersen','prelim'],['Austin Bashi','Lucas Brennan','prelim']].map(([a,b,t],i)=>bout(i+1,a,b,t,slug(a,b)));
 const tab=card=>({rows:[['id','fight_order','review_status','bout_id','event_key','video_id','fighter_a','fighter_b'],...card.map(b=>['v1|pick|'+b.bout_id,b.fight_order,'OK',b.bout_id,'k','v1',b.fighter_a,b.fighter_b])]});
-function run({sheet=CARD,saved=sheet,official,changes,seen=1,transcript=''}){
- const state={event_key:'k',spreadsheet_id:'s',source_card_json:JSON.stringify(saved),pending_change_json:JSON.stringify(changes),official_card_json:JSON.stringify(official),pending_seen_count:seen};
+function run({sheet=CARD,saved=sheet,official,changes,seen=1,transcript='',firstSeen=new Date().toISOString()}){
+ const state={event_key:'k',spreadsheet_id:'s',source_card_json:JSON.stringify(saved),pending_change_json:JSON.stringify(changes),official_card_json:JSON.stringify(official),pending_seen_count:seen,pending_first_seen_at:firstSeen};
  const nodes={'When Called':[{event_key:'k',spreadsheet_id:'s',event_name:'Test'}],'Read Fight Card State':[state],'Read Fight Card':[{rows:[[...H,'bout_id'],...sheet.map(b=>[...H.map(h=>b[h]),b.bout_id])]}],
   'Read Picks':[tab(sheet)],'Read Props':[tab(sheet)],'Read Fight Analysis':[tab(sheet)],'Read Transcripts':[{rows:[['video_id','transcript_text'],['v1',transcript]]}],'Read Event Videos':[{video_id:'v1',event_key:'k',analysis_status:'COMPLETED'}]};
  const $=n=>({first:()=>({json:(nodes[n]||[{}])[0]}),all:()=>(nodes[n]||[]).map(json=>({json}))});
@@ -82,4 +82,17 @@ test('a bout added mid-week keeps the ESPN spelling the official card carries as
  const r=run({official:[...CARD,added],changes:[{type:'added',bout_id:added.bout_id,fight:'Jonny Parsons vs Jose Souza',fight_order:5,bout_type:'prelim'}],seen:1});
  assert.equal(r.new_card[4].fighter_b_aliases,'Jose Henrique');
  assert.equal(r.new_card[0].fighter_a_aliases,'','existing bouts keep the sheet value');
+});
+
+test('a removal ESPN never confirms applies once UFC has shown it for 12 hours over three checks',()=>{
+ const official=renumber([CARD[0],CARD[1],CARD[2]]);
+ const change={type:'removed',bout_id:CARD[3].bout_id,fight:'Austin Bashi vs Lucas Brennan',fight_order:4,espn_listed:true};
+ const hoursAgo=h=>new Date(Date.now()-h*3600e3).toISOString();
+ assert.equal(run({official,changes:[change],seen:5,firstSeen:hoursAgo(11)}).status,'WAITING','too soon');
+ assert.equal(run({official,changes:[change],seen:2,firstSeen:hoursAgo(20)}).status,'WAITING','too few checks');
+ const r=run({official,changes:[change],seen:3,firstSeen:hoursAgo(12.5)});
+ assert.equal(r.status,'APPLY');
+ assert.equal(r.applied_over_espn.length,1);
+ assert.match(r.telegram_message,/Applied without ESPN/);
+ assert.deepEqual(r.new_card.map(b=>b.fighter_a),['Waldo Cortes Acosta','Tatiana Suarez','Gabriel Lorenco']);
 });

@@ -40,9 +40,15 @@ if(removals.length>MAX_REMOVALS){
  const msg='<b>Fight card needs review</b>\n<b>Event:</b> '+event.event_name+'\n'+removals.length+' bouts would be removed at once, so nothing was changed:\n'+removals.map(c=>'• '+describe(c)).join('\n');
  return result('NEEDS_REVIEW',{reason:removals.length+' removals at once.',telegram_message:seen===1?msg:''});
 }
-const ready=c=>!isRemoval(c)||(seen>=2&&c.espn_listed!==true);
+// ESPN confirms removals, but its page can lag or never update. Once UFC has shown the same removal for
+// ESPN_LAG_HOURS over at least three checks, UFC's card wins and the update message says so.
+const ESPN_LAG_HOURS=12;
+const pendingHours=(Date.now()-Date.parse(state.pending_first_seen_at||''))/3600e3;
+const espnLagged=c=>c.espn_listed===true&&seen>=3&&pendingHours>=ESPN_LAG_HOURS;
+const ready=c=>!isRemoval(c)||(seen>=2&&(c.espn_listed!==true||espnLagged(c)));
 const apply=changes.filter(ready),waiting=changes.filter(c=>!ready(c));
-const waitWhy=c=>c.espn_listed===true?'ESPN still lists it':'waiting for a second check';
+const overEspn=apply.filter(espnLagged);
+const waitWhy=c=>c.espn_listed===true?'ESPN still lists it; applies once UFC has shown it for '+ESPN_LAG_HOURS+' hours':'waiting for a second check';
 if(!apply.length)return result('WAITING',{waiting:waiting.map(c=>describe(c)+' ('+waitWhy(c)+')')});
 
 // Current card as it is in the sheet (A:I).
@@ -183,5 +189,6 @@ const voidedTotal=Object.values(rowSummary).reduce((n,r)=>n+r.voided,0);
 if(voidedTotal-setAside.length)lines.push('','Voided '+(voidedTotal-setAside.length)+' picks/props/analyses for bouts that left the card.');
 if(setAside.length)lines.push('','<b>Check these:</b> '+setAside.length+' row'+(setAside.length===1?'':'s')+' matched no bout on the card, so '+(setAside.length===1?'it was':'they were')+' set aside as '+UNMATCHED+'. Clear that status to restore a row.',...setAside.slice(0,10).map(s=>'• '+s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')));
 lines.push(reanalyse.length?'Re-analysing '+reanalyse.length+' video'+(reanalyse.length===1?'':'s')+'.':'No videos need re-analysis.');
+if(overEspn.length)lines.push('','<b>Applied without ESPN:</b> UFC has shown '+(overEspn.length===1?'this change':'these changes')+' for '+ESPN_LAG_HOURS+'+ hours but ESPN still lists the old bout:',...overEspn.map(c=>'• '+describe(c)));
 if(waiting.length)lines.push('','<b>Still waiting:</b>',...waiting.map(c=>'• '+describe(c)+' ('+waitWhy(c)+')'));
-return [{json:{event,status:waiting.length?'PARTLY_APPLY':'APPLY',applied:apply,applied_json:appliedJson,waiting,new_card:next,writes,expected,row_summary:rowSummary,rows_set_aside:setAside,videos:reanalyse,state_update:stateUpdate,telegram_message:lines.join('\n'),dry_run:event.dry_run===true,needs_apply:event.dry_run!==true}}];
+return [{json:{event,status:waiting.length?'PARTLY_APPLY':'APPLY',applied:apply,applied_over_espn:overEspn,applied_json:appliedJson,waiting,new_card:next,writes,expected,row_summary:rowSummary,rows_set_aside:setAside,videos:reanalyse,state_update:stateUpdate,telegram_message:lines.join('\n'),dry_run:event.dry_run===true,needs_apply:event.dry_run!==true}}];

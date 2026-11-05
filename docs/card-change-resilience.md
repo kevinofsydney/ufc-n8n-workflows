@@ -24,7 +24,7 @@ All of these come from four weaknesses:
 
 ## Already in place
 
-- Removals and opponent changes wait for two checks in a row and for ESPN to drop the old bout; more than three removals at once needs review.
+- Removals and opponent changes wait for two checks in a row and for ESPN to drop the old bout, or for 12 hours over three checks if ESPN never does; more than three removals at once needs review.
 - Additions, reorders, segment moves and detail changes apply on the first check.
 - A waiting old main event stays on as `main_card`, so a replacement main event applies at once.
 - Planning uses the sheet's bout IDs, matching changed IDs by fighter names, and `svc.sync_bout_ids` upgrades the IDs afterwards.
@@ -68,10 +68,10 @@ All of these come from four weaknesses:
 - **Never edit silently.** Keep every guard that protects saved picks from being overwritten, but turn "stop everything" into "hold this bout and say why".
 - **Report every card update.** Send one Telegram summary per update listing what was applied, what is waiting and why.
 
-### 4. Check the card more often in fight week (partly done)
+### 4. Check the card more often in fight week (done)
 
 - **Check independently of analysis.** Done: `UFC | 10. Fight-Week Card Check`.
-- **Don't wait forever for ESPN.** The 6-hour fight-week alert now flags a removal ESPN hasn't confirmed. Still to do: a Telegram button to apply it from the alert.
+- **Don't wait forever for ESPN.** Done: the 6-hour fight-week alert flags a removal ESPN hasn't confirmed, and once UFC has shown the same removal for 12 hours over at least three checks it applies anyway. The card update message lists it under "Applied without ESPN". This replaced the planned Telegram button, which would only help if someone was watching.
 
 ### 5. Tell success from luck (partly done)
 
