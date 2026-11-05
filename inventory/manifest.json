@@ -151,10 +151,10 @@
       "file": "workflows/svc-auto-resolve-incidents.json",
       "documentation": "docs/workflows/svc-auto-resolve-incidents.md",
       "active": true,
-      "activeVersionId": "e48d373f-40e7-4f96-99fb-5d46bdf80dc7",
-      "versionId": "e48d373f-40e7-4f96-99fb-5d46bdf80dc7",
-      "nodeCount": 6,
-      "snapshotSha256": "092251d4a1cecd8bd1ac23e89e8bc457c9b44247330ddda4ce66eb936d6aa776"
+      "activeVersionId": "7b1f4b23-62e1-420d-a61b-127e2748a8fc",
+      "versionId": "7b1f4b23-62e1-420d-a61b-127e2748a8fc",
+      "nodeCount": 7,
+      "snapshotSha256": "15edf7ef5b3945847852be1b824f95076f4715a1189a998f2d73d35c45229ba9"
     },
     {
       "id": "IodUUBrjWAVd0cHi",

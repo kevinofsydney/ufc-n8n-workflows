@@ -1,6 +1,6 @@
 # UFC | svc.auto_resolve_incidents
 
-Close quiet error incidents on a time-based rule.
+Close quiet error incidents, and card incidents only once a later card check succeeded.
 
 [Workflow catalogue](../workflows.md) · [Open in n8n](https://N8N_INSTANCE.example/workflow/gfR9qKH6xCTJXzcg) · [Sanitized snapshot](../../workflows/svc-auto-resolve-incidents.json)
 
@@ -8,21 +8,22 @@ Close quiet error incidents on a time-based rule.
 
 - Workflow ID: `gfR9qKH6xCTJXzcg`
 - Published: `True`
-- Published version: `e48d373f-40e7-4f96-99fb-5d46bdf80dc7`
-- Draft version: `e48d373f-40e7-4f96-99fb-5d46bdf80dc7`
+- Published version: `7b1f4b23-62e1-420d-a61b-127e2748a8fc`
+- Draft version: `7b1f4b23-62e1-420d-a61b-127e2748a8fc`
 - Snapshot: 2026-11-05. Published graph matched draft when read.
-- Nodes: 6
+- Nodes: 7
 - Timezone: `inherits instance timezone; not present in MCP snapshot`
 
 ## How it works
 
-1. Every 30 minutes, read incidents and select unresolved error-sourced records with no recurrence for 12 hours.
+1. Every 30 minutes, read incidents and the fight-card state, and select unresolved error-sourced records with no recurrence for 12 hours.
 2. Exclude owner-reported and test incidents.
-3. Set selected incidents resolved with a quiet-period explanation and send a compact Telegram summary.
+3. For incidents from the card services (detect, apply, sync, populate, ensure spreadsheet, fight-week check), also require a card check or build that succeeded after the incident was last seen. Without one, close only after 72 quiet hours and flag it.
+4. Set selected incidents resolved with an explanation and send a compact Telegram summary.
 
 ## Important behavior and limits
 
-Time-based closure means no recurrence was observed; it does not prove a code fix. health_sweep separately owns positive-evidence and health-condition resolution.
+Quiet-time closure means no recurrence was observed; it does not prove a code fix. Card incidents need positive evidence because on 4 Nov a quiet period hid that a card failure was only cleared by a later run. health_sweep separately owns health-condition resolution.
 
 ## Triggers and input contract
 
@@ -60,6 +61,7 @@ Configured error handler: `None`. See [monitoring](../monitoring.md) for product
 | --- | --- | --- | --- |
 | Read All Incidents | ufc_incidents | get |  |
 | Close Stale Incident | ufc_incidents | update | status, resolved_at, resolution, resolved_by |
+| Read Card State | ufc_fight_card_state | get |  |
 
 Terminal nodes in the saved graph: `Send Summary`. Terminal nodes include notifications and parallel branches; not every terminal is the sub-workflow return contract. Caller wait settings and worker result code determine how outputs are consumed.
 
@@ -73,6 +75,7 @@ Terminal nodes in the saved graph: `Send Summary`. Terminal nodes include notifi
 | 4 | Close Stale Incident | dataTable | update ufc_incidents |  |
 | 5 | Build Summary | code | [JavaScript](../../source/svc-auto-resolve-incidents/05-build-summary.js) | executeOnce=True |
 | 6 | Send Summary | telegram | Telegram sendMessage | executeOnce=True |
+| 7 | Read Card State | dataTable | get ufc_fight_card_state | alwaysOutputData=True, executeOnce=True |
 
 ## Exact graph edges
 
@@ -81,10 +84,11 @@ Main output indexes are zero-based. If outputs 0/1 mean true/false for an If nod
 | From | Connection | Output | To | Input |
 | --- | --- | --- | --- | --- |
 | Every 30 Minutes | main | 0 | Read All Incidents | 0 |
-| Read All Incidents | main | 0 | Select Stale Incidents | 0 |
 | Select Stale Incidents | main | 0 | Close Stale Incident | 0 |
 | Close Stale Incident | main | 0 | Build Summary | 0 |
 | Build Summary | main | 0 | Send Summary | 0 |
+| Read All Incidents | main | 0 | Read Card State | 0 |
+| Read Card State | main | 0 | Select Stale Incidents | 0 |
 
 ## Code and configuration
 

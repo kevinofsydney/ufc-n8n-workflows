@@ -30,6 +30,8 @@ All of these come from four weaknesses:
 - Planning uses the sheet's bout IDs, matching changed IDs by fighter names, and `svc.sync_bout_ids` upgrades the IDs afterwards.
 - Repeated failed card checks raise a `card_check_unavailable` health alert.
 - Renamed events are detected daily and reported on Telegram.
+- Card incidents close on evidence, not on quiet time alone (`card-handling/auto-resolve.test.mjs`).
+- The card services share one fighter-name matching rule, enforced by the verifier.
 - Scenario tests cover each change type and the combinations seen so far: `node --test card-handling/card-changes.test.mjs` and `card-handling/card-handling.test.mjs`.
 - **Fight-week card checks.** `UFC | 10. Fight-Week Card Check` runs the card steps every two hours in the 72 hours before the event, so a removal lands within about four hours of UFC and ESPN changing.
 - **Unplaceable rows are set aside.** A Picks, Props or Fight Analysis row whose bout is not on the card is marked `VOID_UNMATCHED` and named in the card update message, instead of stopping every other change. Clear the status to restore it.
@@ -55,10 +57,10 @@ All of these come from four weaknesses:
 - **Replay real runs.** When a card check reports `CHANGED` or a card service fails, save its inputs as a sanitized fixture, without transcripts or sheet IDs, and add it to the replay suite. The 4 Nov failure was reproduced this way before fixing.
 - **Replay before publishing.** Before publishing any card workflow, replay the last week's real card-check inputs through the new code and compare the result with what the live run produced. Add this to the publishing checklist in [operations](operations.md).
 
-### 2. Use one definition of a bout (partly done)
+### 2. Use one definition of a bout (done)
 
 - **Make the fighter pair the identity.** Match on the two fighters' names, with a unique surname match as fallback. Treat the UFC ID as an attribute to adopt when it appears, not as the key.
-- **Keep one copy of the matching rules.** The verifier now fails when the two card builders differ. Still to do: give the matching rules in `svc.apply_card_changes` and `svc.sync_bout_ids` the same treatment.
+- **Keep one copy of the matching rules.** Done: the verifier fails when the two card builders differ, or when detect, apply and sync match fighter names differently. Apply split surnames at hyphens while sync did not, so apply could place a bout that sync then refused; fixed 5 Nov.
 
 ### 3. Apply what is safe instead of failing (partly done)
 
@@ -71,9 +73,9 @@ All of these come from four weaknesses:
 - **Check independently of analysis.** Done: `UFC | 10. Fight-Week Card Check`.
 - **Don't wait forever for ESPN.** The 6-hour fight-week alert now flags a removal ESPN hasn't confirmed. Still to do: a Telegram button to apply it from the alert.
 
-### 5. Tell success from luck (later)
+### 5. Tell success from luck (partly done)
 
-- **Close on evidence, not silence.** Auto-closing an incident after 12 quiet hours hid that the 4 Nov failure was only cleared by a later run. Close a card incident only when a later card check and apply both succeed for the same event.
+- **Close on evidence, not silence.** Auto-closing an incident after 12 quiet hours hid that the 4 Nov failure was only cleared by a later run. Done: a card-service incident now closes only after a later card check or build succeeded, or after 72 quiet hours with a warning to check the card.
 - **Make cards easy to compare.** Add a `/card` Telegram command that shows the saved card next to the current official card, so a mismatch is visible without opening n8n.
 
 ## Known gaps

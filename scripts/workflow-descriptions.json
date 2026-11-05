@@ -220,13 +220,14 @@
     "Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence. The card_check_unavailable condition is in the repository source and awaits publication (see docs/card-handling.md)."
   ],
   "gfR9qKH6xCTJXzcg": [
-    "Close quiet error incidents on a time-based rule.",
+    "Close quiet error incidents, and card incidents only once a later card check succeeded.",
     [
-      "Every 30 minutes, read incidents and select unresolved error-sourced records with no recurrence for 12 hours.",
+      "Every 30 minutes, read incidents and the fight-card state, and select unresolved error-sourced records with no recurrence for 12 hours.",
       "Exclude owner-reported and test incidents.",
-      "Set selected incidents resolved with a quiet-period explanation and send a compact Telegram summary."
+      "For incidents from the card services (detect, apply, sync, populate, ensure spreadsheet, fight-week check), also require a card check or build that succeeded after the incident was last seen. Without one, close only after 72 quiet hours and flag it.",
+      "Set selected incidents resolved with an explanation and send a compact Telegram summary."
     ],
-    "Time-based closure means no recurrence was observed; it does not prove a code fix. health_sweep separately owns positive-evidence and health-condition resolution."
+    "Quiet-time closure means no recurrence was observed; it does not prove a code fix. Card incidents need positive evidence because on 4 Nov a quiet period hid that a card failure was only cleared by a later run. health_sweep separately owns health-condition resolution."
   ],
   "neIv7kEoopd67GLj": [
     "Choose and claim incidents for diagnosis so concurrent diagnosers can coordinate.",

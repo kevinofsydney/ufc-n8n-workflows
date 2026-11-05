@@ -32,7 +32,7 @@ Automatic retry starts the selected worker with empty input. It is not guarantee
 
 The sweep resolves health incidents when their condition clears. It can close error incidents if a later ledger run of the same workflow is success/idle. For retrying incidents it currently uses more than 45 minutes without another failure as recovery evidence. That inference is weaker than inspecting a specific successful retry execution.
 
-`svc.auto_resolve_incidents` separately closes error-sourced incidents after 12 quiet hours. It excludes owner-reported and test incidents. A quiet-period resolution means no recurrence was observed; it does not establish a deployed fix.
+`svc.auto_resolve_incidents` separately closes error-sourced incidents after 12 quiet hours. An incident from a card service also needs a card check or build that succeeded after it was last seen; without one it closes only after 72 quiet hours, flagged in the summary. It excludes owner-reported and test incidents. A quiet-period resolution means no recurrence was observed; it does not establish a deployed fix.
 
 ## Diagnosis flow
 
