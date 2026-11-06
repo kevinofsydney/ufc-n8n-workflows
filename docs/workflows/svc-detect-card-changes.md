@@ -8,10 +8,10 @@ Detect differences between the saved Fight Card and the current official card.
 
 - Workflow ID: `UDRrGRyeFPL9Lk3S`
 - Published: `True`
-- Published version: `bc9ae1f2-ae90-4c38-9155-30a16b4ec1ac`
-- Draft version: `bc9ae1f2-ae90-4c38-9155-30a16b4ec1ac`
+- Published version: `2bb96a96-ad6f-4bac-8a10-72189152a7b4`
+- Draft version: `2bb96a96-ad6f-4bac-8a10-72189152a7b4`
 - Snapshot: 2026-11-05. Published graph matched draft when read.
-- Nodes: 12
+- Nodes: 14
 - Timezone: `Australia/Sydney`
 
 ## How it works
@@ -73,6 +73,8 @@ Terminal nodes in the saved graph: `Return Card Check`. Terminal nodes include n
 | 10 | Record Card Check | dataTable | update ufc_fight_card_state |  |
 | 11 | Card Check Skipped | code | [JavaScript](../../source/svc-detect-card-changes/11-card-check-skipped.js) |  |
 | 12 | Return Card Check | code | [JavaScript](../../source/svc-detect-card-changes/12-return-card-check.js) |  |
+| 13 | Fetch UFC Card Without Region | httpRequest | ={{ $('Prepare UFC Card Request').first().json.source_url }} | onError=continueRegularOutput, alwaysOutputData=True |
+| 14 | Extract UFC Card Without Region | html | extractHtmlContent | onError=continueRegularOutput, alwaysOutputData=True |
 
 ## Exact graph edges
 
@@ -87,11 +89,13 @@ Main output indexes are zero-based. If outputs 0/1 mean true/false for an If nod
 | Can Check Card? | main | 0 | Fetch Official UFC Card | 0 |
 | Can Check Card? | main | 1 | Card Check Skipped | 0 |
 | Fetch Official UFC Card | main | 0 | Extract Official UFC Card | 0 |
-| Extract Official UFC Card | main | 0 | Fetch ESPN Round Data | 0 |
 | Fetch ESPN Round Data | main | 0 | Compare Card Changes | 0 |
 | Compare Card Changes | main | 0 | Record Card Check | 0 |
 | Record Card Check | main | 0 | Return Card Check | 0 |
 | Card Check Skipped | main | 0 | Return Card Check | 0 |
+| Extract Official UFC Card | main | 0 | Fetch UFC Card Without Region | 0 |
+| Fetch UFC Card Without Region | main | 0 | Extract UFC Card Without Region | 0 |
+| Extract UFC Card Without Region | main | 0 | Fetch ESPN Round Data | 0 |
 
 ## Code and configuration
 

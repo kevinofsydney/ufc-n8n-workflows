@@ -143,6 +143,25 @@ test('a UFC page whose fight list drops the bout its title names, while ESPN lis
  assert.equal(c.fingerprint,'fp');assert.equal(c.seen_count,1);
  assert.throws(()=>run(builder,[response],{...cardNodes,'Extract Official UFC Card':[titled([BASHI,PARSONS])]}),/page looks incomplete/,'populate refuses the same page');
 });
+// 6 Nov: UFC's US edition rendered the main event as a bare fight node (no athlete links), so it was not read.
+const items=n=>Array(n).fill('l-listing__item');
+const usBroken={...official,main_items:items(2),main_ids:['2'],main_a:['Jonny Parsons'],main_b:['José Souza'],main_a_url:[athlete('jonny-parsons')],main_b_url:[athlete('jose-henrique')]};
+const plainNodes=(page,status=200)=>({'Extract UFC Card Without Region':[page],'Fetch UFC Card Without Region':[{statusCode:status}]});
+test('a bout the US page cannot read is taken from the copy without the region cookie',()=>{
+ const b=run(builder,[espn],{...cardNodes,'Extract Official UFC Card':[usBroken],...plainNodes({...official,main_items:items(2)})})[0].json;
+ assert.deepEqual(b.card.map(x=>x.fighter_a),['Waldo Cortes Acosta','Jonny Parsons']);
+ assert.equal(b.ufc_page_copy,'no-region');
+});
+test('the US page is used whenever it reads every bout',()=>{
+ const b=run(builder,[espn],{...cardNodes,'Extract Official UFC Card':[{...official,main_items:items(2)}],...plainNodes(usBroken)})[0].json;
+ assert.equal(b.ufc_page_copy,'us-region');assert.equal(b.card.length,2);
+});
+test('an unreadable bout with no complete copy stops the check instead of reading it as a removal',()=>{
+ for(const extra of [{},plainNodes(usBroken),plainNodes({...official,main_items:items(2)},503),plainNodes({...official,main_items:items(2),canonical:'https://www.ufc.com/event/other'})])
+  assert.throws(()=>run(builder,[espn],{...cardNodes,'Extract Official UFC Card':[usBroken],...extra}),/1 bout\(s\) without fighter links/);
+ const c=check({pending_change_fingerprint:'fp',pending_seen_count:1},{fight:usBroken});
+ assert.equal(c.status,'UNAVAILABLE');assert.equal(c.seen_count,1);
+});
 test('the title check passes when the fight list has the title bout, or ESPN has dropped it too',()=>{
  const response=espnWith([...espn.body.events[0].competitions,competition('13','Austin Bashi','Carlos Calderon',3)]);
  const listed=check({},{fight:titled([WALKER,BASHI,PARSONS]),response,rows:threeRows()});

@@ -184,10 +184,10 @@
       "file": "workflows/svc-detect-card-changes.json",
       "documentation": "docs/workflows/svc-detect-card-changes.md",
       "active": true,
-      "activeVersionId": "bc9ae1f2-ae90-4c38-9155-30a16b4ec1ac",
-      "versionId": "bc9ae1f2-ae90-4c38-9155-30a16b4ec1ac",
-      "nodeCount": 12,
-      "snapshotSha256": "7cb6c8596c1886fcf256c4e783a4f9b8bf9462d13a91afcff6803b68aabdaa8c"
+      "activeVersionId": "2bb96a96-ad6f-4bac-8a10-72189152a7b4",
+      "versionId": "2bb96a96-ad6f-4bac-8a10-72189152a7b4",
+      "nodeCount": 14,
+      "snapshotSha256": "884b39502f3f787ace99ec367bb5b0d5cb773437bca77b594ee8fe08a0ad42f5"
     },
     {
       "id": "UB711gFJFn9OuZwb",
@@ -250,10 +250,10 @@
       "file": "workflows/svc-populate-fight-card.json",
       "documentation": "docs/workflows/svc-populate-fight-card.md",
       "active": true,
-      "activeVersionId": "9a026c33-f5d5-48ca-af2a-a8d5f7d66f46",
-      "versionId": "9a026c33-f5d5-48ca-af2a-a8d5f7d66f46",
-      "nodeCount": 40,
-      "snapshotSha256": "5878dba634aaa0eebf30e5ddff394e3b604698f4f021c8a7b6b7d6d99b304ca4"
+      "activeVersionId": "2423a59b-7a61-40ff-83bb-e73506d50593",
+      "versionId": "2423a59b-7a61-40ff-83bb-e73506d50593",
+      "nodeCount": 42,
+      "snapshotSha256": "ce76e87c186f15ad61b34edf3791fc98d2503192a6525f7547d0a5ba464d36d7"
     },
     {
       "id": "pHQCLT93NxqScBgQ",

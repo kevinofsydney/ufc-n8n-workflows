@@ -122,7 +122,7 @@
     [
       "Validate the event and classify the existing Fight Card and saved card state.",
       "For an empty destination, inspect existing extraction before any population write.",
-      "Fetch the official UFC event page with the US-region cookie and ESPN data around the event date. Cross-check card identity, competitors, order and rounds.",
+      "Fetch the official UFC event page with the US-region cookie, a fallback copy without it, and ESPN data around the event date. The fallback is used only when the US copy shows a bout without fighter links. Cross-check card identity, competitors, order and rounds.",
       "Fetch official athlete profiles for verified nickname/alias context and construct the Fight Card matrix.",
       "Recheck that the destination is still safe, write the card, read it back and verify before recording READY state and event metadata.",
       "Preserve existing cards; a separate verified path can backfill missing weight classes and read them back. Pending/unpublished official cards return the configured pending state."
