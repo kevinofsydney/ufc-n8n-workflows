@@ -8,8 +8,8 @@ Detect silent pipeline problems and maintain health incidents every 30 minutes.
 
 - Workflow ID: `oC1PuXuYb1pdeO0J`
 - Published: `True`
-- Published version: `44cfa33e-83aa-44d6-a963-5906a5c004af`
-- Draft version: `44cfa33e-83aa-44d6-a963-5906a5c004af`
+- Published version: `1f658ad5-19c6-44a7-a63f-250b0724085d`
+- Draft version: `1f658ad5-19c6-44a7-a63f-250b0724085d`
 - Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 14
 - Timezone: `Australia/Sydney`
@@ -18,14 +18,15 @@ Detect silent pipeline problems and maintain health incidents every 30 minutes.
 
 1. Read events, videos, Fight Card state, pipeline runs and incidents.
 2. Check capture/analysis run gaps over 38 hours, running ledger entries older than two hours, and whether exactly one event is active.
-3. Check missing event spreadsheets, cards not READY/PRESERVED within five days of start, NEEDS_REVIEW card changes and changes pending more than 24 hours.
-4. Check active-event videos PROCESSING over three hours and CARD_CHANGED re-analysis waiting over 13 hours.
-5. Upsert health incidents, send new/reopened or daily reminder alerts and resolve health conditions that clear. Resolve suitable error incidents when later success/idle evidence exists; retrying incidents use the configured 45-minute no-further-failure rule.
-6. Dispatch diagnose_incident without waiting to investigate eligible incidents.
+3. Check missing event spreadsheets, cards not READY/PRESERVED within five days of start, NEEDS_REVIEW card changes, and changes pending more than 24 hours (6 hours within two days of the event).
+4. Check card checks: two UNAVAILABLE checks in a row or a 12-hour streak within five days of start (card_check_unavailable), and no recorded check for 8 hours within 72 hours of start (card_check_stale), and a UFC bout ESPN has not listed for over 6 hours in the last two days (card_bout_held).
+5. Check active-event videos PROCESSING over three hours and CARD_CHANGED re-analysis waiting over 13 hours.
+6. Upsert health incidents, send new/reopened or daily reminder alerts and resolve health conditions that clear. Resolve suitable error incidents when later success/idle evidence exists; retrying incidents use the configured 45-minute no-further-failure rule.
+7. Dispatch diagnose_incident without waiting to investigate eligible incidents.
 
 ## Important behavior and limits
 
-Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence. The card_check_unavailable condition is in the repository source and awaits publication (see docs/card-handling.md).
+Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence.
 
 ## Triggers and input contract
 

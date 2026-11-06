@@ -158,7 +158,7 @@
       "Write planned spreadsheet columns sequentially and read the affected tabs back to verify the result.",
       "Record applied/partially applied state, flag relevant captured videos CARD_CHANGED, and send one change summary when configured."
     ],
-    "This worker mutates sheet data. It does not itself run the analysis model; CARD_CHANGED videos are selected by the next analysis pass. Column writes are not atomic, so PARTLY_APPLIED and verification failures need inspection before retrying. A main event that is waiting to leave the card stays on as main_card, so its replacement can take fight 1 immediately. When UFC changes a bout ID mid-week, planning matches the official bout to the sheet by fighters and keeps the sheet ID; svc.sync_bout_ids upgrades it afterwards."
+    "This worker mutates sheet data. It does not itself run the analysis model; CARD_CHANGED videos are selected by the next analysis pass. Column writes are not atomic, so PARTLY_APPLIED and verification failures need inspection before retrying. A main event that is waiting to leave the card stays on as main_card, so its replacement can take fight 1 immediately. When UFC changes a bout ID mid-week, planning matches the official bout to the sheet by fighters and keeps the sheet ID; svc.sync_bout_ids upgrades it afterwards. A removal ESPN still lists applies once UFC has shown it for 12 hours over at least three checks, and the change summary says it was applied without ESPN."
   ],
   "G1EMMFVSzpGE4q3Q": [
     "Accept a targeted owner retry for one unfinished active-event video.",
@@ -212,21 +212,23 @@
     [
       "Read events, videos, Fight Card state, pipeline runs and incidents.",
       "Check capture/analysis run gaps over 38 hours, running ledger entries older than two hours, and whether exactly one event is active.",
-      "Check missing event spreadsheets, cards not READY/PRESERVED within five days of start, NEEDS_REVIEW card changes and changes pending more than 24 hours.",
+      "Check missing event spreadsheets, cards not READY/PRESERVED within five days of start, NEEDS_REVIEW card changes, and changes pending more than 24 hours (6 hours within two days of the event).",
+      "Check card checks: two UNAVAILABLE checks in a row or a 12-hour streak within five days of start (card_check_unavailable), and no recorded check for 8 hours within 72 hours of start (card_check_stale), and a UFC bout ESPN has not listed for over 6 hours in the last two days (card_bout_held).",
       "Check active-event videos PROCESSING over three hours and CARD_CHANGED re-analysis waiting over 13 hours.",
       "Upsert health incidents, send new/reopened or daily reminder alerts and resolve health conditions that clear. Resolve suitable error incidents when later success/idle evidence exists; retrying incidents use the configured 45-minute no-further-failure rule.",
       "Dispatch diagnose_incident without waiting to investigate eligible incidents."
     ],
-    "Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence. The card_check_unavailable condition is in the repository source and awaits publication (see docs/card-handling.md)."
+    "Thresholds intentionally differ from worker retry thresholds. The sweep reads the application's ledger rather than independently proving every n8n execution completed. Its retry-resolution rule infers success from no further failure, so read the recorded evidence."
   ],
   "gfR9qKH6xCTJXzcg": [
-    "Close quiet error incidents on a time-based rule.",
+    "Close quiet error incidents, and card incidents only once a later card check succeeded.",
     [
-      "Every 30 minutes, read incidents and select unresolved error-sourced records with no recurrence for 12 hours.",
+      "Every 30 minutes, read incidents and the fight-card state, and select unresolved error-sourced records with no recurrence for 12 hours.",
       "Exclude owner-reported and test incidents.",
-      "Set selected incidents resolved with a quiet-period explanation and send a compact Telegram summary."
+      "For incidents from the card services (detect, apply, sync, populate, ensure spreadsheet, fight-week check), also require a card check or build that succeeded after the incident was last seen. Without one, close only after 72 quiet hours and flag it.",
+      "Set selected incidents resolved with an explanation and send a compact Telegram summary."
     ],
-    "Time-based closure means no recurrence was observed; it does not prove a code fix. health_sweep separately owns positive-evidence and health-condition resolution."
+    "Quiet-time closure means no recurrence was observed; it does not prove a code fix. Card incidents need positive evidence because on 4 Nov a quiet period hid that a card failure was only cleared by a later run. health_sweep separately owns health-condition resolution."
   ],
   "neIv7kEoopd67GLj": [
     "Choose and claim incidents for diagnosis so concurrent diagnosers can coordinate.",

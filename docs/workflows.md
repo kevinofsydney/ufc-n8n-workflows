@@ -17,7 +17,7 @@ All 29 UFC workflows visible through MCP were read directly from the live instan
 | [UFC \| svc.add_video](workflows/svc-add-video.md) | 25 | Capture and analyse one owner-submitted public YouTube video from /addvideo. |
 | [UFC \| svc.alert_failure](workflows/svc-alert-failure.md) | 15 | Record production workflow failures as incidents, suppress repeat alerts and retry selected transient failures. |
 | [UFC \| svc.apply_card_changes](workflows/svc-apply-card-changes.md) | 26 | Apply eligible recorded Fight Card changes and queue affected videos for re-analysis. |
-| [UFC \| svc.auto_resolve_incidents](workflows/svc-auto-resolve-incidents.md) | 6 | Close quiet error incidents on a time-based rule. |
+| [UFC \| svc.auto_resolve_incidents](workflows/svc-auto-resolve-incidents.md) | 7 | Close quiet error incidents, and card incidents only once a later card check succeeded. |
 | [UFC \| svc.browse_videos](workflows/svc-browse-videos.md) | 26 | Browse captured event videos and reopen saved analysis summaries in Telegram. |
 | [UFC \| svc.check_event_spreadsheet](workflows/svc-check-event-spreadsheet.md) | 10 | Check the event spreadsheet contract before analysis without changing sheet data. |
 | [UFC \| svc.detect_card_changes](workflows/svc-detect-card-changes.md) | 12 | Detect differences between the saved Fight Card and the current official card. |

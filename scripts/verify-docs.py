@@ -46,6 +46,12 @@ detect=(ROOT/'source/svc-detect-card-changes/09-compare-card-changes.js').read_t
 builder=(ROOT/'source/svc-populate-fight-card/16-build-verified-ufc-card.js').read_text()
 start,end=detect.find('function buildOfficial(){\n'),detect.find('\n}\n\n// ---- Compare the official card')
 check(start>=0 and end>start and detect[start+len('function buildOfficial(){\n'):end].strip()==builder.strip(),'svc.detect_card_changes card builder differs from svc.populate_fight_card Build Verified UFC Card')
+# The card services must agree on when two names are the same fighter, or one can place a bout the next refuses.
+rules={}
+for name in ['svc-detect-card-changes/09-compare-card-changes.js','svc-apply-card-changes/09-plan-card-changes.js','svc-sync-bout-ids/02-plan-bout-ids.js']:
+ body=(ROOT/'source'/name).read_text(encoding='utf-8').replace('\\u0300-\\u036f','̀-ͯ')
+ rules[name]=tuple(next((l for l in body.split('\n') if l.startswith(prefix)),None) for prefix in ['const norm=','const surname='])
+check(len(set(rules.values()))==1 and None not in next(iter(rules.values())),'Card services use different fighter-name matching rules: '+', '.join(rules))
 for path in [ROOT/'README.md',*(ROOT/'docs').rglob('*.md')]:
  for target in re.findall(r'\]\(([^)]+)\)',path.read_text()):
   target=target.strip('<>')

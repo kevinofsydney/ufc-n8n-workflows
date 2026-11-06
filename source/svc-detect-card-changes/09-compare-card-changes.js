@@ -69,11 +69,24 @@ const options=(response.body?.events||[]).filter(e=>Math.abs(Date.parse(e.date)-
 if(options.length!==1)throw new Error('Could not uniquely verify this UFC event and its main event on ESPN.');
 const espn=options[0];
 const competitions=(espn.competitions||[]).filter(c=>!/cancel|postpon/i.test(String(c.status?.type?.name||'')));
-if(!unsplit&&competitions.length!==card.length)throw new Error('UFC and ESPN list different bout counts ('+card.length+' vs '+competitions.length+'). Review the card before populating it.');
+// UFC's page title names the main event. A fight list that leaves that bout out while ESPN still lists it is an
+// incomplete copy of the page (seen 6 Nov, when one fetch dropped Cortes Acosta vs Walker): stop, don't read it as a card change.
+const headline=/:\s*(.+?)\s+vs\.?\s+(.+?)\s*(?:\||$)/i.exec(text(official.title));
+if(headline){
+ const side=(name,part)=>norm(name).endsWith(norm(part));
+ const named=(a,b)=>(side(a,headline[1])&&side(b,headline[2]))||(side(a,headline[2])&&side(b,headline[1]));
+ if(!card.some(b=>named(b.fighter_a,b.fighter_b))&&competitions.some(c=>c.competitors?.length===2&&named(...names(c))))throw new Error('UFC page title names '+headline[1]+' vs '+headline[2]+' and ESPN lists that bout, but the page\'s fight list leaves it out. The page looks incomplete.');
+}
+// ESPN can lag UFC either way. A UFC bout ESPN does not list at all (never the main event) is held out rather than
+// stopping the whole card: it has no verified rounds or weight class yet. More than MAX_HELD such bouts still stops it.
+const MAX_HELD=3;
+const held=[];
 const used=new Set();
+card.forEach((b,i)=>{b.ufc_index=i;});
 for(const bout of card){
  const found=findCompsBasic(competitions,bout.fighter_a,bout.fighter_b);
  const matches=found.comps;
+ if(!matches.length&&bout!==card[0]){held.push(bout);continue;}
  if(matches.length!==1||used.has(matches[0].id))throw new Error('Could not verify pairing and rounds for '+bout.fighter_a+' vs '+bout.fighter_b+'.');
  const comp=matches[0];used.add(comp.id);
  if(found.tier==='alias'){
@@ -90,6 +103,9 @@ for(const bout of card){
  Object.assign(bout,{scheduled_rounds:rounds,weight_class:weightClass,espn_competition_id:String(comp.id),espn_start:Date.parse(comp.date),fighter_a_aliases:bout.fighter_a_aliases||'',fighter_b_aliases:bout.fighter_b_aliases||''});
  for(const key of ['fighter_a_url','fighter_b_url'])if(!/^https:\/\/www\.ufc\.com\/athlete\/[a-z0-9-]+$/.test(bout[key]))throw new Error('Invalid official athlete URL.');
 }
+if(held.length>MAX_HELD)throw new Error('ESPN does not list '+held.length+' UFC bouts ('+held.map(b=>b.fighter_a+' vs '+b.fighter_b).join('; ')+'). Review the card before populating it.');
+for(const b of held)card.splice(card.indexOf(b),1);
+const heldBouts=held.map(b=>({bout_id:b.bout_id,fighter_a:b.fighter_a,fighter_b:b.fighter_b,fighter_a_url:b.fighter_a_url,fighter_b_url:b.fighter_b_url,ufc_index:b.ufc_index}));
 // ESPN bouts UFC does not list are left off the card (UFC is the source of truth) and reported.
 const espnOnly=competitions.filter(c=>!used.has(c.id)&&c.competitors?.length===2).map(c=>names(c).join(' vs '));
 if(unsplit){
@@ -106,7 +122,7 @@ if(unsplit){
 card.forEach((b,i)=>{b.fight_order=i+1;delete b.espn_start;});
 const rows=card.map(b=>HEADERS.map(h=>b[h]));
 checkCard([HEADERS,...rows]);
-return [{json:{...event,card,espn_event_id:String(espn.id),card_source:unsplit?'ufc-unsplit+espn-segments':'ufc-sections',espn_only_bouts:espnOnly,source_fingerprint:fingerprint(rows),parser_version:'ufc-fight-card-v2',checked_at:new Date().toISOString()}}];
+return [{json:{...event,card,espn_event_id:String(espn.id),card_source:unsplit?'ufc-unsplit+espn-segments':'ufc-sections',espn_only_bouts:espnOnly,held_bouts:heldBouts,source_fingerprint:fingerprint(rows),parser_version:'ufc-fight-card-v2',checked_at:new Date().toISOString()}}];
 
 }
 
@@ -123,7 +139,7 @@ const request=$('Prepare UFC Card Request').first().json;
 const state=$('Read Fight Card State').all().map(i=>i.json).find(s=>s.event_key===request.event_key&&s.spreadsheet_id===request.spreadsheet_id)||{};
 const checkedAt=new Date().toISOString();
 // When the card cannot be checked, keep whatever change was pending so its two-check count survives.
-const done=(status,extra)=>[{json:{...request,card_check:{status,checked_at:checkedAt,changes:[],change_count:0,fingerprint:t(state.pending_change_fingerprint),seen_count:Number(state.pending_seen_count||0),first_seen_at:state.pending_first_seen_at||null,pending_change_json:t(state.pending_change_json),official_card_json:t(state.official_card_json),adoptions:0,adopted_source_card_json:null,...extra}}}];
+const done=(status,extra)=>[{json:{...request,card_check:{status,checked_at:checkedAt,changes:[],change_count:0,fingerprint:t(state.pending_change_fingerprint),seen_count:Number(state.pending_seen_count||0),first_seen_at:state.pending_first_seen_at||null,pending_change_json:t(state.pending_change_json),official_card_json:t(state.official_card_json),adoptions:0,adopted_source_card_json:null,held_bouts_waiting_text:t(state.held_bouts_waiting),held_waiting_since:state.held_waiting_since||null,...extra}}}];
 
 // Consecutive UNAVAILABLE checks are recorded so svc.health_sweep can alert; any verified check clears them.
 const unavailable=reason=>done('UNAVAILABLE',{reason,unavailable_since:state.card_unavailable_since||checkedAt,unavailable_count:Number(state.card_unavailable_count||0)+1,unavailable_reason:t(reason).slice(0,300)});
@@ -136,6 +152,19 @@ let built;
 try{built=buildOfficial()[0].json;}catch(e){return unavailable('Official card could not be verified: '+e.message);}
 if(built.card_pending)return unavailable(built.pending_reason);
 const official=built.card;
+// A held UFC bout (ESPN does not list it) that is already in the sheet stays on the card where UFC places it,
+// with the sheet's details, so it is neither removed nor moved. One new to the sheet waits until ESPN lists it.
+const sameBout=(x,y)=>(x.bout_id&&x.bout_id===y.bout_id)||pairOf(x.fighter_a,x.fighter_b)===pairOf(y.fighter_a,y.fighter_b)||lastPair(x.fighter_a,x.fighter_b)===lastPair(y.fighter_a,y.fighter_b);
+const heldKept=[],heldWaiting=[];
+for(const h of built.held_bouts||[]){
+ const c=current.find(x=>sameBout(x,h));
+ if(!c){heldWaiting.push(label(h));continue;}
+ const before=official.filter(o=>o.ufc_index<h.ufc_index).sort((x,y)=>x.ufc_index-y.ufc_index).pop();
+ const at=before?official.indexOf(before)+1:Math.min(1,official.length);
+ official.splice(at,0,{bout_id:h.bout_id,fighter_a:h.fighter_a,fighter_b:h.fighter_b,fighter_a_url:h.fighter_a_url,fighter_b_url:h.fighter_b_url,fighter_a_aliases:'',fighter_b_aliases:'',bout_type:c.bout_type==='main_event'?'main_card':c.bout_type,scheduled_rounds:c.scheduled_rounds,weight_class:c.weight_class,espn_competition_id:'',ufc_index:h.ufc_index});
+ heldKept.push(label(h));
+}
+if(heldKept.length)official.forEach((o,i)=>{o.fight_order=i+1;});
 // Whether ESPN still lists a bout (not cancelled): removals are only applied once ESPN drops it too.
 const espnEvent=(($input.first().json.body||{}).events||[]).find(e=>String(e.id)===String(built.espn_event_id))||{};
 const espnLive=(espnEvent.competitions||[]).filter(x=>x.competitors?.length===2&&!/cancel|postpon/i.test(String(x.status?.type?.name||'')));
@@ -160,7 +189,8 @@ const changes=[];
 const adoptions=[];
 for(const {c,o} of matched){
  const bout={bout_id:o.bout_id,fight:label(o)};
- if(c.bout_id!==o.bout_id)adoptions.push({type:'adopt_ufc_id',...bout,from:c.bout_id||null,to:o.bout_id,fight_order:c.fight_order});
+ // Never trade a numeric UFC id for a slug one: UFC sometimes drops data-fmid, and svc.sync_bout_ids refuses the downgrade.
+ if(c.bout_id!==o.bout_id&&!(/^ufc:[0-9]+$/.test(c.bout_id)&&!/^ufc:[0-9]+$/.test(o.bout_id)))adoptions.push({type:'adopt_ufc_id',...bout,from:c.bout_id||null,to:o.bout_id,fight_order:c.fight_order});
  if(pairOf(c.fighter_a,c.fighter_b)!==pairOf(o.fighter_a,o.fighter_b))changes.push({type:'renamed',...bout,from:label(c),to:label(o)});
  if(c.fight_order!==o.fight_order)changes.push({type:'reordered',...bout,from:c.fight_order,to:o.fight_order});
  if(c.bout_type!==o.bout_type)changes.push({type:'segment_changed',...bout,from:c.bout_type,to:o.bout_type});
@@ -193,5 +223,8 @@ if(adoptions.length){
   return {...s,...rest,...(c.bout_id?{bout_id:c.bout_id}:{}),...ids};
  });
 }
+// UFC bouts still waiting for ESPN are recorded with when they started waiting, so svc.health_sweep can alert.
+const waitingText=heldWaiting.join('; ');
+const heldSince=!waitingText?null:(t(state.held_bouts_waiting)===waitingText&&state.held_waiting_since?state.held_waiting_since:checkedAt);
 const status=changes.length?'CHANGED':adoptions.length?'ADOPT_IDS':'IN_SYNC';
-return [{json:{...request,card_check:{status,checked_at:checkedAt,changes,change_count:changes.length,fingerprint,seen_count:seen,first_seen_at:firstSeen,pending_change_json:changes.length?JSON.stringify(changes):'',official_card_json:changes.length?JSON.stringify(official):'',adoptions:adoptions.length,adopted_source_card_json:adoptedCard?JSON.stringify(adoptedCard):null,espn_only_bouts:built.espn_only_bouts||[],official_source:built.card_source,unavailable_since:null,unavailable_count:0,unavailable_reason:''}}}];
+return [{json:{...request,card_check:{status,checked_at:checkedAt,changes,change_count:changes.length,fingerprint,seen_count:seen,first_seen_at:firstSeen,pending_change_json:changes.length?JSON.stringify(changes):'',official_card_json:changes.length?JSON.stringify(official):'',adoptions:adoptions.length,adopted_source_card_json:adoptedCard?JSON.stringify(adoptedCard):null,espn_only_bouts:built.espn_only_bouts||[],held_bouts_kept:heldKept,held_bouts_waiting:heldWaiting,held_bouts_waiting_text:waitingText,held_waiting_since:heldSince,official_source:built.card_source,unavailable_since:null,unavailable_count:0,unavailable_reason:''}}}];

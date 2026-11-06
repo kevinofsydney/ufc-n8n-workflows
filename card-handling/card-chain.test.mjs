@@ -56,13 +56,23 @@ test('an opponent change voids the old picks, then sync leaves the voided rows a
  assert.equal(synced.summary.fight_card_bout_ids_written,0);
 });
 
-test('the main event is replaced: the new one takes fight 1 at once, and sync holds while the old one waits',()=>{
+const mainRemoved={type:'removed',bout_id:CARD[0].bout_id,fight:'Waldo Cortes Acosta vs Johnny Walker',fight_order:1,espn_listed:true};
+test('the main event is replaced: the old one keeps fight 1 until its removal is confirmed, and the new bout waits below it',()=>{
  const newMain=bout(1,'Alex Pereira','Jiri Prochazka','main_event');
  const official=renumber([newMain,...CARD.slice(1)]);
- const first=chain({official,seen:1,changes:[{type:'removed',bout_id:CARD[0].bout_id,fight:'Waldo Cortes Acosta vs Johnny Walker',fight_order:1,espn_listed:true},{type:'added',bout_id:newMain.bout_id,fight:'Alex Pereira vs Jiri Prochazka',fight_order:1,bout_type:'main_event'}]});
+ const first=chain({official,seen:1,changes:[mainRemoved,{type:'added',bout_id:newMain.bout_id,fight:'Alex Pereira vs Jiri Prochazka',fight_order:1,bout_type:'main_event'}]});
  assert.equal(first.applied.status,'PARTLY_APPLY');
- assert.deepEqual(first.applied.new_card.slice(0,2).map(b=>[b.fighter_a,b.bout_type]),[['Alex Pereira','main_event'],['Waldo Cortes Acosta','main_card']]);
+ assert.deepEqual(first.applied.new_card.slice(0,3).map(b=>[b.fighter_a,b.bout_type]),[['Waldo Cortes Acosta','main_event'],['Alex Pereira','main_card'],['Tatiana Suarez','main_card']]);
  assert.equal(first.synced.summary.fight_card_bout_ids_written,0);
+});
+
+test('UFC drops the main event for one check: nothing moves and no update is sent while the removal waits',()=>{
+ // 6 Nov: the co-main was promoted to fight 1 and the main event pushed to fight 2 on a single fetch.
+ const official=renumber([{...CARD[1],bout_type:'main_event'},...CARD.slice(2)]);
+ const changes=[{type:'reordered',bout_id:CARD[1].bout_id,from:2,to:1},{type:'segment_changed',bout_id:CARD[1].bout_id,from:'main_card',to:'main_event'},{type:'reordered',bout_id:CARD[2].bout_id,from:3,to:2},{type:'reordered',bout_id:CARD[3].bout_id,from:4,to:3},mainRemoved];
+ const {applied,sheet}=chain({official,seen:1,changes});
+ assert.equal(applied.status,'WAITING');assert.equal(applied.writes.length,0);assert.equal(applied.telegram_message,'');
+ assert.deepEqual(sheet['Fight Card'].slice(1).map(r=>[r[0],r[1],r[5]]),CARD.map(b=>[b.fight_order,b.fighter_a,b.bout_type]));
 });
 
 test('an unplaceable row is set aside, and sync then skips it',()=>{
@@ -77,4 +87,21 @@ test('an unplaceable row is set aside, and sync then skips it',()=>{
  applyWrites(sheet,applied.writes);state.source_card_json=applied.state_update.source_card_json;
  const synced=new Function('$',sync)(ctx(nodes()))[0].json;
  assert.ok(synced);
+});
+
+test('UFC changes an athlete URL: sync adopts the new slug id and rekeys the rows',()=>{
+ // 5 Nov: José Souza's UFC URL moved from jose-henrique to jose-souza, so detect adopted a new slug id.
+ const card=[...CARD.slice(0,3),bout(4,'Jonny Parsons','José Souza','prelim','ufc:jonny-parsons--jose-henrique')];
+ const saved=card.map(b=>b.fight_order===4?{...b,bout_id:'ufc:jonny-parsons--jose-souza'}:b);
+ const {synced,sheet}=chain({card,saved,official:saved,changes:[]});
+ assert.equal(synced.summary.ufc_ids_adopted,1);
+ assert.ok(sheet['Fight Card'].some(r=>r[8]==='ufc:jonny-parsons--jose-souza'));
+ assert.ok(sheet.Picks.some(r=>r[0]==='v1|pick|ufc:jonny-parsons--jose-souza'));
+});
+
+test('sync still refuses a numeric id replaced by a slug, or a different bout at the same order',()=>{
+ const card=[...CARD.slice(0,3),{...CARD[3],bout_id:'ufc:4600'}];
+ assert.throws(()=>chain({card,saved:CARD,official:CARD,changes:[]}),/has bout_id ufc:4600 but the saved card says/);
+ const other=[...CARD.slice(0,3),{...CARD[3],fighter_b:'Somebody Else'}];
+ assert.throws(()=>chain({card:CARD,saved:other,official:other,changes:[]}),/does not match the saved card/);
 });

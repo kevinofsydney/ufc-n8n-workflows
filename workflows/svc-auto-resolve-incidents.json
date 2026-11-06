@@ -19,17 +19,6 @@
         ]
       ]
     },
-    "Read All Incidents": {
-      "main": [
-        [
-          {
-            "node": "Select Stale Incidents",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Select Stale Incidents": {
       "main": [
         [
@@ -57,6 +46,28 @@
         [
           {
             "node": "Send Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read All Incidents": {
+      "main": [
+        [
+          {
+            "node": "Read Card State",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Card State": {
+      "main": [
+        [
+          {
+            "node": "Select Stale Incidents",
             "type": "main",
             "index": 0
           }
@@ -118,7 +129,7 @@
         0
       ],
       "parameters": {
-        "jsCode": "const QUIET_HOURS=12;\nconst rows=$('Read All Incidents').all().map(function(item){return item.json;}).filter(function(row){return row && row.incident_key;});\nconst cutoff=Date.now()-QUIET_HOURS*60*60*1000;\nconst stale=rows.filter(function(row){\n if(row.status==='resolved')return false;\n if(row.source==='owner')return false;\n if(String(row.incident_key).indexOf('test|')===0)return false;\n const seen=Date.parse(row.last_seen_at||row.first_seen_at||'');\n return Number.isFinite(seen) && seen<cutoff;\n});\nif(!stale.length)return [];\nconst now=new Date().toISOString();\nreturn stale.map(function(row){\n return {json:{incident_key:row.incident_key,incident_id:row.id,workflow_name:row.workflow_name||row.node_name||row.source||'pipeline',last_message:row.last_message||'',resolved_at:now,resolution:'Auto-closed: no recurrence in '+QUIET_HOURS+' hours.'}};\n});"
+        "jsCode": "const QUIET_HOURS=12;\n// A card incident closes only once a later card check succeeded, not on quiet time alone: on 4 Nov a quiet\n// period hid that a card failure was only cleared by a later run. With no such check it closes after 72 hours.\nconst CARD_FALLBACK_HOURS=72;\nconst CARD_WORKFLOW=/svc\\.(detect_card_changes|apply_card_changes|sync_bout_ids|populate_fight_card|ensure_event_spreadsheet)|Fight-Week Card Check/;\nconst rows=$('Read All Incidents').all().map(function(item){return item.json;}).filter(function(row){return row && row.incident_key;});\nconst ms=function(v){const t=Date.parse(v||'');return Number.isFinite(t)?t:0;};\n// The latest time any event's card was checked or built successfully.\nlet cardOkAt=0;\n$('Read Card State').all().forEach(function(item){\n const s=item.json||{};\n if(['IN_SYNC','APPLIED','PARTLY_APPLIED'].indexOf(s.change_status)>=0)cardOkAt=Math.max(cardOkAt,ms(s.change_checked_at));\n if(['READY','PRESERVED'].indexOf(s.status)>=0)cardOkAt=Math.max(cardOkAt,ms(s.checked_at));\n});\nconst now=Date.now();\nconst hour=60*60*1000;\nconst closing=[];\nrows.forEach(function(row){\n if(row.status==='resolved')return;\n if(row.source==='owner')return;\n if(String(row.incident_key).indexOf('test|')===0)return;\n const seen=ms(row.last_seen_at||row.first_seen_at);\n if(!seen||seen>=now-QUIET_HOURS*hour)return;\n let resolution='Auto-closed: no recurrence in '+QUIET_HOURS+' hours.';\n if(CARD_WORKFLOW.test(String(row.workflow_name||''))){\n  if(cardOkAt>seen)resolution='Auto-closed: a later card check succeeded ('+new Date(cardOkAt).toISOString().slice(0,16)+'Z) and no recurrence in '+QUIET_HOURS+' hours.';\n  else if(seen<now-CARD_FALLBACK_HOURS*hour)resolution='Auto-closed: no recurrence in '+CARD_FALLBACK_HOURS+' hours, but no later card check succeeded. Check the card.';\n  else return;\n }\n closing.push({row:row,resolution:resolution});\n});\nif(!closing.length)return [];\nconst at=new Date(now).toISOString();\nreturn closing.map(function(c){\n const row=c.row;\n return {json:{incident_key:row.incident_key,incident_id:row.id,workflow_name:row.workflow_name||row.node_name||row.source||'pipeline',last_message:row.last_message||'',resolved_at:at,resolution:c.resolution}};\n});\n"
       },
       "executeOnce": true
     },
@@ -206,7 +217,7 @@
         0
       ],
       "parameters": {
-        "jsCode": "const items=$('Select Stale Incidents').all().map(function(item){return item.json;});\nconst nl=String.fromCharCode(10);\nconst esc=function(value){return String(value===undefined||value===null?'':value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};\nconst lines=['<b>Auto-closed '+items.length+' incident'+(items.length===1?'':'s')+'</b>','No recurrence in 12 hours.'];\nitems.slice(0,8).forEach(function(row){lines.push('#'+row.incident_id+' '+esc(row.workflow_name)+' — '+esc(row.last_message).slice(0,110));});\nif(items.length>8)lines.push('… '+(items.length-8)+' more.');\nreturn [{json:{count:items.length,text:lines.join(nl)}}];"
+        "jsCode": "const items=$('Select Stale Incidents').all().map(function(item){return item.json;});\nconst nl=String.fromCharCode(10);\nconst esc=function(value){return String(value===undefined||value===null?'':value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');};\nconst lines=['<b>Auto-closed '+items.length+' incident'+(items.length===1?'':'s')+'</b>','No recurrence in 12 hours; card incidents also need a later card check that succeeded.'];\nitems.slice(0,8).forEach(function(row){lines.push('#'+row.incident_id+' '+esc(row.workflow_name)+' — '+esc(row.last_message).slice(0,110)+(/no later card check/.test(row.resolution)?' <b>No card check has succeeded since: check the card.</b>':''));});\nif(items.length>8)lines.push('… '+(items.length-8)+' more.');\nreturn [{json:{count:items.length,text:lines.join(nl)}}];\n"
       },
       "executeOnce": true
     },
@@ -236,6 +247,29 @@
           "name": "telegramApi credential"
         }
       }
+    },
+    {
+      "id": "66517fe4-b6ce-45be-bb86-0e3f9a85c719",
+      "name": "Read Card State",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        336,
+        -160
+      ],
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "oCOZ7hzgZ2htYL9F",
+          "cachedResultName": "ufc_fight_card_state"
+        },
+        "matchType": "allConditions",
+        "returnAll": true
+      },
+      "alwaysOutputData": true,
+      "executeOnce": true
     }
   ],
   "nodeGroups": []

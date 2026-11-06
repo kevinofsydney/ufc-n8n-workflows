@@ -26,13 +26,15 @@ Automatic retry starts the selected worker with empty input. It is not guarantee
 | Card review required | change_status is NEEDS_REVIEW |
 | Card changes waiting | CHANGED/PARTLY_APPLIED for more than 24 hours before start, or more than 6 hours within two days of it |
 | Card check unavailable (see [card handling](card-handling.md)) | READY/PRESERVED card within five days before start, with two UNAVAILABLE checks in a row or a streak at least 12 hours old |
+| Card check stale | READY/PRESERVED card within 72 hours of start, not in an unavailable streak, with no recorded card check for 8 hours. Covers skipped checks and a fight-week check that is not running |
+| Card bout held | Within five days before start, a UFC bout ESPN does not list has been held off the card for more than 6 hours within two days of start, or 24 hours earlier |
 | Stuck video | analysis_status PROCESSING for more than three hours |
 | Re-analysis waiting | CARD_CHANGED for more than 13 hours |
 | Health reminder | New/reopened condition, or at least 24 hours since alert |
 
 The sweep resolves health incidents when their condition clears. It can close error incidents if a later ledger run of the same workflow is success/idle. For retrying incidents it currently uses more than 45 minutes without another failure as recovery evidence. That inference is weaker than inspecting a specific successful retry execution.
 
-`svc.auto_resolve_incidents` separately closes error-sourced incidents after 12 quiet hours. It excludes owner-reported and test incidents. A quiet-period resolution means no recurrence was observed; it does not establish a deployed fix.
+`svc.auto_resolve_incidents` separately closes error-sourced incidents after 12 quiet hours. An incident from a card service also needs a card check or build that succeeded after it was last seen; without one it closes only after 72 quiet hours, flagged in the summary. It excludes owner-reported and test incidents. A quiet-period resolution means no recurrence was observed; it does not establish a deployed fix.
 
 ## Diagnosis flow
 

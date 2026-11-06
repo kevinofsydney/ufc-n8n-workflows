@@ -58,7 +58,7 @@ const hoursAhead=h=>new Date(NOW+h*3600e3).toISOString();
 const KEY='health|card_check_unavailable|'+EVENT.event_key;
 function runSweep({state={},daysOut=3,incidents=[]}={}){
  const runs=[{id:1,workflow_id:'y20ZZYzBVS6y8kC0',state:'success',started_at:iso(1)},{id:2,workflow_id:'BvLnPFMwQ2vhPkgv',state:'success',started_at:iso(1)}];
- return run(sweep,[{}],{'Read Pipeline Runs':runs,'Read Events':[{id:1,active:true,...EVENT,event_datetime_local:hoursAhead(daysOut*24)}],'Read Card States':[{id:1,event_key:EVENT.event_key,spreadsheet_id:EVENT.spreadsheet_id,status:'READY',...state}],'Read Videos':[],'Read Incidents':incidents})[0].json;
+ return run(sweep,[{}],{'Read Pipeline Runs':runs,'Read Events':[{id:1,active:true,...EVENT,event_datetime_local:hoursAhead(daysOut*24)}],'Read Card States':[{id:1,event_key:EVENT.event_key,spreadsheet_id:EVENT.spreadsheet_id,status:'READY',change_checked_at:iso(1),...state}],'Read Videos':[],'Read Incidents':incidents})[0].json;
 }
 const failing=(count,hoursAgo,reason='Official card could not be verified: UFC <page> changed')=>({change_status:'UNAVAILABLE',card_unavailable_since:iso(hoursAgo),card_unavailable_count:count,card_unavailable_reason:reason});
 const openIncident=(alertedHoursAgo)=>({id:9,incident_key:KEY,source:'health',status:'open',occurrences:4,first_seen_at:iso(30),last_alerted_at:iso(alertedHoursAgo),last_message:'old'});
@@ -82,3 +82,89 @@ const waiting=hoursAgo=>({change_status:'CHANGED',pending_first_seen_at:iso(hour
 test('a waiting card change alerts after 6 hours in the last two days',()=>assert.deepEqual(runSweep({state:waiting(7),daysOut:1.5}).problems,[WAIT]));
 test('a waiting card change stays quiet for 5 hours in the last two days',()=>assert.deepEqual(runSweep({state:waiting(5),daysOut:1.5}).problems,[]));
 test('earlier in the week a waiting card change still waits 24 hours',()=>{assert.deepEqual(runSweep({state:waiting(7),daysOut:3}).problems,[]);assert.deepEqual(runSweep({state:waiting(25),daysOut:3}).problems,[WAIT]);});
+
+const STALE='health|card_check_stale|'+EVENT.event_key;
+test('no card check recorded for 8 hours in the last three days alerts',()=>{const r=runSweep({state:{change_checked_at:iso(9)},daysOut:2});assert.deepEqual(r.problems,[STALE]);assert.match(r.telegram_message,/No card check has been recorded/);});
+test('a card never checked in the last three days alerts',()=>assert.deepEqual(runSweep({state:{change_checked_at:null},daysOut:1}).problems,[STALE]));
+test('a recent card check, or an earlier week, stays quiet',()=>{assert.deepEqual(runSweep({state:{change_checked_at:iso(7)},daysOut:2}).problems,[]);assert.deepEqual(runSweep({state:{change_checked_at:iso(30)},daysOut:4}).problems,[]);});
+test('an unavailable streak keeps its own alert instead',()=>assert.deepEqual(runSweep({state:{...failing(2,9),change_checked_at:iso(9)},daysOut:2}).problems,[KEY]));
+
+// ESPN lags UFC: UFC lists a bout ESPN does not (here fight 2), or ESPN still lists a bout UFC dropped.
+const withHeld={...official,main_ids:['1','3','2'],main_a:['Waldo Cortes Acosta','Austin Bashi','Jonny Parsons'],main_b:['Johnny Walker','Carlos Calderon','José Souza'],main_a_url:[athlete('waldo-cortes-acosta'),athlete('austin-bashi'),athlete('jonny-parsons')],main_b_url:[athlete('johnny-walker'),athlete('carlos-calderon'),athlete('jose-henrique')]};
+const heldRow=[2,'Austin Bashi','Carlos Calderon','','','main_card',3,'featherweight','ufc:3'];
+const HEAD=['fight_order','fighter_a','fighter_b','fighter_a_aliases','fighter_b_aliases','bout_type','scheduled_rounds','weight_class','bout_id'];
+test('the builder holds out a UFC bout ESPN does not list instead of failing',()=>{
+ const b=run(builder,[espn],{...cardNodes,'Extract Official UFC Card':[withHeld]})[0].json;
+ assert.deepEqual(b.card.map(x=>x.fighter_a),['Waldo Cortes Acosta','Jonny Parsons']);
+ assert.deepEqual(b.card.map(x=>x.fight_order),[1,2]);
+ assert.deepEqual(b.held_bouts.map(x=>x.fighter_a),['Austin Bashi']);
+});
+test('a held bout already in the sheet stays in place, so the check is in sync',()=>{
+ const [main,other]=buildCard().card;
+ const c=check({},{fight:withHeld,rows:[HEAD,sheetRow(main,0),heldRow,[3,...sheetRow(other,2).slice(1)]]});
+ assert.equal(c.status,'IN_SYNC',JSON.stringify(c.changes));
+ assert.deepEqual(c.held_bouts_kept,['Austin Bashi vs Carlos Calderon']);
+});
+test('a held bout new to the sheet waits for ESPN without blocking the check',()=>{
+ const c=check({},{fight:withHeld});
+ assert.equal(c.status,'IN_SYNC',JSON.stringify(c.changes));
+ assert.deepEqual(c.held_bouts_waiting,['Austin Bashi vs Carlos Calderon']);
+});
+test('a held bout does not hide other changes',()=>{
+ const [main,other]=buildCard().card;
+ const r=sheetRow(other,2);r[0]=3;r[6]=5;
+ const c=check({},{fight:withHeld,rows:[HEAD,sheetRow(main,0),heldRow,r]});
+ assert.equal(c.status,'CHANGED');assert.deepEqual(c.changes.map(x=>x.type),['details_changed']);
+});
+test('more than three bouts ESPN does not list still stops the check',()=>{
+ const many={...withHeld};
+ for(const k of ['ids','a','b','a_url','b_url'])many['main_'+k]=[...withHeld['main_'+k]];
+ for(let i=0;i<4;i++){many.main_ids.push('9'+i);many.main_a.push('Extra A'+i);many.main_b.push('Extra B'+i);many.main_a_url.push(athlete('extra-a'+i));many.main_b_url.push(athlete('extra-b'+i));}
+ const c=check({},{fight:many});
+ assert.equal(c.status,'UNAVAILABLE');assert.match(c.unavailable_reason,/ESPN does not list 5 UFC bouts/);
+});
+test('a bout UFC dropped but ESPN still lists is a removal ESPN still lists',()=>{
+ const [main,other]=buildCard().card;
+ const espnExtra={statusCode:200,body:{events:[{...espn.body.events[0],competitions:[...espn.body.events[0].competitions,competition('13','Austin Bashi','Carlos Calderon',3)]}]}};
+ const c=check({},{response:espnExtra,rows:[HEAD,sheetRow(main,0),heldRow,[3,...sheetRow(other,2).slice(1)]]});
+ assert.equal(c.status,'CHANGED',c.unavailable_reason);
+ const removed=c.changes.find(x=>x.type==='removed');
+ assert.equal(removed.fight,'Austin Bashi vs Carlos Calderon');assert.equal(removed.espn_listed,true);
+});
+// 6 Nov: one fetch of the UFC page left the main event out of its fight list while its title still named it.
+const titled=(main)=>({...official,title:'UFC Fight Night: Cortes Acosta vs Walker | UFC',main_ids:main.map(b=>b[0]),main_a:main.map(b=>b[1]),main_b:main.map(b=>b[2]),main_a_url:main.map(b=>athlete(b[3])),main_b_url:main.map(b=>athlete(b[4]))});
+const WALKER=['1','Waldo Cortes Acosta','Johnny Walker','waldo-cortes-acosta','johnny-walker'],BASHI=['3','Austin Bashi','Carlos Calderon','austin-bashi','carlos-calderon'],PARSONS=['2','Jonny Parsons','José Souza','jonny-parsons','jose-henrique'];
+const espnWith=comps=>({statusCode:200,body:{events:[{...espn.body.events[0],competitions:comps}]}});
+const threeRows=()=>{const [main,other]=buildCard().card;return [HEAD,sheetRow(main,0),heldRow,[3,...sheetRow(other,2).slice(1)]];};
+test('a UFC page whose fight list drops the bout its title names, while ESPN lists it, is not a card change',()=>{
+ const response=espnWith([...espn.body.events[0].competitions,competition('13','Austin Bashi','Carlos Calderon',3)]);
+ const c=check({pending_change_fingerprint:'fp',pending_seen_count:1,pending_change_json:'[{"type":"reordered"}]'},{fight:titled([BASHI,PARSONS]),response,rows:threeRows()});
+ assert.equal(c.status,'UNAVAILABLE');assert.match(c.unavailable_reason,/title names Cortes Acosta vs Walker .* leaves it out/);
+ assert.equal(c.fingerprint,'fp');assert.equal(c.seen_count,1);
+ assert.throws(()=>run(builder,[response],{...cardNodes,'Extract Official UFC Card':[titled([BASHI,PARSONS])]}),/page looks incomplete/,'populate refuses the same page');
+});
+test('the title check passes when the fight list has the title bout, or ESPN has dropped it too',()=>{
+ const response=espnWith([...espn.body.events[0].competitions,competition('13','Austin Bashi','Carlos Calderon',3)]);
+ const listed=check({},{fight:titled([WALKER,BASHI,PARSONS]),response,rows:threeRows()});
+ assert.equal(listed.status,'CHANGED',listed.unavailable_reason);
+ assert.deepEqual(listed.changes.map(x=>x.type),['details_changed'],'only the fixture weight class differs');
+ const gone=check({},{fight:titled([BASHI,PARSONS]),response:espnWith([espn.body.events[0].competitions[1],competition('13','Austin Bashi','Carlos Calderon',3)]),rows:threeRows()});
+ assert.equal(gone.status,'CHANGED',gone.unavailable_reason);
+ assert.equal(gone.changes.find(x=>x.type==='removed').espn_listed,false);
+});
+test('a waiting held bout is recorded with when it started waiting',()=>{
+ const c=check({},{fight:withHeld});
+ assert.equal(c.held_bouts_waiting_text,'Austin Bashi vs Carlos Calderon');assert.equal(c.held_waiting_since,c.checked_at);
+ const again=check({held_bouts_waiting:'Austin Bashi vs Carlos Calderon',held_waiting_since:iso(5)},{fight:withHeld});
+ assert.equal(again.held_waiting_since,iso(5));
+ assert.equal(check({held_bouts_waiting:'Austin Bashi vs Carlos Calderon',held_waiting_since:iso(5)}).held_waiting_since,null,'cleared once nothing waits');
+ assert.equal(check({held_bouts_waiting:'x',held_waiting_since:iso(5)},{fight:broken}).held_waiting_since,iso(5),'kept through a failed check');
+});
+const HELD='health|card_bout_held|'+EVENT.event_key;
+test('a bout ESPN has not listed alerts after 6 hours in the last two days',()=>{
+ const held=h=>({held_bouts_waiting:'Austin Bashi vs Carlos Calderon',held_waiting_since:iso(h)});
+ assert.deepEqual(runSweep({state:held(5),daysOut:1.5}).problems,[]);
+ const r=runSweep({state:held(7),daysOut:1.5});assert.deepEqual(r.problems,[HELD]);assert.match(r.telegram_message,/gets no picks: Austin Bashi vs Carlos Calderon/);
+ assert.deepEqual(runSweep({state:held(7),daysOut:3}).problems,[]);
+ assert.deepEqual(runSweep({state:{held_bouts_waiting:'',held_waiting_since:null}}).problems,[]);
+});

@@ -1,7 +1,7 @@
 // Turns the change recorded by svc.detect_card_changes into an exact set of sheet writes.
 // Rules: additions and detail changes apply at once; a removal (or the old half of an opponent change)
 // waits until two checks in a row agree AND ESPN no longer lists the bout; more than 3 removals at once
-// needs a human. Bouts still waiting stay on the card. Nothing here writes.
+// needs a human. Bouts still waiting stay on the card in their own place and segment. Nothing here writes.
 const HEADERS=['fight_order','fighter_a','fighter_b','fighter_a_aliases','fighter_b_aliases','bout_type','scheduled_rounds','weight_class'];
 const TABS=[{sheet:'Picks',node:'Read Picks'},{sheet:'Props',node:'Read Props'},{sheet:'Fight Analysis',node:'Read Fight Analysis'}];
 const VOID='VOID_CARD_CHANGE',UNMATCHED='VOID_UNMATCHED';
@@ -9,7 +9,7 @@ const MAX_REMOVALS=3;
 const text=v=>String(v??'').trim();
 const norm=v=>text(v).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]/g,'');
 const words=v=>' '+text(v).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()+' ';
-const surname=v=>{const w=words(v).trim().split(' ').filter(x=>x&&!['jr','sr','ii','iii','iv'].includes(x));return w[w.length-1]||'';};
+const surname=v=>{const words=text(v).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().split(/\s+/).map(w=>w.replace(/[^a-z0-9]/g,'')).filter(w=>w&&!['jr','sr','ii','iii','iv'].includes(w));return words[words.length-1]||'';};
 const label=b=>b.fighter_a+' vs '+b.fighter_b;
 const colName=index=>{let n=index+1,s='';while(n>0){const m=(n-1)%26;s=String.fromCharCode(65+m)+s;n=Math.floor((n-1)/26);}return s;};
 function fingerprint(rows){const value=JSON.stringify(rows.map(r=>r.map(v=>text(v))));let hash=2166136261;for(let i=0;i<value.length;i++)hash=Math.imul(hash^value.charCodeAt(i),16777619)>>>0;return 'fnv1a-'+hash.toString(16).padStart(8,'0');}
@@ -40,9 +40,15 @@ if(removals.length>MAX_REMOVALS){
  const msg='<b>Fight card needs review</b>\n<b>Event:</b> '+event.event_name+'\n'+removals.length+' bouts would be removed at once, so nothing was changed:\n'+removals.map(c=>'• '+describe(c)).join('\n');
  return result('NEEDS_REVIEW',{reason:removals.length+' removals at once.',telegram_message:seen===1?msg:''});
 }
-const ready=c=>!isRemoval(c)||(seen>=2&&c.espn_listed!==true);
+// ESPN confirms removals, but its page can lag or never update. Once UFC has shown the same removal for
+// ESPN_LAG_HOURS over at least three checks, UFC's card wins and the update message says so.
+const ESPN_LAG_HOURS=12;
+const pendingHours=(Date.now()-Date.parse(state.pending_first_seen_at||''))/3600e3;
+const espnLagged=c=>c.espn_listed===true&&seen>=3&&pendingHours>=ESPN_LAG_HOURS;
+const ready=c=>!isRemoval(c)||(seen>=2&&(c.espn_listed!==true||espnLagged(c)));
 const apply=changes.filter(ready),waiting=changes.filter(c=>!ready(c));
-const waitWhy=c=>c.espn_listed===true?'ESPN still lists it':'waiting for a second check';
+const overEspn=apply.filter(espnLagged);
+const waitWhy=c=>c.espn_listed===true?'ESPN still lists it; applies once UFC has shown it for '+ESPN_LAG_HOURS+' hours':'waiting for a second check';
 if(!apply.length)return result('WAITING',{waiting:waiting.map(c=>describe(c)+' ('+waitWhy(c)+')')});
 
 // Current card as it is in the sheet (A:I).
@@ -83,12 +89,17 @@ const waitingSwap=new Map(waiting.filter(c=>c.type==='opponent_replaced').map(c=
 const fromOfficial=o=>{const cur=currentById.get(o.bout_id)||{};return {...savedFor(o),...o,fighter_a_aliases:cur.fighter_a_aliases||o.fighter_a_aliases||'',fighter_b_aliases:cur.fighter_b_aliases||o.fighter_b_aliases||''};};
 const fromCurrent=b=>({...savedFor(b),...b});
 const next=official.map(o=>waitingSwap.has(o.bout_id)?fromCurrent(currentById.get(waitingSwap.get(o.bout_id))):fromOfficial(o));
+// A bout still waiting to leave keeps its exact place and segment, so nothing that only follows from its
+// removal (others moving up, a new main event) is applied before the removal itself is confirmed.
 for(const id of waitingRemoved){
  const b=currentById.get(id);
- const before=current.filter(x=>x.fight_order<b.fight_order).reverse().map(x=>x.bout_id).find(x=>next.some(y=>y.bout_id===x));
- // An old main event still waiting to leave stays on the card as a main card bout, so a new main event can take fight 1 now.
  const kept=fromCurrent(b);
- if(kept.bout_type==='main_event')kept.bout_type='main_card';
+ if(kept.bout_type==='main_event'){
+  for(const y of next)if(y.bout_type==='main_event'){const c=currentById.get(y.bout_id);y.bout_type=c&&c.bout_type!=='main_event'?c.bout_type:'main_card';}
+  next.unshift(kept);
+  continue;
+ }
+ const before=current.filter(x=>x.fight_order<b.fight_order).reverse().map(x=>x.bout_id).find(x=>next.some(y=>y.bout_id===x));
  next.splice(before?next.findIndex(y=>y.bout_id===before)+1:Math.min(1,next.length),0,kept);
 }
 next.forEach((b,i)=>{b.fight_order=i+1;});
@@ -183,5 +194,6 @@ const voidedTotal=Object.values(rowSummary).reduce((n,r)=>n+r.voided,0);
 if(voidedTotal-setAside.length)lines.push('','Voided '+(voidedTotal-setAside.length)+' picks/props/analyses for bouts that left the card.');
 if(setAside.length)lines.push('','<b>Check these:</b> '+setAside.length+' row'+(setAside.length===1?'':'s')+' matched no bout on the card, so '+(setAside.length===1?'it was':'they were')+' set aside as '+UNMATCHED+'. Clear that status to restore a row.',...setAside.slice(0,10).map(s=>'• '+s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')));
 lines.push(reanalyse.length?'Re-analysing '+reanalyse.length+' video'+(reanalyse.length===1?'':'s')+'.':'No videos need re-analysis.');
+if(overEspn.length)lines.push('','<b>Applied without ESPN:</b> UFC has shown '+(overEspn.length===1?'this change':'these changes')+' for '+ESPN_LAG_HOURS+'+ hours but ESPN still lists the old bout:',...overEspn.map(c=>'• '+describe(c)));
 if(waiting.length)lines.push('','<b>Still waiting:</b>',...waiting.map(c=>'• '+describe(c)+' ('+waitWhy(c)+')'));
-return [{json:{event,status:waiting.length?'PARTLY_APPLY':'APPLY',applied:apply,applied_json:appliedJson,waiting,new_card:next,writes,expected,row_summary:rowSummary,rows_set_aside:setAside,videos:reanalyse,state_update:stateUpdate,telegram_message:lines.join('\n'),dry_run:event.dry_run===true,needs_apply:event.dry_run!==true}}];
+return [{json:{event,status:waiting.length?'PARTLY_APPLY':'APPLY',applied:apply,applied_over_espn:overEspn,applied_json:appliedJson,waiting,new_card:next,writes,expected,row_summary:rowSummary,rows_set_aside:setAside,videos:reanalyse,state_update:stateUpdate,telegram_message:lines.join('\n'),dry_run:event.dry_run===true,needs_apply:event.dry_run!==true}}];

@@ -8,8 +8,8 @@ Apply eligible recorded Fight Card changes and queue affected videos for re-anal
 
 - Workflow ID: `jWFGMw2faC2zLseh`
 - Published: `True`
-- Published version: `0d0da8d6-4e15-4aea-824e-b595646c5676`
-- Draft version: `0d0da8d6-4e15-4aea-824e-b595646c5676`
+- Published version: `6fc7cd1c-be66-4b95-9065-2d2e7aafe7aa`
+- Draft version: `6fc7cd1c-be66-4b95-9065-2d2e7aafe7aa`
 - Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 26
 - Timezone: `Australia/Sydney`
@@ -24,7 +24,7 @@ Apply eligible recorded Fight Card changes and queue affected videos for re-anal
 
 ## Important behavior and limits
 
-This worker mutates sheet data. It does not itself run the analysis model; CARD_CHANGED videos are selected by the next analysis pass. Column writes are not atomic, so PARTLY_APPLIED and verification failures need inspection before retrying. A main event that is waiting to leave the card stays on as main_card, so its replacement can take fight 1 immediately. When UFC changes a bout ID mid-week, planning matches the official bout to the sheet by fighters and keeps the sheet ID; svc.sync_bout_ids upgrades it afterwards.
+This worker mutates sheet data. It does not itself run the analysis model; CARD_CHANGED videos are selected by the next analysis pass. Column writes are not atomic, so PARTLY_APPLIED and verification failures need inspection before retrying. A main event that is waiting to leave the card stays on as main_card, so its replacement can take fight 1 immediately. When UFC changes a bout ID mid-week, planning matches the official bout to the sheet by fighters and keeps the sheet ID; svc.sync_bout_ids upgrades it afterwards. A removal ESPN still lists applies once UFC has shown it for 12 hours over at least three checks, and the change summary says it was applied without ESPN.
 
 ## Triggers and input contract
 
