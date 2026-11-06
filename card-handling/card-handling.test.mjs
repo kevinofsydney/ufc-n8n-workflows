@@ -131,6 +131,27 @@ test('a bout UFC dropped but ESPN still lists is a removal ESPN still lists',()=
  const removed=c.changes.find(x=>x.type==='removed');
  assert.equal(removed.fight,'Austin Bashi vs Carlos Calderon');assert.equal(removed.espn_listed,true);
 });
+// 6 Nov: one fetch of the UFC page left the main event out of its fight list while its title still named it.
+const titled=(main)=>({...official,title:'UFC Fight Night: Cortes Acosta vs Walker | UFC',main_ids:main.map(b=>b[0]),main_a:main.map(b=>b[1]),main_b:main.map(b=>b[2]),main_a_url:main.map(b=>athlete(b[3])),main_b_url:main.map(b=>athlete(b[4]))});
+const WALKER=['1','Waldo Cortes Acosta','Johnny Walker','waldo-cortes-acosta','johnny-walker'],BASHI=['3','Austin Bashi','Carlos Calderon','austin-bashi','carlos-calderon'],PARSONS=['2','Jonny Parsons','José Souza','jonny-parsons','jose-henrique'];
+const espnWith=comps=>({statusCode:200,body:{events:[{...espn.body.events[0],competitions:comps}]}});
+const threeRows=()=>{const [main,other]=buildCard().card;return [HEAD,sheetRow(main,0),heldRow,[3,...sheetRow(other,2).slice(1)]];};
+test('a UFC page whose fight list drops the bout its title names, while ESPN lists it, is not a card change',()=>{
+ const response=espnWith([...espn.body.events[0].competitions,competition('13','Austin Bashi','Carlos Calderon',3)]);
+ const c=check({pending_change_fingerprint:'fp',pending_seen_count:1,pending_change_json:'[{"type":"reordered"}]'},{fight:titled([BASHI,PARSONS]),response,rows:threeRows()});
+ assert.equal(c.status,'UNAVAILABLE');assert.match(c.unavailable_reason,/title names Cortes Acosta vs Walker .* leaves it out/);
+ assert.equal(c.fingerprint,'fp');assert.equal(c.seen_count,1);
+ assert.throws(()=>run(builder,[response],{...cardNodes,'Extract Official UFC Card':[titled([BASHI,PARSONS])]}),/page looks incomplete/,'populate refuses the same page');
+});
+test('the title check passes when the fight list has the title bout, or ESPN has dropped it too',()=>{
+ const response=espnWith([...espn.body.events[0].competitions,competition('13','Austin Bashi','Carlos Calderon',3)]);
+ const listed=check({},{fight:titled([WALKER,BASHI,PARSONS]),response,rows:threeRows()});
+ assert.equal(listed.status,'CHANGED',listed.unavailable_reason);
+ assert.deepEqual(listed.changes.map(x=>x.type),['details_changed'],'only the fixture weight class differs');
+ const gone=check({},{fight:titled([BASHI,PARSONS]),response:espnWith([espn.body.events[0].competitions[1],competition('13','Austin Bashi','Carlos Calderon',3)]),rows:threeRows()});
+ assert.equal(gone.status,'CHANGED',gone.unavailable_reason);
+ assert.equal(gone.changes.find(x=>x.type==='removed').espn_listed,false);
+});
 test('a waiting held bout is recorded with when it started waiting',()=>{
  const c=check({},{fight:withHeld});
  assert.equal(c.held_bouts_waiting_text,'Austin Bashi vs Carlos Calderon');assert.equal(c.held_waiting_since,c.checked_at);

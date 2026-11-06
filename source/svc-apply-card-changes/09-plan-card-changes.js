@@ -1,7 +1,7 @@
 // Turns the change recorded by svc.detect_card_changes into an exact set of sheet writes.
 // Rules: additions and detail changes apply at once; a removal (or the old half of an opponent change)
 // waits until two checks in a row agree AND ESPN no longer lists the bout; more than 3 removals at once
-// needs a human. Bouts still waiting stay on the card. Nothing here writes.
+// needs a human. Bouts still waiting stay on the card in their own place and segment. Nothing here writes.
 const HEADERS=['fight_order','fighter_a','fighter_b','fighter_a_aliases','fighter_b_aliases','bout_type','scheduled_rounds','weight_class'];
 const TABS=[{sheet:'Picks',node:'Read Picks'},{sheet:'Props',node:'Read Props'},{sheet:'Fight Analysis',node:'Read Fight Analysis'}];
 const VOID='VOID_CARD_CHANGE',UNMATCHED='VOID_UNMATCHED';
@@ -89,12 +89,17 @@ const waitingSwap=new Map(waiting.filter(c=>c.type==='opponent_replaced').map(c=
 const fromOfficial=o=>{const cur=currentById.get(o.bout_id)||{};return {...savedFor(o),...o,fighter_a_aliases:cur.fighter_a_aliases||o.fighter_a_aliases||'',fighter_b_aliases:cur.fighter_b_aliases||o.fighter_b_aliases||''};};
 const fromCurrent=b=>({...savedFor(b),...b});
 const next=official.map(o=>waitingSwap.has(o.bout_id)?fromCurrent(currentById.get(waitingSwap.get(o.bout_id))):fromOfficial(o));
+// A bout still waiting to leave keeps its exact place and segment, so nothing that only follows from its
+// removal (others moving up, a new main event) is applied before the removal itself is confirmed.
 for(const id of waitingRemoved){
  const b=currentById.get(id);
- const before=current.filter(x=>x.fight_order<b.fight_order).reverse().map(x=>x.bout_id).find(x=>next.some(y=>y.bout_id===x));
- // An old main event still waiting to leave stays on the card as a main card bout, so a new main event can take fight 1 now.
  const kept=fromCurrent(b);
- if(kept.bout_type==='main_event')kept.bout_type='main_card';
+ if(kept.bout_type==='main_event'){
+  for(const y of next)if(y.bout_type==='main_event'){const c=currentById.get(y.bout_id);y.bout_type=c&&c.bout_type!=='main_event'?c.bout_type:'main_card';}
+  next.unshift(kept);
+  continue;
+ }
+ const before=current.filter(x=>x.fight_order<b.fight_order).reverse().map(x=>x.bout_id).find(x=>next.some(y=>y.bout_id===x));
  next.splice(before?next.findIndex(y=>y.bout_id===before)+1:Math.min(1,next.length),0,kept);
 }
 next.forEach((b,i)=>{b.fight_order=i+1;});

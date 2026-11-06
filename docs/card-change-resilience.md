@@ -16,6 +16,7 @@ Fight cards change through fight week: opponents are replaced, bouts are added o
 | 4 Nov | Bashi's opponent changed from Brennan to Calderon | Not a failure; detected and applied after the fix | Applied 5 Nov |
 | 5 Nov | ESPN dropped Bashi vs Calderon while UFC still listed it | Every card check failed on a bout-count mismatch (14 vs 13), freezing all other card changes | Fixed 5 Nov |
 | 5 Nov | UFC moved José Souza's athlete URL from `jose-henrique` to `jose-souza` | Detect adopted the new slug bout ID, and `svc.sync_bout_ids` refused it, failing fight-week run 4650 | Fixed 5 Nov, 9 minutes later |
+| 6 Nov | One fetch of the UFC page left the main event, Cortes Acosta vs Walker, out of its fight list while the page title and ESPN still had it | Not a failure, a wrong update: the reorders that followed from the pending removal applied at once, so Suarez vs Jandiroba became main event and Telegram reported the main event moved to fight 2 | Fixed 6 Nov; the 03:05 UTC check restores the card |
 
 All of these come from four weaknesses:
 
@@ -28,7 +29,8 @@ All of these come from four weaknesses:
 
 - Removals and opponent changes wait for two checks in a row and for ESPN to drop the old bout, or for 12 hours over three checks if ESPN never does; more than three removals at once needs review.
 - Additions, reorders, segment moves and detail changes apply on the first check.
-- A waiting old main event stays on as `main_card`, so a replacement main event applies at once.
+- A bout waiting to leave keeps its fight number and segment, so nothing that only follows from its removal applies early. A waiting main event stays at fight 1 as main event; a replacement main event sits below it as `main_card` until the removal is confirmed.
+- **Incomplete UFC pages are refused.** If the page title names a bout that its fight list leaves out while ESPN still lists it, the check counts as unavailable and keeps any pending change's count, instead of reading the gap as a removal. Populate refuses the same page.
 - Planning uses the sheet's bout IDs, matching changed IDs by fighter names, and `svc.sync_bout_ids` upgrades the IDs afterwards.
 - Repeated failed card checks raise a `card_check_unavailable` health alert.
 - Renamed events are detected daily and reported on Telegram.

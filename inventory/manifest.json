@@ -140,10 +140,10 @@
       "file": "workflows/svc-apply-card-changes.json",
       "documentation": "docs/workflows/svc-apply-card-changes.md",
       "active": true,
-      "activeVersionId": "7c56e054-569e-4c1f-bcb2-95a541914d30",
-      "versionId": "7c56e054-569e-4c1f-bcb2-95a541914d30",
+      "activeVersionId": "6fc7cd1c-be66-4b95-9065-2d2e7aafe7aa",
+      "versionId": "6fc7cd1c-be66-4b95-9065-2d2e7aafe7aa",
       "nodeCount": 26,
-      "snapshotSha256": "458f6aeaef3b8c49ca97c405366eff1eb9391e8b1c3768af68c6c1f52e3fe655"
+      "snapshotSha256": "b7e81b2e839c066f05b0ad9ce93e94bc838d47929ae1c46cfff981de91d0e387"
     },
     {
       "id": "gfR9qKH6xCTJXzcg",
@@ -184,10 +184,10 @@
       "file": "workflows/svc-detect-card-changes.json",
       "documentation": "docs/workflows/svc-detect-card-changes.md",
       "active": true,
-      "activeVersionId": "19d94de3-6914-4222-b4f0-d98ba7a9d537",
-      "versionId": "19d94de3-6914-4222-b4f0-d98ba7a9d537",
+      "activeVersionId": "bc9ae1f2-ae90-4c38-9155-30a16b4ec1ac",
+      "versionId": "bc9ae1f2-ae90-4c38-9155-30a16b4ec1ac",
       "nodeCount": 12,
-      "snapshotSha256": "6799f3436f4384091851de6ff77935e075e748f4c3bf0cab543493ae633d8699"
+      "snapshotSha256": "7cb6c8596c1886fcf256c4e783a4f9b8bf9462d13a91afcff6803b68aabdaa8c"
     },
     {
       "id": "UB711gFJFn9OuZwb",
@@ -250,10 +250,10 @@
       "file": "workflows/svc-populate-fight-card.json",
       "documentation": "docs/workflows/svc-populate-fight-card.md",
       "active": true,
-      "activeVersionId": "653a9591-e707-4672-8156-9888c1a474eb",
-      "versionId": "653a9591-e707-4672-8156-9888c1a474eb",
+      "activeVersionId": "9a026c33-f5d5-48ca-af2a-a8d5f7d66f46",
+      "versionId": "9a026c33-f5d5-48ca-af2a-a8d5f7d66f46",
       "nodeCount": 40,
-      "snapshotSha256": "18064aaa541b8309941bb42bf1bf0cb40f7b5f827a6d8e148921d21574d427ec"
+      "snapshotSha256": "5878dba634aaa0eebf30e5ddff394e3b604698f4f021c8a7b6b7d6d99b304ca4"
     },
     {
       "id": "pHQCLT93NxqScBgQ",

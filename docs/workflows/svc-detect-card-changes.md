@@ -8,8 +8,8 @@ Detect differences between the saved Fight Card and the current official card.
 
 - Workflow ID: `UDRrGRyeFPL9Lk3S`
 - Published: `True`
-- Published version: `19d94de3-6914-4222-b4f0-d98ba7a9d537`
-- Draft version: `19d94de3-6914-4222-b4f0-d98ba7a9d537`
+- Published version: `bc9ae1f2-ae90-4c38-9155-30a16b4ec1ac`
+- Draft version: `bc9ae1f2-ae90-4c38-9155-30a16b4ec1ac`
 - Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 12
 - Timezone: `Australia/Sydney`

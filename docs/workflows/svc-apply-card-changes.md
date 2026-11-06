@@ -8,8 +8,8 @@ Apply eligible recorded Fight Card changes and queue affected videos for re-anal
 
 - Workflow ID: `jWFGMw2faC2zLseh`
 - Published: `True`
-- Published version: `7c56e054-569e-4c1f-bcb2-95a541914d30`
-- Draft version: `7c56e054-569e-4c1f-bcb2-95a541914d30`
+- Published version: `6fc7cd1c-be66-4b95-9065-2d2e7aafe7aa`
+- Draft version: `6fc7cd1c-be66-4b95-9065-2d2e7aafe7aa`
 - Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 26
 - Timezone: `Australia/Sydney`

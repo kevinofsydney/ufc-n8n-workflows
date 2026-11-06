@@ -69,6 +69,14 @@ const options=(response.body?.events||[]).filter(e=>Math.abs(Date.parse(e.date)-
 if(options.length!==1)throw new Error('Could not uniquely verify this UFC event and its main event on ESPN.');
 const espn=options[0];
 const competitions=(espn.competitions||[]).filter(c=>!/cancel|postpon/i.test(String(c.status?.type?.name||'')));
+// UFC's page title names the main event. A fight list that leaves that bout out while ESPN still lists it is an
+// incomplete copy of the page (seen 6 Nov, when one fetch dropped Cortes Acosta vs Walker): stop, don't read it as a card change.
+const headline=/:\s*(.+?)\s+vs\.?\s+(.+?)\s*(?:\||$)/i.exec(text(official.title));
+if(headline){
+ const side=(name,part)=>norm(name).endsWith(norm(part));
+ const named=(a,b)=>(side(a,headline[1])&&side(b,headline[2]))||(side(a,headline[2])&&side(b,headline[1]));
+ if(!card.some(b=>named(b.fighter_a,b.fighter_b))&&competitions.some(c=>c.competitors?.length===2&&named(...names(c))))throw new Error('UFC page title names '+headline[1]+' vs '+headline[2]+' and ESPN lists that bout, but the page\'s fight list leaves it out. The page looks incomplete.');
+}
 // ESPN can lag UFC either way. A UFC bout ESPN does not list at all (never the main event) is held out rather than
 // stopping the whole card: it has no verified rounds or weight class yet. More than MAX_HELD such bouts still stops it.
 const MAX_HELD=3;
