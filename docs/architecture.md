@@ -41,7 +41,7 @@ sequenceDiagram
 
 ## Fight-card integrity comes before model extraction
 
-The Fight Card is based on official UFC order/names, with ESPN verification of competitors and rounds. UFC requests carry the US-region cookie to prevent an unexpected regional site edition. Existing extraction is protected before initial card writes.
+The Fight Card is based on official UFC order/names, with ESPN verification of competitors and rounds. UFC requests carry the US-region cookie to prevent an unexpected regional site edition. The card services also fetch a copy without the cookie and use it only when the US copy shows a bout it cannot read (each bout is one list item, so list items are counted against readable fights). Existing extraction is protected before initial card writes.
 
 Four services keep later changes aligned:
 

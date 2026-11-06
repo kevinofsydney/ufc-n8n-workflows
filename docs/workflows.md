@@ -20,13 +20,13 @@ All 29 UFC workflows visible through MCP were read directly from the live instan
 | [UFC \| svc.auto_resolve_incidents](workflows/svc-auto-resolve-incidents.md) | 7 | Close quiet error incidents, and card incidents only once a later card check succeeded. |
 | [UFC \| svc.browse_videos](workflows/svc-browse-videos.md) | 26 | Browse captured event videos and reopen saved analysis summaries in Telegram. |
 | [UFC \| svc.check_event_spreadsheet](workflows/svc-check-event-spreadsheet.md) | 10 | Check the event spreadsheet contract before analysis without changing sheet data. |
-| [UFC \| svc.detect_card_changes](workflows/svc-detect-card-changes.md) | 12 | Detect differences between the saved Fight Card and the current official card. |
+| [UFC \| svc.detect_card_changes](workflows/svc-detect-card-changes.md) | 14 | Detect differences between the saved Fight Card and the current official card. |
 | [UFC \| svc.diagnose_incident](workflows/svc-diagnose-incident.md) | 12 | Investigate eligible incidents using a bounded AI diagnosis workflow and save the findings. |
 | [UFC \| svc.ensure_event_spreadsheet](workflows/svc-ensure-event-spreadsheet.md) | 13 | Return a valid event spreadsheet, reusing an existing copy before creating a new one. |
 | [UFC \| svc.health_sweep](workflows/svc-health-sweep.md) | 14 | Detect silent pipeline problems and maintain health incidents every 30 minutes. |
 | [UFC \| svc.list_incidents_to_diagnose](workflows/svc-list-incidents-to-diagnose.md) | 7 | Choose and claim incidents for diagnosis so concurrent diagnosers can coordinate. |
 | [UFC \| svc.list_issues](workflows/svc-list-issues.md) | 5 | Send a readable list of open and recently resolved incidents. |
-| [UFC \| svc.populate_fight_card](workflows/svc-populate-fight-card.md) | 40 | Build a verified Fight Card for an empty event sheet while protecting existing extraction. |
+| [UFC \| svc.populate_fight_card](workflows/svc-populate-fight-card.md) | 42 | Build a verified Fight Card for an empty event sheet while protecting existing extraction. |
 | [UFC \| svc.read_execution](workflows/svc-read-execution.md) | 3 | Return compact read-only execution evidence for diagnosers. |
 | [UFC \| svc.record_diagnosis](workflows/svc-record-diagnosis.md) | 9 | Persist a diagnosis and send the owner a consistently formatted diagnosis message. |
 | [UFC \| svc.record_issue](workflows/svc-record-issue.md) | 11 | Record an owner-reported issue in the same incident system used for pipeline failures. |

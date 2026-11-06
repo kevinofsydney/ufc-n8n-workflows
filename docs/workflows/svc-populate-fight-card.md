@@ -8,17 +8,17 @@ Build a verified Fight Card for an empty event sheet while protecting existing e
 
 - Workflow ID: `SBBK0hOGx2uPYpm4`
 - Published: `True`
-- Published version: `9a026c33-f5d5-48ca-af2a-a8d5f7d66f46`
-- Draft version: `9a026c33-f5d5-48ca-af2a-a8d5f7d66f46`
+- Published version: `2423a59b-7a61-40ff-83bb-e73506d50593`
+- Draft version: `2423a59b-7a61-40ff-83bb-e73506d50593`
 - Snapshot: 2026-11-05. Published graph matched draft when read.
-- Nodes: 40
+- Nodes: 42
 - Timezone: `Australia/Sydney`
 
 ## How it works
 
 1. Validate the event and classify the existing Fight Card and saved card state.
 2. For an empty destination, inspect existing extraction before any population write.
-3. Fetch the official UFC event page with the US-region cookie and ESPN data around the event date. Cross-check card identity, competitors, order and rounds.
+3. Fetch the official UFC event page with the US-region cookie, a fallback copy without it, and ESPN data around the event date. The fallback is used only when the US copy shows a bout without fighter links. Cross-check card identity, competitors, order and rounds.
 4. Fetch official athlete profiles for verified nickname/alias context and construct the Fight Card matrix.
 5. Recheck that the destination is still safe, write the card, read it back and verify before recording READY state and event metadata.
 6. Preserve existing cards; a separate verified path can backfill missing weight classes and read them back. Pending/unpublished official cards return the configured pending state.
@@ -106,6 +106,8 @@ Terminal nodes in the saved graph: `Return UFC Card Status`. Terminal nodes incl
 | 38 | Build Weight Class Backfill | code | [JavaScript](../../source/svc-populate-fight-card/38-build-weight-class-backfill.js) |  |
 | 39 | Verify Weight Class Read Back | code | [JavaScript](../../source/svc-populate-fight-card/39-verify-weight-class-read-back.js) |  |
 | 40 | Official Card Pending? | if |  |  |
+| 41 | Fetch UFC Card Without Region | httpRequest | ={{ $('Prepare UFC Card Request').first().json.source_url }} | onError=continueRegularOutput, alwaysOutputData=True |
+| 42 | Extract UFC Card Without Region | html | extractHtmlContent | onError=continueRegularOutput, alwaysOutputData=True |
 
 ## Exact graph edges
 
@@ -127,7 +129,6 @@ Main output indexes are zero-based. If outputs 0/1 mean true/false for an If nod
 | Check Existing Fight Analysis | main | 0 | Protect Existing Extraction | 0 |
 | Protect Existing Extraction | main | 0 | Fetch Official UFC Card | 0 |
 | Fetch Official UFC Card | main | 0 | Extract Official UFC Card | 0 |
-| Extract Official UFC Card | main | 0 | Fetch ESPN Round Data | 0 |
 | Fetch ESPN Round Data | main | 0 | Build Verified UFC Card | 0 |
 | Prepare Athlete Lookups | main | 0 | Fetch Official Athlete Profiles | 0 |
 | Fetch Official Athlete Profiles | main | 0 | Prepare Profile HTML | 0 |
@@ -157,6 +158,9 @@ Main output indexes are zero-based. If outputs 0/1 mean true/false for an If nod
 | Build Verified UFC Card | main | 0 | Official Card Pending? | 0 |
 | Official Card Pending? | main | 0 | Return UFC Card Status | 0 |
 | Official Card Pending? | main | 1 | Prepare Athlete Lookups | 0 |
+| Extract Official UFC Card | main | 0 | Fetch UFC Card Without Region | 0 |
+| Fetch UFC Card Without Region | main | 0 | Extract UFC Card Without Region | 0 |
+| Extract UFC Card Without Region | main | 0 | Fetch ESPN Round Data | 0 |
 
 ## Code and configuration
 

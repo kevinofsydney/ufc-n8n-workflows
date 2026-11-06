@@ -24,10 +24,25 @@ function checkCard(rows,allowEmpty=false){
 function fingerprint(rows){const value=JSON.stringify(rows.map(r=>r.map(v=>text(v))));let hash=2166136261;for(let i=0;i<value.length;i++)hash=Math.imul(hash^value.charCodeAt(i),16777619)>>>0;return 'fnv1a-'+hash.toString(16).padStart(8,'0');}
 
 const event=$('Prepare UFC Card Request').first().json;
-const official=$('Extract Official UFC Card').first().json;
-const http=$('Fetch Official UFC Card').first().json;
-if(http.statusCode!==200)throw new Error('Official UFC card request returned HTTP '+http.statusCode+'. No spreadsheet data was written.');
-if(String(official.canonical||'').replace(/\/$/,'')!==event.source_url)throw new Error('Official UFC page does not match the stored event URL.');
+// UFC's US edition (the region cookie) can render a bout as a bare fight node with no athlete links or fight id
+// (6 Nov: the main event). Each bout is one list item, so compare list items with readable fights; when the US
+// copy has unreadable bouts, use the copy fetched without the region cookie if that one reads every bout.
+const pageCopy=(extract,fetch)=>{try{return {page:$(extract).first().json,status:$(fetch).first().json.statusCode};}catch(e){return null;}};
+const unreadable=o=>{
+ const split=['main','prelim','early'].some(s=>(o[s+'_items']||o[s+'_ids']||[]).length);
+ return (split?['main','prelim','early']:['unsplit']).reduce((n,s)=>n+(Array.isArray(o[s+'_items'])&&Array.isArray(o[s+'_ids'])?Math.max(0,o[s+'_items'].length-o[s+'_ids'].length):0),0);
+};
+const regional=pageCopy('Extract Official UFC Card','Fetch Official UFC Card');
+const plain=pageCopy('Extract UFC Card Without Region','Fetch UFC Card Without Region');
+const sameEvent=c=>String(c.page.canonical||'').replace(/\/$/,'')===event.source_url;
+let chosen=regional,pageCopyUsed='us-region';
+if(regional.status===200&&sameEvent(regional)&&unreadable(regional.page)){
+ if(!(plain&&plain.status===200&&sameEvent(plain)&&!unreadable(plain.page)))throw new Error('Official UFC page shows '+unreadable(regional.page)+' bout(s) without fighter links, and no complete copy of the page was available. No spreadsheet data was written.');
+ chosen=plain;pageCopyUsed='no-region';
+}
+const official=chosen.page;
+if(chosen.status!==200)throw new Error('Official UFC card request returned HTTP '+chosen.status+'. No spreadsheet data was written.');
+if(!sameEvent(chosen))throw new Error('Official UFC page does not match the stored event URL.');
 // UFC lists upcoming cards as one flat list until it splits them into main card and prelims.
 // Build those from the flat list (UFC is the source of truth for bouts, names and order) and take
 // rounds, weight class and segment from ESPN. Report pending only if ESPN cannot place the segments.
@@ -122,7 +137,7 @@ if(unsplit){
 card.forEach((b,i)=>{b.fight_order=i+1;delete b.espn_start;});
 const rows=card.map(b=>HEADERS.map(h=>b[h]));
 checkCard([HEADERS,...rows]);
-return [{json:{...event,card,espn_event_id:String(espn.id),card_source:unsplit?'ufc-unsplit+espn-segments':'ufc-sections',espn_only_bouts:espnOnly,held_bouts:heldBouts,source_fingerprint:fingerprint(rows),parser_version:'ufc-fight-card-v2',checked_at:new Date().toISOString()}}];
+return [{json:{...event,card,espn_event_id:String(espn.id),card_source:unsplit?'ufc-unsplit+espn-segments':'ufc-sections',ufc_page_copy:pageCopyUsed,espn_only_bouts:espnOnly,held_bouts:heldBouts,source_fingerprint:fingerprint(rows),parser_version:'ufc-fight-card-v2',checked_at:new Date().toISOString()}}];
 
 }
 
@@ -227,4 +242,4 @@ if(adoptions.length){
 const waitingText=heldWaiting.join('; ');
 const heldSince=!waitingText?null:(t(state.held_bouts_waiting)===waitingText&&state.held_waiting_since?state.held_waiting_since:checkedAt);
 const status=changes.length?'CHANGED':adoptions.length?'ADOPT_IDS':'IN_SYNC';
-return [{json:{...request,card_check:{status,checked_at:checkedAt,changes,change_count:changes.length,fingerprint,seen_count:seen,first_seen_at:firstSeen,pending_change_json:changes.length?JSON.stringify(changes):'',official_card_json:changes.length?JSON.stringify(official):'',adoptions:adoptions.length,adopted_source_card_json:adoptedCard?JSON.stringify(adoptedCard):null,espn_only_bouts:built.espn_only_bouts||[],held_bouts_kept:heldKept,held_bouts_waiting:heldWaiting,held_bouts_waiting_text:waitingText,held_waiting_since:heldSince,official_source:built.card_source,unavailable_since:null,unavailable_count:0,unavailable_reason:''}}}];
+return [{json:{...request,card_check:{status,checked_at:checkedAt,changes,change_count:changes.length,fingerprint,seen_count:seen,first_seen_at:firstSeen,pending_change_json:changes.length?JSON.stringify(changes):'',official_card_json:changes.length?JSON.stringify(official):'',adoptions:adoptions.length,adopted_source_card_json:adoptedCard?JSON.stringify(adoptedCard):null,espn_only_bouts:built.espn_only_bouts||[],held_bouts_kept:heldKept,held_bouts_waiting:heldWaiting,held_bouts_waiting_text:waitingText,held_waiting_since:heldSince,official_source:built.card_source,ufc_page_copy:built.ufc_page_copy,unavailable_since:null,unavailable_count:0,unavailable_reason:''}}}];
