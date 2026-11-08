@@ -151,10 +151,10 @@
       "file": "workflows/svc-auto-resolve-incidents.json",
       "documentation": "docs/workflows/svc-auto-resolve-incidents.md",
       "active": true,
-      "activeVersionId": "7b1f4b23-62e1-420d-a61b-127e2748a8fc",
-      "versionId": "7b1f4b23-62e1-420d-a61b-127e2748a8fc",
+      "activeVersionId": "4c68352b-b86f-46d6-965c-a8559cdec7ef",
+      "versionId": "4c68352b-b86f-46d6-965c-a8559cdec7ef",
       "nodeCount": 7,
-      "snapshotSha256": "15edf7ef5b3945847852be1b824f95076f4715a1189a998f2d73d35c45229ba9"
+      "snapshotSha256": "00048c12200dfcba431c3808ed8964574b2d47679ff9f1a44e190bd9a37d9555"
     },
     {
       "id": "IodUUBrjWAVd0cHi",
@@ -316,10 +316,10 @@
       "file": "workflows/svc-sync-bout-ids.json",
       "documentation": "docs/workflows/svc-sync-bout-ids.md",
       "active": true,
-      "activeVersionId": "f8d22363-c257-43e0-a9c2-203637095080",
-      "versionId": "f8d22363-c257-43e0-a9c2-203637095080",
+      "activeVersionId": "6e86a7c8-b909-4891-b2ec-c1dd73d12c78",
+      "versionId": "6e86a7c8-b909-4891-b2ec-c1dd73d12c78",
       "nodeCount": 18,
-      "snapshotSha256": "aad3865d82d99b3f99157346aa821cdc20355d2b42b4a474b6198e512e51ecd9"
+      "snapshotSha256": "a2dfbbee708fc7a5cf75d27c8ecdc969936f4967a22e0a1acde16c7333426806"
     }
   ]
 }
