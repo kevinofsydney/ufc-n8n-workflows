@@ -99,9 +99,30 @@ test('UFC changes an athlete URL: sync adopts the new slug id and rekeys the row
  assert.ok(sheet.Picks.some(r=>r[0]==='v1|pick|ufc:jonny-parsons--jose-souza'));
 });
 
-test('sync still refuses a numeric id replaced by a slug, or a different bout at the same order',()=>{
- const card=[...CARD.slice(0,3),{...CARD[3],bout_id:'ufc:4600'}];
- assert.throws(()=>chain({card,saved:CARD,official:CARD,changes:[]}),/has bout_id ufc:4600 but the saved card says/);
+test('sync still refuses an unrecognised id, or a different bout at the same order',()=>{
+ const card=[...CARD.slice(0,3),{...CARD[3],bout_id:'espn:600061268'}];
+ assert.throws(()=>chain({card,saved:CARD,official:CARD,changes:[]}),/has bout_id espn:600061268 but the saved card says/);
  const other=[...CARD.slice(0,3),{...CARD[3],fighter_b:'Somebody Else'}];
  assert.throws(()=>chain({card:CARD,saved:other,official:other,changes:[]}),/does not match the saved card/);
 });
+
+// 7 Nov: UFC re-issued 13 numeric ids for an unchanged card (ufc:4584 became ufc:13237). Detection saved the new ids,
+// and sync refused them, which stopped the fight-week check and analysis.
+test('UFC re-issues numeric ids for the same fights: sync follows the saved card and re-keys the rows',()=>{
+ const card=CARD.map((b,i)=>({...b,bout_id:'ufc:'+(4580+i)}));
+ const saved=card.map((b,i)=>({...b,bout_id:i===3?b.bout_id:'ufc:'+(13230+i)}));
+ const {synced,sheet}=chain({card,saved,official:saved,changes:[]});
+ assert.equal(synced.summary.ufc_ids_adopted,3);
+ assert.deepEqual(sheet['Fight Card'].slice(1).map(r=>r[8]),saved.map(b=>b.bout_id));
+ for(const [name] of TABS)assert.deepEqual(sheet[name].slice(1).map(r=>r[7]),saved.map(b=>b.bout_id),name+' bout_id follows the saved card');
+ assert.ok(sheet.Picks.some(r=>r[0]==='v1|pick|ufc:13230'));
+ assert.ok(sheet.Props.some(r=>r[0]==='v1|prop|ufc:13231|method'));
+});
+
+test('a numeric id the saved card replaces with a slug is followed too',()=>{
+ const card=CARD.map((b,i)=>i===2?{...b,bout_id:'ufc:4576'}:b);
+ const {synced,sheet}=chain({card,saved:CARD,official:CARD,changes:[]});
+ assert.equal(synced.summary.ufc_ids_adopted,1);
+ assert.equal(sheet['Fight Card'][3][8],CARD[2].bout_id);
+});
+

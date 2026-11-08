@@ -82,9 +82,12 @@ All of these come from four weaknesses:
 
 ### 5. Tell success from luck (partly done)
 
-- **Close on evidence, not silence.** Auto-closing an incident after 12 quiet hours hid that the 4 Nov failure was only cleared by a later run. Done: a card-service incident now closes only after a later card check or build succeeded, or after 72 quiet hours with a warning to check the card.
+- **Close on evidence, not silence.** Auto-closing an incident after 12 quiet hours hid that the 4 Nov failure was only cleared by a later run. Done: a card-service incident now closes only after a later card check or build succeeded, or after 72 quiet hours with a warning to check the card. Since 9 Nov every card checked since the failure must have succeeded after it, so another event's good check no longer counts (on 8 Nov UFC 334's card closed a sync failure on the previous event), and a card step failing inside another workflow (Sync Bout IDs in analysis) counts as a card incident.
 - **Make cards easy to compare.** Add a `/card` Telegram command that shows the saved card next to the current official card, so a mismatch is visible without opening n8n.
 
 ## Known gaps
+
+- The 7 Nov card (Cortes Acosta vs Walker) keeps UFC's earlier bout IDs in its sheet, while its saved card holds the 13 re-issued ones. It was graded on 8 Nov with the earlier IDs, and grades are stored by pick_id, so re-keying the sheet now would separate picks from their grades. Leave it as is.
+- Bout IDs that change after an event is graded are not carried into `ufc_pick_grades` or `ufc_prop_grades`.
 
 - Changes made after the event starts are not applied; the card is locked.

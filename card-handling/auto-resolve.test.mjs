@@ -34,3 +34,28 @@ test('recent, owner and test incidents are never closed',()=>{
  const states=[{status:'READY',change_status:'IN_SYNC',change_checked_at:ago(0.1)}];
  assert.equal(run([inc('c','UFC | svc.detect_card_changes',2),{...inc('o','',100),source:'owner'},inc('test|x','UFC | 7. Grade Picks',100)],states).length,0);
 });
+
+// 8 Nov: a sync failure on one event closed because the next event's card built fine, while the failed
+// event's card never recovered.
+test('another event checking fine does not close a card incident while the failed event stays unhealthy',()=>{
+ const i=inc('c','UFC | svc.sync_bout_ids',20);
+ const failed={status:'READY',change_status:'ADOPT_IDS',change_checked_at:ago(20.1),checked_at:ago(20.05)};
+ const next={status:'READY',change_status:null,checked_at:ago(14)};
+ assert.equal(run([i],[failed,next]).length,0,'the failed event has no successful check since');
+ const r=run([i],[{...failed,change_status:'IN_SYNC',change_checked_at:ago(15)},next]);
+ assert.equal(r.length,1,'closes once the failed event checks fine too');
+ assert.match(r[0].resolution,/later card check succeeded/);
+});
+
+test('an event last checked well before the failure is not counted either way',()=>{
+ const i=inc('c','UFC | svc.sync_bout_ids',20);
+ const old={status:'UNAVAILABLE',change_status:'CHANGED',change_checked_at:ago(200),checked_at:ago(200)};
+ const r=run([i],[old,{status:'READY',change_status:'IN_SYNC',change_checked_at:ago(15),checked_at:ago(15)}]);
+ assert.equal(r.length,1);
+});
+
+test('a card step failing inside analysis is treated as a card incident',()=>{
+ const i={...inc('c','UFC | 3. Analyse Picker Video Transcripts',13),node_name:'Sync Bout IDs'};
+ assert.equal(run([i]).length,0,'no quiet-time close without a later card check');
+ assert.equal(run([{...i,node_name:'Extract Picks'}]).length,1,'other analysis failures still close on quiet time');
+});

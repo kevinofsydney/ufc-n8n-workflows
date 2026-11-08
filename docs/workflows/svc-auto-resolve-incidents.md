@@ -8,8 +8,8 @@ Close quiet error incidents, and card incidents only once a later card check suc
 
 - Workflow ID: `gfR9qKH6xCTJXzcg`
 - Published: `True`
-- Published version: `7b1f4b23-62e1-420d-a61b-127e2748a8fc`
-- Draft version: `7b1f4b23-62e1-420d-a61b-127e2748a8fc`
+- Published version: `4c68352b-b86f-46d6-965c-a8559cdec7ef`
+- Draft version: `4c68352b-b86f-46d6-965c-a8559cdec7ef`
 - Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 7
 - Timezone: `inherits instance timezone; not present in MCP snapshot`

@@ -40,11 +40,13 @@ const bouts=fcData.slice(0,fcCount).map((r,i)=>{
  // Cards entered by hand have no UFC id; derive a stable one from the fighters.
  const boutId=text(s.bout_id)||('card:'+[norm(r[1]),norm(r[2])].sort().join('-'));
  const current=text(r[8]);
- // The saved card's id is adopted when it changes for the same fighters at the same fight order (checked above):
- // a name-based id gaining a UFC id, a slug id gaining a numeric id, or a slug id after UFC changed an athlete URL
- // (5 Nov: jose-henrique became jose-souza). A numeric id is never replaced by a slug, and any other change is refused.
- const slugId=/^ufc:[a-z0-9-]+--[a-z0-9-]+$/;
- const upgrade=current!==boutId&&((current.startsWith('card:')&&boutId.startsWith('ufc:'))||(slugId.test(current)&&(/^ufc:[0-9]+$/.test(boutId)||slugId.test(boutId))));
+ // The saved card is the source of truth for ids: svc.detect_card_changes and svc.apply_card_changes only save an id
+ // change after checking it against ufc.com and ESPN. So the sheet follows the saved card whenever the same fighters
+ // are at the same fight order (checked above), whatever form the id takes. Listing the allowed forms broke on each new
+ // one: slug to numeric (4 Nov), slug to slug after an athlete URL change (5 Nov), numeric to numeric when UFC
+ // re-issued 13 ids (7 Nov: ufc:4584 became ufc:13237). Only an unrecognised id is still refused.
+ const knownId=/^(ufc|card):[a-z0-9-]+$/;
+ const upgrade=current!==boutId&&knownId.test(current)&&knownId.test(boutId);
  if(current&&current!==boutId&&!upgrade)throw new Error('Fight Card fight '+order+' has bout_id '+current+' but the saved card says '+boutId+'.');
  return {order,fighter_a:text(r[1]),fighter_b:text(r[2]),bout_id:boutId,current,old_id:upgrade?current:null};
 });

@@ -8,8 +8,8 @@ Give bouts stable identities and align spreadsheet references to those identitie
 
 - Workflow ID: `ya1uS9XFsrlhq6e3`
 - Published: `True`
-- Published version: `f8d22363-c257-43e0-a9c2-203637095080`
-- Draft version: `f8d22363-c257-43e0-a9c2-203637095080`
+- Published version: `6e86a7c8-b909-4891-b2ec-c1dd73d12c78`
+- Draft version: `6e86a7c8-b909-4891-b2ec-c1dd73d12c78`
 - Snapshot: 2026-11-05. Published graph matched draft when read.
 - Nodes: 18
 - Timezone: `Australia/Sydney`
