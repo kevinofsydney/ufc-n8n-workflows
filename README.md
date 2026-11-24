@@ -13,6 +13,7 @@ The system discovers UFC events and YouTube prediction videos, captures English 
 - [Data model](docs/data-model.md) and [complete table schemas](docs/data-tables.md).
 - [Monitoring and incident handling](docs/monitoring.md): retries, diagnosis, alerts and resolution.
 - [Operations and recovery](docs/operations.md): setup, testing, troubleshooting, restore and updates.
+- [Migration to the homelab](docs/migration-to-homelab.md): why the cloud instance is capped, the target VM, workflow changes and the cutover plan.
 - [Interfaces](docs/interfaces.md): caller payloads and response semantics.
 - [Credentials](docs/credentials.md), [dependency graph](docs/dependencies.md) and [verification record](docs/verification.md).
 - [Privacy review](docs/privacy-review.md): redactions, retained configuration and safe restoration.
