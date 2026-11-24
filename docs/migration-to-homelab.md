@@ -1,6 +1,6 @@
 # Migration from n8n Cloud to the homelab
 
-Handover for any agent continuing this work. Last updated 24 November 2026.
+Handover for any agent continuing this work. Last updated 24 November 2026. Since the first version, the VM has joined the tailnet with `tailscale serve` running, and the owner's Telegram ID is in `.env`.
 
 ## Why and when
 
@@ -11,7 +11,7 @@ Handover for any agent continuing this work. Last updated 24 November 2026.
   - `1. Set Active UFC Event` did not run on Sunday 23 November, so UFC Riyadh (5 December) has no spreadsheet and no captured videos.
   - After the reset, the next scheduled runs should catch up. Check this on 1 December.
 - The cloud instance runs **n8n 2.49.5 on the beta track**.
-- **Decision (owner, 24 November):** move to a dedicated homelab VM rather than upgrade the plan. Target cutover is the week after UFC Riyadh: after the December reset, and before December's quota runs out.
+- **Decision (owner, 24 November):** move to a dedicated homelab VM rather than upgrade the plan. Run both instances **in parallel** and decommission the cloud one as late as possible: when its quota runs out, or before the plan ends on 20 January, whichever comes first. See [Parallel run](#parallel-run).
 
 ## Target
 
@@ -32,13 +32,13 @@ Done:
 - `.env` (root, 0600) was created with a generated webhook path. The relay secret file was generated on the VM. Neither value has left the VM.
 
 Waiting on the owner:
-- Tailscale login, so the tailnet name can go into `.env`.
-- The Telegram user ID and a test bot token.
+- A second bot's token (the owner places it on the VM).
+- The second Supadata account and, ideally, a separate OpenRouter key.
 - An NFS export for the backup share. This is why `qnap_backup_mount` was skipped in the first run.
 
 ## Workflow changes needed for self-hosting
 
-Make these in this repository and on the homelab instance only. The cloud workflows stay as they are until cutover.
+Make these in this repository and on the homelab instance only. The cloud workflows stay as they are; the cloud keeps running in parallel until it is decommissioned.
 
 1. **`5. Telegram Command Router`:** replace the Telegram Trigger with a Webhook node:
    - POST, path set to `RELAY_WEBHOOK_PATH` from the VM's `.env`
@@ -66,12 +66,39 @@ Make these in this repository and on the homelab instance only. The cloud workfl
 | Import | Agent | Import unpublished. Rewrite workflow IDs, data-table IDs, credential IDs, `errorWorkflow`, Execute Workflow targets and IDs inside Code nodes (see [dependencies](dependencies.md)). Apply the changes listed above. Validate every workflow. |
 | Agent | Agent | Recreate the first-class Agent "UFC Incident Diagnostician" if the homelab version supports Agents. Otherwise keep diagnosis in the workflow AI Agent node. |
 | Test | Agent and owner | Use the test bot. Run the order in [operations](operations.md#restore-or-clone): spreadsheet and card services, capture and analysis, views and grading, then diagnostics. |
-| Cutover | Agent, owner confirms timing | In a week with no event: unpublish cloud schedules and router, re-copy changed rows, switch the relay to the production bot token, publish in dependency order, and watch the first full cycle. |
-| Rollback | Agent | Until the cloud account is cancelled: unpublish the homelab workflows, stop the relay, and republish the cloud router and schedules. The cloud Telegram Trigger re-registers its webhook when published. |
+| Go live in parallel | Agent | Publish on the homelab in dependency order with the second bot, separate Drive folder and own API accounts (see [Parallel run](#parallel-run)). Watch the first full cycle. |
+| Rollback | Agent | While both run, rollback just means unpublishing the homelab workflows. After decommissioning, and until the plan ends: stop the relay and republish the cloud router and schedules. The cloud Telegram Trigger re-registers its webhook when published. |
 
-## Before cutover: stretch the cloud quota
+## Parallel run
 
-From 1 December, running `svc.health_sweep` and `svc.auto_resolve_incidents` hourly instead of every 30 minutes would save about 1,450 executions a month. That keeps the cloud running until cutover. Revert after cutover only if needed; the homelab has no execution cap.
+The owner chose a parallel run over a cutover. The two instances must not share anything that both write to:
+
+| Resource | Cloud (current) | Homelab (parallel) |
+| --- | --- | --- |
+| Telegram | Production bot, webhook | Second bot, through the relay (one bot cannot use a webhook and polling at once). The owner mutes whichever chat is noisier. |
+| Event spreadsheets | Existing Drive folder and template | **Separate Drive folder** with its own copy of the template. Point `svc.ensure_event_spreadsheet` at it. |
+| Data tables | Cloud copies | Homelab copies, seeded from the cloud. Expect them to drift: grades, incidents and video state are kept per instance. |
+| Supadata | Current account | **Second account** (owner provides). |
+| OpenRouter | Current key | **A separate key is recommended.** The current key has a monthly limit with about $8.70 left (20 November), and a shared key would hide which instance spent it. |
+| YouTube Data API | Same key is fine | Same key. |
+
+### Cost of running twice
+
+- **OpenRouter:** extraction costs about **1.4¢ per video**, measured on two Doha videos on 19 November (`openai/gpt-6-luna-pro`, about 60k input and 18k output tokens). At about 17 videos a card that is roughly **$0.25 a card**. The consensus explanation costs about $0.004 a card. A parallel run adds about $1 a month.
+- **YouTube Data API:** every call is a 1-unit method (`channels.list`, `playlistItems.list`, `videos.list`); nothing uses the 100-unit `search.list`. One capture run costs about 15–30 units, giving about 50–100 units a day against the default 10,000-unit daily quota, so roughly 1%. Running twice is still about 1–2%. This is estimated from the workflow calls; Google Cloud's quota page has the exact figure.
+- **Supadata:** one transcript per video per instance, covered by the second account.
+
+### Decommissioning the cloud instance
+
+Once the homelab has handled at least one full card and the owner is satisfied:
+1. Unpublish the cloud schedules and router.
+2. Point the production bot at the homelab relay by putting its token in the relay secret and restarting the relay. The relay clears the cloud webhook on start.
+3. Point the homelab back at the production Drive folder if you want one sheet history, or keep the new folder.
+4. Keep the cloud account untouched until the plan ends, as a fallback.
+
+## Before decommissioning: stretch the cloud quota
+
+From 1 December, running `svc.health_sweep` and `svc.auto_resolve_incidents` hourly instead of every 30 minutes would save about 1,450 executions a month. That keeps the cloud running alongside the homelab for most or all of December. The homelab has no execution cap, so its schedules can stay at 30 minutes.
 
 ## Follow-on: Fight Analyser expert picks
 
